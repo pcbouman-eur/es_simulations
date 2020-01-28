@@ -22,8 +22,9 @@ def init_sbm(n, affinity):
 
 
 if __name__ == '__main__':
-    affinity = [[0.2, 0.01], [0.01, 0.2]]
-    g = init_sbm(100, affinity)
+    p = [[0.2, 0.01], [0.01, 0.2]]
+    m = 100
+    test_graph = init_sbm(m, p)
     colors = np.array(['blue', 'green'])
-    g.vs['color'] = colors[np.array(g.vs['district']) - 1]
-    ig.plot(g)
+    test_graph.vs['color'] = colors[np.array(test_graph.vs['district']) - 1]
+    ig.plot(test_graph)
