@@ -6,6 +6,7 @@ TODO: explain more here
 
 from itertools import groupby
 
+
 # Retrieve the voters from a network
 def extract_voters(network):
     return network.vs
@@ -57,14 +58,13 @@ def system_district_majority(voters, district_voting=system_population_majority)
     return counts_to_result(counts, district_count)
 
 
-# Runs a voting system on a network
-# TODO: run this on an actual network
 def run_voting_system(network, system=system_population_majority):
     return system_population_majority(extract_voters(network))
 
 
-# This is some basic test code
-lst = [(1,'a'),(-1,'a'),(-1,'a'),(1,'b'),(1,'b'),(1,'b'),(1,'b'),(-1,'c'),(-1,'c'),(1,'c')]
-test_voters = [{'state' : a, 'district' : b} for a,b in lst]
-print(system_population_majority(test_voters))
-print(system_district_majority(test_voters))
+if __name__ == '__main__':
+    # This is some basic test code
+    lst = [(1,'a'),(-1,'a'),(-1,'a'),(1,'b'),(1,'b'),(1,'b'),(1,'b'),(-1,'c'),(-1,'c'),(1,'c')]
+    test_voters = [{'state' : a, 'district' : b} for a,b in lst]
+    print(system_population_majority(test_voters))
+    print(system_district_majority(test_voters))

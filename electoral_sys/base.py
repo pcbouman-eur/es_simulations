@@ -1,1 +1,0 @@
-import igraph as ig
