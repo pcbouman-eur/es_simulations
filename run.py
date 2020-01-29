@@ -37,19 +37,21 @@ def plot_hist(distribution):
     plt.ylabel('probability')
     plt.show()
 
+
 def plot_traj(traj):
     plt.plot(traj)
     plt.ylim(0,1)
     plt.show()
+
 
 def main():
     dist_population_wise = {1: [], -1: []}
     dist_district_wise = {1: [], -1: []}
 
     init_g = init_sbm(N, AFFINITY)
-    init_g = add_zealots(init_g)
+    init_g = add_zealots(init_g, 0)
 
-    g,traj = run_thermalization(init_g, EPS, THERM_TIME, each=100, n=N)
+    g, traj = run_thermalization(init_g, EPS, THERM_TIME, each=100, n=N)
     plot_traj(traj)
 
     for i in range(SAMPLE_SIZE):
