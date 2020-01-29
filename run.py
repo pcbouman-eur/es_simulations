@@ -26,6 +26,10 @@ def plot_hist(distribution):
     plt.show()
     plt.clf()
 
+def plot_traj(traj):
+    plt.plot(traj)
+    plt.ylim(0,1)
+    plt.show()
 
 def main():
     dist_population_wise = {1: [], -1: []}
@@ -33,34 +37,30 @@ def main():
 
     init_g = init_sbm(N, AFFINITY)
     init_g = add_zealots(init_g)
-    g = run_symulation(init_g, EPS, 200000, n=N)
-    onefraction_time = [system_population_majority(g.vs)['fractions'][1]]
+    # g = run_symulation(init_g, EPS, 200000, n=N)
+    g,traj = run_thermalization(init_g, EPS, 2000, 100, n=N)
+    
+    plot_traj(traj)
     
     for i in range(500):
         g = run_symulation(g, EPS, N*10, n=N)
         dist_population_wise[1].append(system_population_majority(g.vs)['fractions'][1])
         dist_population_wise[-1].append(system_population_majority(g.vs)['fractions'][-1])
         
-        onefraction_time.append(system_population_majority(g.vs)['fractions'][1])
-        
-        
         dist_district_wise[1].append(system_district_majority(g.vs)['fractions'][1])
         dist_district_wise[-1].append(system_district_majority(g.vs)['fractions'][-1])
     
-    plt.plot(onefraction_time)
-    plt.ylim(0,1)
-    plt.show()
-    #print(dist_population_wise)
-    #print(dist_district_wise)
+    print(dist_population_wise)
+    print(dist_district_wise)
 
-    # plot_hist(dist_population_wise)
-    # plot_hist(dist_district_wise)
+    plot_hist(dist_population_wise)
+    plot_hist(dist_district_wise)
 
-    # # just plotting graph
-    # for i in range(N):
-    #     if g.vs(i)["state"][0] == 1:
-    #         g.vs(i)["color"] = 'green'
-    # ig.plot(g)
+    # just plotting graph
+    for i in range(N):
+        if g.vs(i)["state"][0] == 1:
+            g.vs(i)["color"] = 'green'
+    ig.plot(g)
 
 
 if __name__ == '__main__':
