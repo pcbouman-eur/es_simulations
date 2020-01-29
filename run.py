@@ -49,7 +49,8 @@ def main():
     init_g = init_sbm(N, AFFINITY)
     init_g = add_zealots(init_g)
 
-    g = run_thermalization(init_g, EPS, THERM_TIME, n=N)
+    g,traj = run_thermalization(init_g, EPS, THERM_TIME, n=N)
+    plot_traj(traj)
 
     for i in range(SAMPLE_SIZE):
         g = run_symulation(g, EPS, N*50, n=N)
