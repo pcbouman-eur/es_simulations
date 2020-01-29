@@ -2,20 +2,20 @@ import igraph as ig
 import numpy as np
 
 
-def planted_affinity(q, c, fractions, eps, n):
+def planted_affinity(q, c, fractions, ratio, n):
     """
 
     :param q: number of districts
     :param c: average degree
     :param fractions: fractions of each district (numpy array with shape = (q,))
-    :param eps: ratio between density outside and inside of districts
+    :param ratio: ratio between density outside and inside of districts
     :param n: network size
-    :return: np.array() object with shape = (q, q).
+    :return: list object with shape = (q, q).
     """
-    p_in = c / (n * (eps + (1.0 - eps) * np.sum(fractions**2)))
-    p_out = eps * p_in
+    p_in = c / (n * (ratio + (1.0 - ratio) * np.sum(fractions**2)))
+    p_out = ratio * p_in
     p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
-    return p
+    return p.tolist()
 
 
 def init_sbm(n, affinity):

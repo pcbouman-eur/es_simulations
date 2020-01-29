@@ -1,11 +1,14 @@
 import igraph as ig
+import numpy as np
 from matplotlib import pyplot as plt
-from net_generation.base import init_sbm, add_zealots
+from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_symulation
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
-N = 500  # network size
-AFFINITY = [[0.2, 0.01], [0.01, 0.2]]  # change to get different network from SBM
+N = 5000  # network size
+q = 100
+# AFFINITY = [[0.2, 0.01], [0.01, 0.2]]  # change to get different network from SBM
+AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
 EPS = 0.01  # noise rate
 
 
