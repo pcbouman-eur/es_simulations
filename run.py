@@ -10,14 +10,20 @@ EPS = 0.01  # noise rate
 
 
 def plot_hist(distribution):
-    plt.hist(distribution, bins=10, normed=True)
+    plt.hist(distribution[1], bins=10, normed=True, color='green')
+    plt.title('Histogram of vote share')
+    plt.xlabel('fraction of votes')
+    plt.ylabel('probability')
+    plt.show()
+
+    plt.hist(distribution[-1], bins=10, normed=True, color='red')
     plt.title('Histogram of vote share')
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
     plt.show()
 
 
-if __name__ == '__main__':
+def main():
     dist_population_wise = {1: [], -1: []}
     dist_district_wise = {1: [], -1: []}
 
@@ -35,13 +41,15 @@ if __name__ == '__main__':
     print(dist_population_wise)
     print(dist_district_wise)
 
-    plot_hist(dist_population_wise[1])
-    plot_hist(dist_population_wise[-1])
-    plot_hist(dist_district_wise[1])
-    plot_hist(dist_district_wise[-1])
+    plot_hist(dist_population_wise)
+    plot_hist(dist_district_wise)
 
     # just plotting graph
     for i in range(N):
         if g.vs(i)["state"][0] == 1:
             g.vs(i)["color"] = 'green'
     ig.plot(g)
+
+
+if __name__ == '__main__':
+    main()
