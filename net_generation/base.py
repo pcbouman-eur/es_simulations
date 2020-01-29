@@ -14,10 +14,23 @@ def init_sbm(n, affinity):
     g = ig.Graph.SBM(n, affinity, block_sizes)
     g.vs()["state"] = np.random.randint(0, 2, n) * 2 - 1
 
+    g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
+
     group = np.zeros(n, dtype='int')
     for i in range(q - 1):
         group[int(np.sum(block_sizes[:(i + 1)])):] = i + 1
     g.vs['district'] = group
+    return g
+
+
+def add_zealots(g):
+    """
+    Function creating zealots in the network.
+    Overwrite as you wish.
+    :param g: ig.Graph() object
+    :return: ig.Graph() object
+    """
+    # g.vs(10)['zealot'] = 1  # this will make node no. 10 a zealot
     return g
 
 
