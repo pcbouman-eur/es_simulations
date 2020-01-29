@@ -2,7 +2,7 @@ import igraph as ig
 import numpy as np
 from matplotlib import pyplot as plt
 from net_generation.base import init_sbm, add_zealots, planted_affinity
-from simulation.base import run_symulation
+from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
 N = 500  # network size
@@ -49,7 +49,7 @@ def main():
     init_g = init_sbm(N, AFFINITY)
     init_g = add_zealots(init_g)
 
-    g = run_symulation(init_g, EPS, THERM_TIME, n=N)
+    g = run_thermalization(init_g, EPS, THERM_TIME, n=N)
 
     for i in range(SAMPLE_SIZE):
         g = run_symulation(g, EPS, N*50, n=N)

@@ -22,10 +22,10 @@ def run_symulation(g, noise_rate, max_step, n=None):
     return g
 
 
-def run_thermalization(g, noise_rate, nrun, each, n=None):
+def run_thermalization(g, noise_rate, therm_time, each, n=None):
         
     traj = [system_population_majority(g.vs)['fractions'][1]]
-    
+    nrun = round(therm_time/each)
     for t in range(nrun):
         g = run_symulation(g, noise_rate, each)
         traj.append(system_population_majority(g.vs)['fractions'][1])
