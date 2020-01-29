@@ -35,7 +35,7 @@ def system_population_majority(voters):
     voter_count = 0
     for voter in voters:
         vote = extract_vote(voter)
-        if not vote in counts:
+        if vote not in counts:
             counts[vote] = 0
         counts[vote] += 1
         voter_count += 1
@@ -51,7 +51,7 @@ def system_district_majority(voters, district_voting=system_population_majority)
     district_count = 0
     for district, res in results_by_district.items():
         winner = res['winner']
-        if not winner in counts:
+        if winner not in counts:
             counts[winner] = 0
         counts[winner] += 1
         district_count += 1
