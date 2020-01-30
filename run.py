@@ -1,4 +1,4 @@
-import igraph as ig
+# import igraph as ig
 import numpy as np
 import sys
 from matplotlib import pyplot as plt
@@ -10,10 +10,10 @@ if len(sys.argv) == 1:
     N = 1875
     q = 25
     EPS = 0.01
-    SAMPLE_SIZE = 100
+    SAMPLE_SIZE = 500
     THERM_TIME = 300000
-    n_zealots = 0  # round(N/50)
-    where_zealots = 'degree'
+    n_zealots = 6  # round(N/50)
+    where_zealots = 'district'
     zealots_district = None
 else:
     N = int(sys.argv[1])  # size of the network
@@ -37,16 +37,17 @@ else:
     degdriv = False
     one_dist = False
     district = None
-    
-# AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
-AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
 
-sufix = '_N_' + str(N) + '_q_' + str(q) + '_EPS_' + str(EPS) + '_S_' + str(SAMPLE_SIZE) + '_T_' + str(THERM_TIME)
+ratio = 0.1
+# AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
+AFFINITY = planted_affinity(q, 5, np.ones(q) / q, ratio, N)  # all districts the same size and density
+
+sufix = '_N_' + str(N) + '_q_' + str(q) + '_EPS_' + str(EPS) + '_S_' + str(SAMPLE_SIZE) + '_T_' + str(THERM_TIME) + '_R_' + str(ratio)
 
 
 def plot_hist(distribution, name1, name2):
     plt.figure()
-    plt.hist(distribution[1], bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color='green')
+    plt.hist(distribution[1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='green')
     avg = np.mean(distribution[1])
     std = np.std(distribution[1])
     plt.axvline(avg, linestyle='-', color='black')
@@ -58,7 +59,7 @@ def plot_hist(distribution, name1, name2):
     plt.savefig('plots/' + name1 + '' + sufix + '.pdf')
 
     plt.figure()
-    plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color='red')
+    plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='red')
     avg = np.mean(distribution[-1])
     std = np.std(distribution[-1])
     plt.axvline(avg, linestyle='-', color='black')
