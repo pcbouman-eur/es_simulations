@@ -2,7 +2,7 @@ import igraph as ig
 import numpy as np
 from matplotlib import pyplot as plt
 from net_generation.base import init_sbm, add_zealots, planted_affinity
-from simulation.base import run_symulation
+from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
 N = 1000  # network size
@@ -38,13 +38,21 @@ def plot_hist(distribution):
     plt.show()
 
 
+def plot_traj(traj):
+    plt.plot(traj)
+    plt.ylim(0,1)
+    plt.show()
+
+
 def main():
     dist_population_wise = {1: [], -1: []}
     dist_district_wise = {1: [], -1: []}
 
     init_g = init_sbm(N, AFFINITY)
-    init_g = add_zealots(init_g)
-    g = run_symulation(init_g, EPS, THERM_TIME, n=N)
+    init_g = add_zealots(init_g, 0)
+
+    g, traj = run_thermalization(init_g, EPS, THERM_TIME, each=100, n=N)
+    plot_traj(traj)
 
     for i in range(SAMPLE_SIZE):
         print(i)

@@ -39,14 +39,24 @@ def init_sbm(n, affinity):
     return g
 
 
-def add_zealots(g):
+def add_zealots(g, m, one_district=False, district=None):
     """
     Function creating zealots in the network.
     Overwrite as you wish.
     :param g: ig.Graph() object
+    :param m: number of zealots
+    :param one_district: boolean, whether to add them to one district or randomly
+    :param district: if one_district==True, which district to choose? In 'None', district is chosen randomly
     :return: ig.Graph() object
     """
-    # g.vs(10)['zealot'] = 1  # this will make node no. 10 a zealot
+    if one_district:
+        if district is None:
+            district = np.random.randint(np.max(g.vs['district']) + 1)
+        ids = np.random.choice(np.where(np.array(g.vs['district']) == district)[0], size=m)
+    else:
+        ids = np.random.randint(g.vcount(), size=m)
+    if len(ids):
+        g.vs[ids]['zealot'] = 1
     return g
 
 
