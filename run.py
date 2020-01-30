@@ -15,15 +15,15 @@ if len(sys.argv) == 1:
     n_zealots = 0  # round(N/50)
     where_zealots = 'degree'
     zealots_district = None
-else :
-    N = int(sys.argv[1]) #size of the network
-    q = int(sys.argv[2]) #number of districts
+else:
+    N = int(sys.argv[1])  # size of the network
+    q = int(sys.argv[2])  # number of districts
     EPS = float(sys.argv[3])  # noise rate
-    SAMPLE_SIZE = int(sys.argv[4]) # number of points
+    SAMPLE_SIZE = int(sys.argv[4])  # number of points
     THERM_TIME = int(sys.argv[5])  # thermalization time steps
-    n_zealots = int(sys.argv[6]) # number of zealots
-    where_zealots = chr(sys.argv[7]) # where are the zealots. Options: degree-based, one_district, random
-    zealots_district = int(sys.argv[8]) # if zealots are in one district, which district
+    n_zealots = int(sys.argv[6])  # number of zealots
+    where_zealots = chr(sys.argv[7])  # where are the zealots. Options: degree-based, one_district, random
+    zealots_district = int(sys.argv[8])  # if zealots are in one district, which district
 
 if where_zealots == 'degree':
     degdriv = True
