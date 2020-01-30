@@ -37,7 +37,6 @@ else:
     degdriv = False
     one_dist = False
     district = None
-district = 2
 
 ratio = 0.1
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
