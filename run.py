@@ -47,7 +47,7 @@ sufix = '_N_' + str(N) + '_q_' + str(q) + '_EPS_' + str(EPS) + '_S_' + str(SAMPL
 
 def plot_hist(distribution, name1, name2):
     plt.figure()
-    plt.hist(distribution[1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='green')
+    plt.hist(distribution[1], bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color='green')
     avg = np.mean(distribution[1])
     std = np.std(distribution[1])
     plt.axvline(avg, linestyle='-', color='black')
@@ -59,7 +59,7 @@ def plot_hist(distribution, name1, name2):
     plt.savefig('plots/' + name1 + '' + sufix + '.pdf')
 
     plt.figure()
-    plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='red')
+    plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color='red')
     avg = np.mean(distribution[-1])
     std = np.std(distribution[-1])
     plt.axvline(avg, linestyle='-', color='black')
