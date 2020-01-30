@@ -49,6 +49,9 @@ def counts_to_result(counts, total):
     winner = np.random.choice(winners, 1)[0]
     fractions = {k: 1.0 * v / total for k, v in counts.items()}
     fractions = VotesCount(fractions)
+    total = sum(fractions.values())
+    if total < 1.0:
+        print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBB :', str(total))
     return {'winner': winner, 'fractions': fractions}
 
 
@@ -81,8 +84,8 @@ def system_district_majority(voters, district_voting=system_population_majority)
     return counts_to_result(counts, district_count)
 
 
-def run_voting_system(network, system=system_population_majority):
-    return system_population_majority(extract_voters(network))
+# def run_voting_system(network, system=system_population_majority):
+#     return system_population_majority(extract_voters(network))
 
 
 if __name__ == '__main__':
