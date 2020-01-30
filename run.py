@@ -74,7 +74,7 @@ def plot_hist(distribution, name1, name2):
 def plot_traj(traj):
     plt.figure()
     plt.plot(traj)
-    plt.ylim(0,1)
+    plt.ylim(0, 1)
     plt.savefig('plots/traj' + sufix + '.pdf')
 
 
@@ -83,7 +83,9 @@ def main():
     dist_district_wise = {1: [], -1: []}
 
     init_g = init_sbm(N, AFFINITY)
-    init_g = add_zealots(init_g, n_zealots, one_district = one_dist, degree_driven = degdriv)
+    init_g = add_zealots(init_g, n_zealots, one_district=one_dist, degree_driven=degdriv)
+    # for i in range(2):
+    #     init_g = add_zealots(init_g, n_zealots, one_district=i, degree_driven=degdriv)
 
     g, traj = run_thermalization(init_g, EPS, THERM_TIME, each=100, n=N)
     plot_traj(traj)
