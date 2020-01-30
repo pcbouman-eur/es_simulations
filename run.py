@@ -6,13 +6,21 @@ from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
-N = int(sys.argv[1]) #100  # network size
-q = int(sys.argv[2]) #10
+if len(sys.argv) == 1 :
+    N = 1000
+    q = 20
+    EPS = 0.01
+    SAMPLE_SIZE = 500
+    THERM_TIME = 10000
+else :
+    N = int(sys.argv[1]) #size of the network
+    q = int(sys.argv[2]) #number of districts
+    EPS = float(sys.argv[3])  # noise rate
+    SAMPLE_SIZE = int(sys.argv[4]) # number of points
+    THERM_TIME = int(sys.argv[5])  # thermalization time steps
+
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
 AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
-EPS = float(sys.argv[3]) #0.01  # noise rate
-SAMPLE_SIZE = int(sys.argv[4]) #100  # number of points
-THERM_TIME = int(sys.argv[5]) #10000  # thermalization time steps
 
 
 def plot_hist(distribution, name1, name2):
