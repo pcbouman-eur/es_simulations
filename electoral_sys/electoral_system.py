@@ -3,8 +3,27 @@ Functions that model different election systems
 
 TODO: explain more here
 '''
-
+import numpy as np
 from itertools import groupby
+
+
+class VotesCount:
+    def __init__(self, data):
+        self.data = data
+
+    def __getitem__(self, key):
+        if key in self.data:
+            return self.data[key]
+        return 0.0
+
+    def items(self):
+        return self.data.items()
+
+    def keys(self):
+        return self.data.keys()
+
+    def values(self):
+        return self.data.values()
 
 
 # Retrieve the voters from a network
@@ -25,13 +44,17 @@ def extract_district(voter):
 # Convenience function that produces the outcome of an election based on counts per option
 def counts_to_result(counts, total):
     winner = max(counts.keys(), key=counts.get)
-    fractions = {k: v / total for k, v in counts.items()}
+    _max = counts[winner]
+    winners = [w for w, v in counts.items() if v == _max]
+    winner = np.random.choice(winners, 1)[0]
+    fractions = {k: 1.0 * v / total for k, v in counts.items()}
+    fractions = VotesCount(fractions)
     return {'winner': winner, 'fractions': fractions}
 
 
 # Extracts the vote from each individual voter and computes the winner based on the majority
 def system_population_majority(voters):
-    counts = {1: 0, -1: 0}
+    counts = {}
     voter_count = 0
     for voter in voters:
         vote = extract_vote(voter)
@@ -47,7 +70,7 @@ def system_population_majority(voters):
 def system_district_majority(voters, district_voting=system_population_majority):
     voters_by_district = groupby(voters, extract_district)
     results_by_district = {d: district_voting(vs) for d, vs in voters_by_district}
-    counts = {1: 0, -1: 0}
+    counts = {}
     district_count = 0
     for district, res in results_by_district.items():
         winner = res['winner']
