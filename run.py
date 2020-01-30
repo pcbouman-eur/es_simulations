@@ -5,7 +5,7 @@ from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
-N = 1000  # network size
+N = 5000  # network size
 q = 100
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
 AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
@@ -15,7 +15,7 @@ THERM_TIME = 10000  # thermalization time steps
 
 
 def plot_hist(distribution):
-    plt.hist(distribution[1], bins=100, range=(0, 1), density=True, color='green')
+    plt.hist(distribution[1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='green')
     avg = np.mean(distribution[1])
     std = np.std(distribution[1])
     plt.axvline(avg, linestyle='-', color='black')
@@ -26,7 +26,7 @@ def plot_hist(distribution):
     plt.ylabel('probability')
     plt.show()
 
-    plt.hist(distribution[-1], bins=100, range=(0, 1), density=True, color='red')
+    plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='red')
     avg = np.mean(distribution[-1])
     std = np.std(distribution[-1])
     plt.axvline(avg, linestyle='-', color='black')
