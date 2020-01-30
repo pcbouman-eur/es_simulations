@@ -3,6 +3,7 @@ import random
 import numpy as np
 from electoral_sys.electoral_system import system_population_majority
 
+
 def run_symulation(g, noise_rate, max_step, n=None):
     if n is None:
         n = len(g.vs())

@@ -37,6 +37,7 @@ else:
     degdriv = False
     one_dist = False
     district = None
+district = 2
 
 ratio = 0.1
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
@@ -83,9 +84,9 @@ def main():
     dist_district_wise = {1: [], -1: []}
 
     init_g = init_sbm(N, AFFINITY)
-    init_g = add_zealots(init_g, n_zealots, one_district=one_dist, degree_driven=degdriv)
+    init_g = add_zealots(init_g, n_zealots, one_district=one_dist, district=district, degree_driven=degdriv)
     # for i in range(2):
-    #     init_g = add_zealots(init_g, n_zealots, one_district=i, degree_driven=degdriv)
+    #     init_g = add_zealots(init_g, n_zealots, one_district=one_dist, district=i, degree_driven=degdriv)
 
     g, traj = run_thermalization(init_g, EPS, THERM_TIME, each=100, n=N)
     plot_traj(traj)
