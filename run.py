@@ -13,16 +13,31 @@ if len(sys.argv) == 1 :
     SAMPLE_SIZE = 50
     THERM_TIME = 10000
     n_zealots = 0# round(N/50)
-    degdriv = True
-    one_dist = False
-    district = None
+    where_zealots = 'degree'
+    zealots_district = None
 else :
     N = int(sys.argv[1]) #size of the network
     q = int(sys.argv[2]) #number of districts
     EPS = float(sys.argv[3])  # noise rate
     SAMPLE_SIZE = int(sys.argv[4]) # number of points
     THERM_TIME = int(sys.argv[5])  # thermalization time steps
+    n_zealots = int(sys.argv[6]) # number of zealots
+    where_zealots = chr(sys.argv[7]) # where are the zealots. Options: degree-based, one_district, random
+    zealots_district = int(sys.argv[8]) # if zealots are in one district, which district
 
+if where_zealots == 'degree':
+    degdriv = True
+    one_dist = False
+    district = None
+elif where_zealots == 'district':
+    degdriv = False
+    one_dist = True
+    district = zealots_district
+else:
+    degdriv = False
+    one_dist = False
+    district = None
+    
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
 AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
 

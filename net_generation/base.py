@@ -31,7 +31,7 @@ def init_sbm(n, affinity):
     g.vs()["state"] = np.random.randint(0, 2, n) * 2 - 1
 
     g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
-
+    
     group = np.zeros(n, dtype='int')
     for i in range(q - 1):
         group[int(np.sum(block_sizes[:(i + 1)])):] = i + 1
@@ -39,7 +39,7 @@ def init_sbm(n, affinity):
     return g
 
 
-def add_zealots(g, m, one_district=False, district=None):
+def add_zealots(g, m, one_district=False, district=None, degree_driven = False):
     """
     Function creating zealots in the network.
     Overwrite as you wish.
@@ -52,11 +52,16 @@ def add_zealots(g, m, one_district=False, district=None):
     if one_district:
         if district is None:
             district = np.random.randint(np.max(g.vs['district']) + 1)
-        ids = np.random.choice(np.where(np.array(g.vs['district']) == district)[0], size=m)
+        ids = np.random.choice(np.where(np.array(g.vs['district']) == district)[0], replace = False, size=m)
+    elif degree_driven:
+        degrees = g.degree()
+        degprob = degrees/np.sum(degrees)
+        ids = np.random.choice(g.vcount(), size = m, replace = False, p = degprob)
     else:
-        ids = np.random.randint(g.vcount(), size=m)
+        ids = np.random.randint(g.vcount(), replace = False, size=m)
     if len(ids):
-        g.vs[ids]['zealot'] = 1
+        g.vs[list(ids)]['zealot'] = 1
+        g.vs[list(ids)]['state'] = 1
     return g
 
 
