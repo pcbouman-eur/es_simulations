@@ -11,7 +11,7 @@ q = 10
 AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
 EPS = 0.01  # noise rate
 SAMPLE_SIZE = 100  # number of points
-THERM_TIME = 100000  # thermalization time steps
+THERM_TIME = 10000  # thermalization time steps
 
 
 def plot_hist(distribution):
@@ -57,17 +57,13 @@ def main():
     for i in range(SAMPLE_SIZE):
         print(i)
         g = run_symulation(g, EPS, N*50, n=N)
-        dist_population_wise[1].append(system_population_majority(g.vs)['fractions'][1])
-        dist_population_wise[-1].append(system_population_majority(g.vs)['fractions'][-1])
-        dist_district_wise[1].append(system_district_majority(g.vs)['fractions'][1])
-        dist_district_wise[-1].append(system_district_majority(g.vs)['fractions'][-1])
+        population = system_population_majority(g.vs)['fractions']
+        dist_population_wise[1].append(population[1])
+        dist_population_wise[-1].append(population[-1])
 
-    for i in range(SAMPLE_SIZE):
-        print(dist_district_wise[1][i])
-        print(dist_district_wise[-1][i])
-        if dist_district_wise[1][i] != 1.0-dist_district_wise[-1][i]:
-            print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-            print()
+        district = system_district_majority(g.vs)['fractions']
+        dist_district_wise[1].append(district[1])
+        dist_district_wise[-1].append(district[-1])
 
     plot_hist(dist_population_wise)
     plot_hist(dist_district_wise)
