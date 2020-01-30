@@ -1,20 +1,22 @@
 import igraph as ig
 import numpy as np
+import sys
 from matplotlib import pyplot as plt
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
-N = 5000  # network size
-q = 100
+N = int(sys.argv[1]) #100  # network size
+q = int(sys.argv[2]) #10
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
 AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
-EPS = 0.01  # noise rate
-SAMPLE_SIZE = 100  # number of points
-THERM_TIME = 10000  # thermalization time steps
+EPS = float(sys.argv[3]) #0.01  # noise rate
+SAMPLE_SIZE = int(sys.argv[4]) #100  # number of points
+THERM_TIME = int(sys.argv[5]) #10000  # thermalization time steps
 
 
-def plot_hist(distribution):
+def plot_hist(distribution, name1, name2):
+    plt.figure()
     plt.hist(distribution[1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='green')
     avg = np.mean(distribution[1])
     std = np.std(distribution[1])
@@ -24,8 +26,9 @@ def plot_hist(distribution):
     plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
-    plt.show()
+    plt.savefig(name1 + '.pdf')
 
+    plt.figure()
     plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='red')
     avg = np.mean(distribution[-1])
     std = np.std(distribution[-1])
@@ -35,13 +38,14 @@ def plot_hist(distribution):
     plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
-    plt.show()
+    plt.savefig(name2 + '.pdf')
 
 
 def plot_traj(traj):
+    plt.figure()
     plt.plot(traj)
     plt.ylim(0,1)
-    plt.show()
+    plt.savefig('traj.pdf')
 
 
 def main():
@@ -65,8 +69,8 @@ def main():
         dist_district_wise[1].append(district[1])
         dist_district_wise[-1].append(district[-1])
 
-    plot_hist(dist_population_wise)
-    plot_hist(dist_district_wise)
+    plot_hist(dist_population_wise, 'population1', 'population-1')
+    plot_hist(dist_district_wise, 'district1', 'district-1')
 
     # just plotting graph
     # for i in range(N):
