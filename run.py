@@ -26,6 +26,8 @@ else :
 # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
 AFFINITY = planted_affinity(q, 5, np.ones(q) / q, 0.2, N)  # all districts the same size and density
 
+sufix = '_N_' + str(N) + '_q_' + str(q) + '_EPS_' + str(EPS) + '_S_' + str(SAMPLE_SIZE) + '_T_' + str(THERM_TIME)
+
 
 def plot_hist(distribution, name1, name2):
     plt.figure()
@@ -38,7 +40,7 @@ def plot_hist(distribution, name1, name2):
     plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
-    plt.savefig(name1 + '.pdf')
+    plt.savefig(name1 + '' + sufix + '.pdf')
 
     plt.figure()
     plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='red')
@@ -50,14 +52,14 @@ def plot_hist(distribution, name1, name2):
     plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
-    plt.savefig(name2 + '.pdf')
+    plt.savefig(name2 + '' + sufix + '.pdf')
 
 
 def plot_traj(traj):
     plt.figure()
     plt.plot(traj)
     plt.ylim(0,1)
-    plt.savefig('traj.pdf')
+    plt.savefig('traj' + sufix + '.pdf')
 
 
 def main():
