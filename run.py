@@ -10,8 +10,12 @@ if len(sys.argv) == 1 :
     N = 1000
     q = 20
     EPS = 0.01
-    SAMPLE_SIZE = 500
+    SAMPLE_SIZE = 50
     THERM_TIME = 10000
+    n_zealots = 0# round(N/50)
+    degdriv = True
+    one_dist = False
+    district = None
 else :
     N = int(sys.argv[1]) #size of the network
     q = int(sys.argv[2]) #number of districts
@@ -61,7 +65,7 @@ def main():
     dist_district_wise = {1: [], -1: []}
 
     init_g = init_sbm(N, AFFINITY)
-    init_g = add_zealots(init_g, 0)
+    init_g = add_zealots(init_g, n_zealots, one_district = one_dist, degree_driven = degdriv)
 
     g, traj = run_thermalization(init_g, EPS, THERM_TIME, each=100, n=N)
     plot_traj(traj)
