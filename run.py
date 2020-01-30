@@ -55,7 +55,7 @@ def plot_hist(distribution, name1, name2):
     plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
-    plt.savefig(name1 + '' + sufix + '.pdf')
+    plt.savefig('plots/' + name1 + '' + sufix + '.pdf')
 
     plt.figure()
     plt.hist(distribution[-1], bins=np.linspace(0.0, 1.0, 40), range=(0, 1), density=True, color='red')
@@ -67,14 +67,14 @@ def plot_hist(distribution, name1, name2):
     plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
     plt.xlabel('fraction of votes')
     plt.ylabel('probability')
-    plt.savefig(name2 + '' + sufix + '.pdf')
+    plt.savefig('plots/' + name2 + '' + sufix + '.pdf')
 
 
 def plot_traj(traj):
     plt.figure()
     plt.plot(traj)
     plt.ylim(0,1)
-    plt.savefig('traj' + sufix + '.pdf')
+    plt.savefig('plots/traj' + sufix + '.pdf')
 
 
 def main():

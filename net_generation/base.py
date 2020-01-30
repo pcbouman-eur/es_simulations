@@ -47,18 +47,19 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven = False):
     :param m: number of zealots
     :param one_district: boolean, whether to add them to one district or randomly
     :param district: if one_district==True, which district to choose? In 'None', district is chosen randomly
+    :param degree_driven: if True choose nodes proportionaly to the degree
     :return: ig.Graph() object
     """
     if one_district:
         if district is None:
             district = np.random.randint(np.max(g.vs['district']) + 1)
-        ids = np.random.choice(np.where(np.array(g.vs['district']) == district)[0], replace = False, size=m)
+        ids = np.random.choice(np.where(np.array(g.vs['district']) == district)[0], replace=False, size=m)
     elif degree_driven:
         degrees = g.degree()
-        degprob = degrees/np.sum(degrees)
-        ids = np.random.choice(g.vcount(), size = m, replace = False, p = degprob)
+        deg_prob = degrees / np.sum(degrees)
+        ids = np.random.choice(g.vcount(), size=m, replace=False, p=deg_prob)
     else:
-        ids = np.random.randint(g.vcount(), replace = False, size=m)
+        ids = np.random.choice(g.vcount(), size=m, replace=False)
     if len(ids):
         g.vs[list(ids)]['zealot'] = 1
         g.vs[list(ids)]['state'] = 1
