@@ -1,4 +1,4 @@
-import igraph as ig
+# import igraph as ig
 import numpy as np
 import sys
 from matplotlib import pyplot as plt
@@ -6,24 +6,24 @@ from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
-if len(sys.argv) == 1 :
+if len(sys.argv) == 1:
     N = 1000
     q = 20
     EPS = 0.01
     SAMPLE_SIZE = 50
     THERM_TIME = 10000
-    n_zealots = 0# round(N/50)
+    n_zealots = 0  # round(N/50)
     where_zealots = 'degree'
     zealots_district = None
-else :
-    N = int(sys.argv[1]) #size of the network
-    q = int(sys.argv[2]) #number of districts
+else:
+    N = int(sys.argv[1])  # size of the network
+    q = int(sys.argv[2])  # number of districts
     EPS = float(sys.argv[3])  # noise rate
-    SAMPLE_SIZE = int(sys.argv[4]) # number of points
+    SAMPLE_SIZE = int(sys.argv[4])  # number of points
     THERM_TIME = int(sys.argv[5])  # thermalization time steps
-    n_zealots = int(sys.argv[6]) # number of zealots
-    where_zealots = chr(sys.argv[7]) # where are the zealots. Options: degree-based, one_district, random
-    zealots_district = int(sys.argv[8]) # if zealots are in one district, which district
+    n_zealots = int(sys.argv[6])  # number of zealots
+    where_zealots = chr(sys.argv[7])  # where are the zealots. Options: degree-based, one_district, random
+    zealots_district = int(sys.argv[8])  # if zealots are in one district, which district
 
 if where_zealots == 'degree':
     degdriv = True
