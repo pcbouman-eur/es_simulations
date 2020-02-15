@@ -71,7 +71,7 @@ def system_population_majority(voters):
 # Applies a voting system to each district, and then aggregates votes based on the
 # winner of each district
 def system_district_majority(voters, district_voting=system_population_majority):
-    voters_by_district = groupby(voters, extract_district)
+    voters_by_district = groupby(sorted(voters, key=extract_district), key=extract_district)
     results_by_district = {d: district_voting(vs) for d, vs in voters_by_district}
     counts = {}
     district_count = 0
