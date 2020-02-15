@@ -18,17 +18,29 @@ def planted_affinity(q, c, fractions, ratio, n):
     return p.tolist()
 
 
-def init_sbm(n, affinity):
+def default_initial_state(n):
+    """
+    Generates n default -1 or 1 initial states with equal probabilities
+
+    :param n: the number of states to generate
+    :return: a numpy array of n states
+    """
+
+    return np.random.randint(0, 2, n) * 2 - 1
+
+
+def init_sbm(n, affinity, state_generator=default_initial_state):
     """
 
     :param n: network size
     :param affinity: affinity matrix for SBM model
+    :param state_generator: function that generates the states
     :return: ig.Graph() object with...
     """
     q = len(affinity)
     block_sizes = np.repeat(n / q, q).tolist()
     g = ig.Graph.SBM(n, affinity, block_sizes)
-    g.vs()["state"] = np.random.randint(0, 2, n) * 2 - 1
+    g.vs()["state"] = default_initial_state(n)
 
     g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
     
