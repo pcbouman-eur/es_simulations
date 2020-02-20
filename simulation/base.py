@@ -1,6 +1,7 @@
 import igraph as ig
 import random
 import numpy as np
+from collections import Counter
 from electoral_sys.electoral_system import system_population_majority
 
 
@@ -23,7 +24,6 @@ def default_propagation(node, g):
     and copies the state from the neighbor into the the target node
 
     :param node: the node to which a new state can be propagated
-    :param neighbours: the neighbors of the node
     :param g: the graph in which the node and neighbours live
     :result: the new state for the node
     """
@@ -32,10 +32,35 @@ def default_propagation(node, g):
         target_neighbor = random.sample(neighbours, 1)[0]
         return g.vs[target_neighbor]["state"]
     return node["state"]
+
+
+def majority_propagation(node, g, inverse=False):
+    """
+    Majority propagation mechanism that looks at the distribution of
+    states amongst the neigbors, and selects a state that occurs the most
+    often
     
+    :param node: the node to which a new state will be propagated
+    :param g: the igraph graph where the node and neighbours live
+    :param inverse: if propagation should be done from the minority instead
+    :result: the new state for the node
+    """
+    neighbours = g.neighbors(node)
+    if neighbours:
+        c = Counter([g.vs[n]["state"] for n in neighbours])
+        counts = c.most_common()
+        if inverse:
+            max_count = counts[-1][1]
+        else:
+            max_count = counts[0][1]
+        selection = [state for state,count in counts if count == max_count]
+        if len(selection) == 1:
+            return selection[0]
+        return random.sample(selection, 1)[0]
+    return node["state"]
+
     
-def run_symulation(g, noise_rate, max_step, n=None, mutate=default_mutation,
-                   propagate=default_propagation):
+def run_symulation(config, g, noise_rate, max_step, n=None):
     if n is None:
         n = len(g.vs())
         
@@ -46,19 +71,18 @@ def run_symulation(g, noise_rate, max_step, n=None, mutate=default_mutation,
             rnum = random.random()
             if rnum <= noise_rate / 2.0:
                 # Mutate
-                target["state"] = mutate(target)
+                target["state"] = config.mutate(target)
             elif rnum > noise_rate:
                 # Propagate
-                target["state"] = propagate(target, g)
+                target["state"] = config.propagate(target, g)
     return g
 
 
-def run_thermalization(g, noise_rate, therm_time, each, n=None):
-        
+def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
     traj = [system_population_majority(g.vs)['fractions'][1]]
     nrun = round(therm_time/each)
     for t in range(nrun):
-        g = run_symulation(g, noise_rate, each)
+        g = run_symulation(config, g, noise_rate, each)
         traj.append(system_population_majority(g.vs)['fractions'][1])
             
     return g, traj
