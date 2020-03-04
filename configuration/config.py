@@ -13,34 +13,32 @@ class Config:
 
     :cmd_args: an argparse Namespace with command line arguments
     :voting_system: a voting system function used to determine a winner
-    :initial_states: a function that generates a vector of initial states
-    :propagation: a function that propagates states from neighbours to a node
-    :mutation: a function that changes the state of a node at random
+    :initialize_states: a function that generates a vector of initial states
+    :propagate: a function that propagates states from neighbours to a node
+    :mutate: a function that changes the state of a node at random
+    :reset: whether to generate new initial states after each simulation
     :zealots_config: configuration for the zealot initialization
     :suffix: suggested file name suffix for output files
     """
 
+    initialize_states = staticmethod(ng.default_initial_state)
+    voting_systems = { 'population' : es.system_population_majority,
+                       'district' : es.system_district_majority}
+    propagate = staticmethod(sim.default_propagation)
+    mutate = staticmethod(sim.default_mutation)
+    reset = False
+
     def __init__(self, cmd_args):
         # Command line arguments
         self.cmd_args = cmd_args
-
-        # State initialization options
-        self.initial_states = ng.default_initial_state
-
-        # Voting systems used in the simulation
-        self.voting_systems = {'population' : es.system_population_majority,
-                               'district' : es.system_district_majority}
-
-        # Mutation mechanisms
-        self.mutation = sim.default_mutation
+        self.reset = cmd_args.reset
 
         # Propagation mechanisms
         if cmd_args.propagation == 'majority':
-            self.propagation = sim.majority_propagation
+            self.propagate = sim.majority_propagation
         elif cmd_args.propagation == 'minority':
-            self.propagation = lambda n,g: sim.majority_propagation(n,g,True)
-        else:
-            self.propagation = sim.default_propagation
+            f = lambda n,g: sim.majority_propagation(n,g,True)
+            self.propagate = f
 
         # Filename suffix
         self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}'\
@@ -59,27 +57,3 @@ class Config:
             self.zealots_config = {'degree_driven' : False,
                                    'one_district'  : False,
                                    'district'      : None}                                   
-
-
-    def initialize_states(self, n):
-        """
-        Generates an initial state vector for the simulation
-        :param n: the number of states to generate
-        """
-        return self.initial_states(n)
-
-    def propagate(self, target, g):
-        """
-        Determines a new state for a target node based on the network situation
-        :target: the node for which the new state must be determined
-        :g: the network where the node lives
-        """
-        return self.propagation(target, g)
-    
-    def mutate(self, node):
-        """
-        Determines a new state for a target node that spontaneously mutates
-        its state
-        :node: the node that mutates
-        """
-        return self.mutation(node)

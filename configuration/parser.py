@@ -39,9 +39,13 @@ parser.add_argument('-zd', '--zealots_district', action='store', default=None,
                     type=int, dest='zealots_district',
                     help='if zealots are in one district, which district')
 
-parser.add_argument('-r', '--ratio', action='store', default=0.1,
+parser.add_argument('-ra', '--ratio', action='store', default=0.1,
                     type=float, dest='ratio',
                     help='The ratio used to plant the affinities')
+
+parser.add_argument('--reset', action='store_const', default=False, const=True,
+                    dest='reset',
+                    help='reset states after each simulation')
 
 parser.add_argument('-p', '--propagation', action='store', default='standard',
                     choices=('standard', 'majority', 'minority'),

@@ -48,12 +48,8 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
     AFFINITY = planted_affinity(q, 5, np.ones(q) / q, ratio, N)  # all districts the same size and density
 
     suffix = config.suffix
-    #'_N_' + str(N) + '_q_' + str(q) + '_EPS_' + str(EPS) + '_S_' + str(SAMPLE_SIZE) + '_T_' + str(THERM_TIME) + '_R_' + str(ratio)
 
-    # dist_population_wise = {1: [], -1: []}
-    # dist_district_wise = {1: [], -1: []}
-
-    init_g = init_sbm(N, AFFINITY, state_generator=config.initial_states)
+    init_g = init_sbm(N, AFFINITY, state_generator=config.initialize_states)
     init_g = add_zealots(init_g, n_zealots, **config.zealots_config)
     # for i in range(2):
     #     init_g = add_zealots(init_g, n_zealots, one_district=one_dist, district=i, degree_driven=degdriv)
@@ -66,6 +62,8 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
 
     for i in range(SAMPLE_SIZE):
         print(i)
+        if (config.reset):
+            g.vs()["state"] = config.initialize_states(N)
         g = run_symulation(config, g, EPS, N*50, n=N)
         
         for system,fun in config.voting_systems.items():
@@ -73,20 +71,9 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
             results[system][1].append(outcome[1])
             results[system][-1].append(outcome[-1])
 
-        # population = system_population_majority(g.vs)['fractions']
-        # dist_population_wise[1].append(population[1])
-        # dist_population_wise[-1].append(population[-1])
-
-        # district = system_district_majority(g.vs)['fractions']
-        # dist_district_wise[1].append(district[1])
-        # dist_district_wise[-1].append(district[-1])
-
     for system in config.voting_systems.keys():
         plot_hist(results[system], system+'1', system+'-1', suffix)
     
-    # plot_hist(dist_population_wise, 'population1', 'population-1', suffix)
-    # plot_hist(dist_district_wise, 'district1', 'district-1', suffix)
-
     # just plotting graph
     # for i in range(N):
     #     if g.vs(i)["state"][0] == 1:
