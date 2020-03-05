@@ -5,25 +5,7 @@ TODO: explain more here
 '''
 import numpy as np
 from itertools import groupby
-
-
-class VotesCount:
-    def __init__(self, data):
-        self.data = data
-
-    def __getitem__(self, key):
-        if key in self.data:
-            return self.data[key]
-        return 0.0
-
-    def items(self):
-        return self.data.items()
-
-    def keys(self):
-        return self.data.keys()
-
-    def values(self):
-        return self.data.values()
+from collections import Counter
 
 
 # Retrieve the voters from a network
@@ -47,8 +29,7 @@ def counts_to_result(counts, total):
     _max = counts[winner]
     winners = [w for w, v in counts.items() if v == _max]
     winner = np.random.choice(winners, 1)[0]
-    fractions = {k: 1.0 * v / total for k, v in counts.items()}
-    fractions = VotesCount(fractions)
+    fractions = Counter({k: 1.0 * v / total for k, v in counts.items()})
     total = sum(fractions.values())
     if total < 1.0:
         print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBB :', str(total))
