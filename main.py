@@ -13,7 +13,7 @@ from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
 def plot_hist(distribution, name, suffix, output_dir='plots/',
-                colors=['green','red','blue']):
+                colors=['red','green','blue']):
     os.makedirs(output_dir, exist_ok=True)
     idx = 0
     for key in sorted(distribution.keys()):
@@ -30,7 +30,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/',
         plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
         plt.xlabel('fraction of votes')
         plt.ylabel('probability')
-        plt.savefig(output_dir + name + str(key) + suffix + '.pdf')
+        plt.savefig(output_dir + name + '_' + str(key) + suffix + '.pdf')
         idx += 1
 
 
@@ -88,8 +88,6 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
 
     init_g = init_sbm(N, AFFINITY, state_generator=config.initialize_states)
     init_g = add_zealots(init_g, n_zealots, **config.zealots_config)
-    # for i in range(2):
-    #     init_g = add_zealots(init_g, n_zealots, one_district=one_dist, district=i, degree_driven=degdriv)
 
     g, traj = run_thermalization(config, init_g, EPS, THERM_TIME, each=100, n=N)
     plot_traj(traj, suffix)
@@ -98,7 +96,7 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
 
     for i in range(SAMPLE_SIZE):
         print(i)
-        if (config.reset):
+        if config.reset:
             g.vs()["state"] = config.initialize_states(N)
         g = run_symulation(config, g, EPS, N*50, n=N)
         
@@ -111,11 +109,6 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
         plot_hist(distr, system, suffix)
     
     save_data(config, results, suffix)
-    # just plotting graph
-    # for i in range(N):
-    #     if g.vs(i)["state"][0] == 1:
-    #         g.vs(i)["color"] = 'green'
-    # ig.plot(g)
 
 
 def main():

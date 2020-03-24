@@ -73,8 +73,13 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False):
     else:
         ids = np.random.choice(g.vcount(), size=m, replace=False)
     if len(ids):
-        g.vs[list(ids)]['zealot'] = 1
-        g.vs[list(ids)]['state'] = 1
+        # apparently igraph can understand only python integers as node ids,
+        # list comprehension below is not the most optimal way to obtain a list of python integers,
+        # but using numpy key-word argument 'dtype' or the method 'astype' with type 'int'
+        # still returns arrays with entries as 'numpy.int64' instead of python 'int'
+        zealots = [int(_id) for _id in ids]
+        g.vs[zealots]['zealot'] = 1
+        g.vs[zealots]['state'] = 1
     return g
 
 
