@@ -44,7 +44,7 @@ class Config:
 
         # Filename suffix
         self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}' \
-                      '_R_{ratio}_zn_{n_zealots}_p_{propagation}_zn_{n_zealots}'.format_map(vars(cmd_args))
+                      '_R_{ratio}_zn_{n_zealots}_p_{propagation}'.format_map(vars(cmd_args))
 
         # Zealot configuration options
         if cmd_args.where_zealots == 'degree':
