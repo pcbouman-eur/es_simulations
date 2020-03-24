@@ -13,7 +13,7 @@ from simulation.base import run_symulation, run_thermalization
 from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
 
-def plot_hist(distribution, name, suffix, output_dir='plots/', colors=['red', 'green', 'blue']):
+def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('red', 'green', 'blue')):
     os.makedirs(output_dir, exist_ok=True)
     idx = 0
     for key in sorted(distribution.keys()):
