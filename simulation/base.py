@@ -5,7 +5,6 @@ from collections import Counter
 from electoral_sys.electoral_system import system_population_majority
 
 
-
 def default_mutation(node):
     """
     Default mutation mechanism that updates the state of a node whenever
@@ -53,17 +52,17 @@ def majority_propagation(node, g, inverse=False):
             max_count = counts[-1][1]
         else:
             max_count = counts[0][1]
-        selection = [state for state,count in counts if count == max_count]
+        selection = [state for state, count in counts if count == max_count]
         if len(selection) == 1:
             return selection[0]
         return random.sample(selection, 1)[0]
     return node["state"]
 
-    
+
 def run_symulation(config, g, noise_rate, max_step, n=None):
     if n is None:
         n = len(g.vs())
-        
+
     for _ in range(max_step):
         node = np.random.randint(0, n)
         target = g.vs[node]
@@ -80,9 +79,9 @@ def run_symulation(config, g, noise_rate, max_step, n=None):
 
 def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
     traj = [system_population_majority(g.vs)['fractions'][1]]
-    nrun = round(therm_time/each)
+    nrun = round(therm_time / each)
     for t in range(nrun):
         g = run_symulation(config, g, noise_rate, each)
         traj.append(system_population_majority(g.vs)['fractions'][1])
-            
+
     return g, traj

@@ -12,7 +12,7 @@ def planted_affinity(q, c, fractions, ratio, n):
     :param n: network size
     :return: list object with shape = (q, q).
     """
-    p_in = c / (n * (ratio + (1.0 - ratio) * np.sum(fractions**2)))
+    p_in = c / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
     p_out = ratio * p_in
     p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
     return p.tolist()
@@ -43,7 +43,7 @@ def init_sbm(n, affinity, state_generator=default_initial_state):
     g.vs()["state"] = default_initial_state(n)
 
     g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
-    
+
     group = np.zeros(n, dtype='int')
     for i in range(q - 1):
         group[int(np.sum(block_sizes[:(i + 1)])):] = i + 1

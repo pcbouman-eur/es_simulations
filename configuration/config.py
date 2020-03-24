@@ -7,6 +7,7 @@ import electoral_sys.electoral_system as es
 import net_generation.base as ng
 import simulation.base as sim
 
+
 class Config:
     """
     Holds the configuration of a simulation.
@@ -22,8 +23,8 @@ class Config:
     """
 
     initialize_states = staticmethod(ng.default_initial_state)
-    voting_systems = { 'population' : es.system_population_majority,
-                       'district' : es.system_district_majority}
+    voting_systems = {'population': es.system_population_majority,
+                      'district': es.system_district_majority}
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
     reset = False
@@ -37,23 +38,24 @@ class Config:
         if cmd_args.propagation == 'majority':
             self.propagate = sim.majority_propagation
         elif cmd_args.propagation == 'minority':
-            f = lambda n,g: sim.majority_propagation(n,g,True)
+            def f(n, g):
+                return sim.majority_propagation(n, g, True)
             self.propagate = f
 
         # Filename suffix
-        self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}'\
+        self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}' \
                       '_R_{ratio}_p_{propagation}_zn_{n_zealots}'.format_map(vars(cmd_args))
 
         # Zealot configuration options
         if cmd_args.where_zealots == 'degree':
-            self.zealots_config = {'degree_driven' : True,
-                                   'one_district'  : False,
-                                   'district'      : None}
+            self.zealots_config = {'degree_driven': True,
+                                   'one_district': False,
+                                   'district': None}
         elif cmd_args.where_zealots == 'district':
-            self.zealots_config = {'degree_driven' : False,
-                                   'one_district'  : True,
-                                   'district'      : cmd_args.zealots_district}
+            self.zealots_config = {'degree_driven': False,
+                                   'one_district': True,
+                                   'district': cmd_args.zealots_district}
         else:
-            self.zealots_config = {'degree_driven' : False,
-                                   'one_district'  : False,
-                                   'district'      : None}                                   
+            self.zealots_config = {'degree_driven': False,
+                                   'one_district': False,
+                                   'district': None}

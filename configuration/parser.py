@@ -6,7 +6,6 @@ argparse module
 import argparse
 from configuration.config import Config
 
-
 # In the following part, the different command line arguments are defined
 
 description = 'Simulation of dynamics in the voter model'
@@ -26,7 +25,7 @@ parser.add_argument('-s', '--samples', type=int, action='store', default=500,
                     help='number of points', dest='SAMPLE_SIZE')
 
 parser.add_argument('-t', '--therm', type=int, action='store', default=300000,
-                    help='thermalization time steps', dest='THERM_TIME') 
+                    help='thermalization time steps', dest='THERM_TIME')
 
 parser.add_argument('-zn', '--zealots_count', type=int, action='store',
                     default=6, help='number of zealots', dest='n_zealots')
@@ -51,8 +50,7 @@ parser.add_argument('-p', '--propagation', action='store', default='standard',
                     choices=('standard', 'majority', 'minority'),
                     dest='propagation',
                     help='propagation method to determine a new state based on '
-                    'the states of the neighbours')
-
+                         'the states of the neighbours')
 
 
 def get_arguments():
