@@ -30,15 +30,16 @@ def convert_to_distribution(series, missing_value=0):
     res = {k: [d[k] if np.isin(k, list(d)) else missing_value for d in series] for k in keys}
     return res
 
-def plot_mean_std(y, ylab, std, name, x = zn_set, xlab = 'Number of zealots'):
+def plot_mean_std(y, ylab, std, name, x = zn_set, xlab = 'Number of zealots', save_file = True):
     """
-    Saves a plot of mean +/- std of given variable vs number of zealots 
+    Plots a plot of mean +/- std of given variable vs number of zealots 
     :param y: given variable
     :param ylab: y-axis label
     :param std: standard deviation of y
     :param name: name of quantity (Population or District)
     :param x: array with number of zealots
     :param xlab: x-axis label
+    :param save_file: bool if save plot to file
     """
     plt.figure()
 
@@ -50,28 +51,38 @@ def plot_mean_std(y, ylab, std, name, x = zn_set, xlab = 'Number of zealots'):
     plt.xlabel(xlab)
     plt.ylabel(ylab)
     plt.tight_layout()
-    plt.savefig('plots/' + name + '_Mean' + suffix + '.pdf')
+    if save_file:
+        plt.savefig('plots/' + name + '_Mean' + suffix + '.pdf')
+    else:
+        plt.show()
 
-def plot_heatmap(heatmap, l_bins, ylab, name, xlab = 'Number of zealots'):
+def plot_heatmap(heatmap, l_bins, ylab, name, xlab = 'Number of zealots', save_file = True, colormap = 'viridis'):
     """
-    Saves a heatmap of given variable vs number of zealots 
+    Plots a heatmap of given variable vs number of zealots 
     :param heatmap: histogram of given variable
     :param ylab: y-axis label
     :param name: name of quantity (Population or District)
     :param xlab: x-axis label
+    :param save_file: bool if save plot to file
+    :param colormap: change colormap
     """
     plot_heatmap = np.transpose(heatmap)
-
+    plot_heatmap /= np.sum(plot_heatmap, 0)
+    
     plt.figure(figsize = (5, 5))
     
-    plt.imshow(plot_heatmap, origin = 'lower', aspect='auto')
+    plt.imshow(plot_heatmap, origin = 'lower', aspect='auto', cmap = colormap)
+    plt.colorbar()
     
     plt.title(name)
     plt.yticks(np.linspace(0, l_bins, 5)-0.5 , np.linspace(0, 1, 5))
     plt.xlabel(xlab)
     plt.ylabel(ylab)
     plt.tight_layout()
-    plt.savefig('plots/' + name + '_Heatmap' + suffix + '.pdf')
+    if save_file:
+        plt.savefig('plots/' + name + '_Heatmap' + suffix + '.pdf')
+    else:
+        plt.show()
 
 # create variables for data
 suffix = '_N_{}_q_{}_EPS_{}_S_{}_T_{}_R_{}_p_{}'.format(N, q, EPS, S, T, R, p)
