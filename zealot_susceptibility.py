@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import json
 import numpy as np
 import itertools
@@ -127,6 +128,17 @@ def plot_zealot_susceptibility(config):
 
 
 if __name__ == '__main__':
+    ##################################################################################
+    # this section can be modified depending on the environment where you want to run
+    # this simulations, e.g. you might want to use multiprocessing to spawn jobs
+    # on multiple cores, or just modify the command to use external parallelization,
+    # remember if you want to overwrite default parameters for main.py they should
+    # be written at the top of this file to use the same ones for plotting
+    for zealots in zn_set:
+        os.system('python3 main.py -zn {} -s {}'.format(zealots, SAMPLE_SIZE))
+    ##################################################################################
+
     cfg = get_arguments()
+    # here overwrite default configuration parameters with the same values as above
     cfg.cmd_args.SAMPLE_SIZE = SAMPLE_SIZE
     plot_zealot_susceptibility(cfg)
