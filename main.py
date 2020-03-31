@@ -1,19 +1,16 @@
-# import igraph as ig
+# -*- coding: utf-8 -*-
 import numpy as np
 import sys
 import os
 import json
-from collections import Counter
-from collections.abc import Iterable
-import numbers
 from matplotlib import pyplot as plt
+from tools import convert_to_distributions, prepare_json
 from configuration.parser import get_arguments
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_symulation, run_thermalization
-from electoral_sys.electoral_system import system_population_majority, system_district_majority
 
 
-def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('red', 'green', 'blue')):
+def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     os.makedirs(output_dir, exist_ok=True)
     idx = 0
     for key in sorted(distribution.keys()):
@@ -48,35 +45,6 @@ def save_data(config, results, suffix, output_dir='results/'):
     fname = output_dir + 'results' + suffix + '.json'
     with open(fname, 'w') as out_file:
         json.dump(result, out_file, indent=3)
-
-
-def convert_to_distributions(series, missing_value=0):
-    """
-    Converts a list of dicts into a dict of lists
-    :param series: a list of dicts
-    :param missing_value: value to insert if a key in a series
-    :result: a dict of lists
-    """
-    # Compute all keys that occur in the series
-    keys = set()
-    for d in series:
-        keys.update(d.keys())
-    res = {k: [d[k] for d in series] for k in keys}
-    return res
-
-
-def prepare_json(d):
-    if isinstance(d, dict) or isinstance(d, Counter):
-        res = {}
-        for k, v in d.items():
-            if isinstance(k, numbers.Integral):
-                res[str(k)] = prepare_json(v)
-            else:
-                res[k] = prepare_json(v)
-        return res
-    if isinstance(d, Iterable):
-        return [prepare_json(i) for i in d]
-    return d
 
 
 def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio, **kwargs):
