@@ -21,12 +21,19 @@ def planted_affinity(q, c, fractions, ratio, n):
 def default_initial_state(n):
     """
     Generates n default -1 or 1 initial states with equal probabilities
-
     :param n: the number of states to generate
     :return: a numpy array of n states
     """
-
     return np.random.randint(0, 2, n) * 2 - 1
+
+
+def initial_state_abc(n):
+    """
+    Generates n initial states from values 'a', 'b', and 'c' with equal probabilities
+    :param n: the number of states to generate
+    :return: a numpy array of n states
+    """
+    return np.random.choice(['a', 'b', 'c'], size=n)
 
 
 def init_sbm(n, affinity, state_generator=default_initial_state):
@@ -40,7 +47,7 @@ def init_sbm(n, affinity, state_generator=default_initial_state):
     q = len(affinity)
     block_sizes = np.repeat(n / q, q).tolist()
     g = ig.Graph.SBM(n, affinity, block_sizes)
-    g.vs()["state"] = default_initial_state(n)
+    g.vs()["state"] = state_generator(n)
 
     g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
 
@@ -51,7 +58,7 @@ def init_sbm(n, affinity, state_generator=default_initial_state):
     return g
 
 
-def add_zealots(g, m, one_district=False, district=None, degree_driven=False):
+def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state=1):
     """
     Function creating zealots in the network.
     Overwrite as you wish.
@@ -60,6 +67,7 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False):
     :param one_district: boolean, whether to add them to one district or randomly
     :param district: if one_district==True, which district to choose? In 'None', district is chosen randomly
     :param degree_driven: if True choose nodes proportionaly to the degree
+    :param zealot_state: state to assign for zealots
     :return: ig.Graph() object
     """
     if one_district:
@@ -79,7 +87,7 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False):
         # still returns arrays with entries as 'numpy.int64' instead of python 'int'
         zealots = [int(_id) for _id in ids]
         g.vs[zealots]['zealot'] = 1
-        g.vs[zealots]['state'] = 1
+        g.vs[zealots]['state'] = zealot_state
     return g
 
 

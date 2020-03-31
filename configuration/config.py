@@ -27,12 +27,15 @@ class Config:
                       'district': es.system_district_majority}
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
+    zealot_state = 1
     reset = False
+    abc = False
 
     def __init__(self, cmd_args):
         # Command line arguments
         self.cmd_args = cmd_args
         self.reset = cmd_args.reset
+        self.abc = cmd_args.abc
 
         # Propagation mechanisms
         if cmd_args.propagation == 'majority':
@@ -45,6 +48,13 @@ class Config:
         # Filename suffix
         self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}' \
                       '_R_{ratio}_p_{propagation}_zn_{n_zealots}'.format_map(vars(cmd_args))
+
+        # 3 states version of the model (abc)
+        if self.abc:
+            self.mutate = sim.mutation_abc
+            self.initialize_states = ng.initial_state_abc
+            self.zealot_state = 'a'
+            self.suffix = ''.join(['_abc', self.suffix])
 
         # Zealot configuration options
         if cmd_args.where_zealots == 'degree':

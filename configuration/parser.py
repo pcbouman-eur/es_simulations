@@ -52,6 +52,9 @@ parser.add_argument('-p', '--propagation', action='store', default='standard',
                     help='propagation method to determine a new state based on '
                          'the states of the neighbours')
 
+parser.add_argument('--abc', action='store_const', default=False, const=True,
+                    dest='abc', help='if you want to run simulation for 3 states a, b, and c')
+
 
 def get_arguments():
     """

@@ -30,9 +30,11 @@ def counts_to_result(counts, total):
     winners = [w for w, v in counts.items() if v == _max]
     winner = np.random.choice(winners, 1)[0]
     fractions = Counter({k: 1.0 * v / total for k, v in counts.items()})
-    total = sum(fractions.values())
-    if total < 1.0:
-        print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBB :', str(total))
+    # TODO: in 3-state model this does't add up to 1.0 due to floating point numbers arithmetics,
+    #  decide either to ignore it or fix it with decimals
+    # total = sum(fractions.values())
+    # if total < 1.0:
+    #     print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBB :', str(total))
     return {'winner': winner, 'fractions': fractions}
 
 

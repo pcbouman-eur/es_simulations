@@ -10,11 +10,19 @@ def default_mutation(node):
     Default mutation mechanism that updates the state of a node whenever
     noise is applied. The default mechanism multiplies the state of the
     agent by -1
-
     :param node: the node for which a new state is generated because of noise
     :result: the new mutated state for the node
     """
-    return node["state"] * -1
+    return np.random.choice([-1, 1])
+
+
+def mutation_abc(node):
+    """
+    Mutation in the 3-satate model where states are 'a', 'b', 'c'
+    :param node: the node for which a new state is generated because of noise
+    :result: the new mutated state for the node
+    """
+    return np.random.choice(['a', 'b', 'c'])
 
 
 def default_propagation(node, g):
@@ -59,7 +67,7 @@ def majority_propagation(node, g, inverse=False):
     return node["state"]
 
 
-def run_symulation(config, g, noise_rate, max_step, n=None):
+def run_simulation(config, g, noise_rate, max_step, n=None):
     if n is None:
         n = len(g.vs())
 
@@ -68,20 +76,23 @@ def run_symulation(config, g, noise_rate, max_step, n=None):
         target = g.vs[node]
         if target["zealot"] == 0:
             rnum = random.random()
-            if rnum <= noise_rate / 2.0:
-                # Mutate
-                target["state"] = config.mutate(target)
-            elif rnum > noise_rate:
+            if rnum > noise_rate:
                 # Propagate
                 target["state"] = config.propagate(target, g)
+            else:
+                # Mutate
+                target["state"] = config.mutate(target)
+
     return g
 
 
 def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
-    traj = [system_population_majority(g.vs)['fractions'][1]]
+    traj = {k: [v] for k, v in system_population_majority(g.vs)['fractions'].items()}
     nrun = round(therm_time / each)
+
     for t in range(nrun):
-        g = run_symulation(config, g, noise_rate, each)
-        traj.append(system_population_majority(g.vs)['fractions'][1])
+        g = run_simulation(config, g, noise_rate, each)
+        for key, value in system_population_majority(g.vs)['fractions'].items():
+            traj[key].append(value)
 
     return g, traj
