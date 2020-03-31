@@ -17,7 +17,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
         col = colors[idx % len(colors)]
         distr = distribution[key]
 
-        plt.figure()
+        plt.figure(figsize=(4, 3))
         plt.hist(distr, bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color=col)
 
         avg = np.mean(distr)
@@ -36,7 +36,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
 
 def plot_traj(traj, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     os.makedirs(output_dir, exist_ok=True)
-    plt.figure()
+    plt.figure(figsize=(4, 3))
 
     for i, key in enumerate(sorted(traj.keys())):
         plt.plot(traj[key], color=colors[i % len(colors)], label=str(key))

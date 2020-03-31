@@ -28,7 +28,7 @@ parser.add_argument('-t', '--therm', type=int, action='store', default=300000,
                     help='thermalization time steps', dest='THERM_TIME')
 
 parser.add_argument('-zn', '--zealots_count', type=int, action='store',
-                    default=6, help='number of zealots', dest='n_zealots')
+                    default=0, help='number of zealots', dest='n_zealots')
 
 parser.add_argument('-zw', '--zealots_where', action='store', default='random',
                     choices=('degree', 'district', 'random'),
@@ -65,26 +65,3 @@ def get_arguments():
     """
     return Config(parser.parse_args())
 
-
-"""
-The defaults in this file were based on the following code snippet from run.py
-
-if len(sys.argv) == 1:
-    N = 1875
-    q = 25
-    EPS = 0.01
-    SAMPLE_SIZE = 500
-    THERM_TIME = 300000
-    n_zealots = 6  # round(N/50)
-    where_zealots = 'district'
-    zealots_district = None
-else:
-    N = int(sys.argv[1])  # size of the network
-    q = int(sys.argv[2])  # number of districts
-    EPS = float(sys.argv[3])  # noise rate
-    SAMPLE_SIZE = int(sys.argv[4])  # number of points
-    THERM_TIME = int(sys.argv[5])  # thermalization time steps
-    n_zealots = int(sys.argv[6])  # number of zealots
-    where_zealots = chr(sys.argv[7])  # where are the zealots. Options: degree-based, one_district, random
-    zealots_district = int(sys.argv[8])  # if zealots are in one district, which district
-"""
