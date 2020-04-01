@@ -82,7 +82,7 @@ def plot_zealot_susceptibility(config):
     :return: None
     """
     # create variables for data
-    suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_R_{ratio}_p_{propagation}'.format_map(
+    suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}_R_{ratio}_p_{propagation}'.format_map(
         vars(config.cmd_args))
 
     l_zn_set = len(zn_set)

@@ -27,6 +27,10 @@ parser.add_argument('-s', '--samples', type=int, action='store', default=500,
 parser.add_argument('-t', '--therm', type=int, action='store', default=300000,
                     help='thermalization time steps', dest='THERM_TIME')
 
+parser.add_argument('-mc', '--mc_steps', type=int, action='store', default=50,
+                    help='number of MC steps between performing consecutive elections in the model',
+                    dest='mc_steps')
+
 parser.add_argument('-zn', '--zealots_count', type=int, action='store',
                     default=0, help='number of zealots', dest='n_zealots')
 
@@ -42,9 +46,8 @@ parser.add_argument('-ra', '--ratio', action='store', default=0.1,
                     type=float, dest='ratio',
                     help='The ratio used to plant the affinities')
 
-parser.add_argument('--reset', action='store_const', default=False, const=True,
-                    dest='reset',
-                    help='reset states after each simulation')
+parser.add_argument('--reset', action='store_const', default=False, const=True, dest='reset',
+                    help='whether to reset states after each simulation, draw new zealots and run thermalization again')
 
 parser.add_argument('-p', '--propagation', action='store', default='standard',
                     choices=('standard', 'majority', 'minority'),

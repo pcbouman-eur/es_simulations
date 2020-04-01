@@ -91,8 +91,13 @@ def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
     nrun = round(therm_time / each)
 
     for t in range(nrun):
-        g = run_simulation(config, g, noise_rate, each)
+        g = run_simulation(config, g, noise_rate, each, n=n)
         for key, value in system_population_majority(g.vs)['fractions'].items():
             traj[key].append(value)
 
     return g, traj
+
+
+def run_thermalization_silent(config, g, noise_rate, therm_time, n=None):
+    g = run_simulation(config, g, noise_rate, therm_time, n=n)
+    return g

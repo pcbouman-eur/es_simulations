@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from tools import convert_to_distributions, prepare_json
 from configuration.parser import get_arguments
 from net_generation.base import init_sbm, add_zealots, planted_affinity
-from simulation.base import run_simulation, run_thermalization
+from simulation.base import run_simulation, run_thermalization, run_thermalization_silent
 
 
 def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
@@ -77,9 +77,16 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
 
     for i in range(SAMPLE_SIZE):
         print(i)
+
         if config.reset:
             g.vs()["state"] = config.initialize_states(N)
-        g = run_simulation(config, g, EPS, N * 50, n=N)
+            # we have to reset zealots, otherwise they would have states different than 'zealot_state'
+            # TODO: maybe whole initialization of SBM should be repeated? for now seems not necessary
+            g.vs()["zealot"] = np.zeros(N)
+            g = add_zealots(g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+            g = run_thermalization_silent(config, g, EPS, THERM_TIME, n=N)
+
+        g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
 
         for system, fun in config.voting_systems.items():
             outcome = fun(g.vs)['fractions']
