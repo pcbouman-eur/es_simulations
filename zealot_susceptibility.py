@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import matplotlib as mpl
+mpl.use('agg')
 import os
 import json
 import numpy as np
