@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 from configuration.parser import get_arguments
 from tools import convert_to_distributions
 
-# parameters of simulations
+# parameters of simulations not present in the config module
 zn_set = range(61)  # range of considered number of zealots
-SAMPLE_SIZE = 1000
 bins = 25  # how many bins in heatmap histogram
 
 
@@ -45,7 +44,8 @@ def plot_mean_std(y, std, name, suffix, ylab='election result of 1', x=zn_set, x
         plt.show()
 
 
-def plot_heatmap(heatmap, l_bins, name, suffix, ylab='distribution of 1', xlab='number of zealots', save_file=True, colormap='jet'):
+def plot_heatmap(heatmap, l_bins, name, suffix, ylab='distribution of 1', xlab='number of zealots', save_file=True,
+                 colormap='jet'):
     """
     Plots a heatmap of given variable vs number of zealots 
     :param heatmap: histogram of given variable
@@ -82,9 +82,7 @@ def plot_zealot_susceptibility(config):
     :return: None
     """
     # create variables for data
-    suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}_R_{ratio}_p_{propagation}'.format_map(
-        vars(config.cmd_args))
-
+    suffix = config.suffix.split('_zn_')[0]
     l_zn_set = len(zn_set)
 
     bins_hist_pop = np.linspace(0, 1, num=bins + 1)
@@ -103,8 +101,8 @@ def plot_zealot_susceptibility(config):
         with open(loc) as json_file:
             data = json.load(json_file)
 
-        population_1 = convert_to_distributions(data['results']['population'])['1']
-        district_1 = convert_to_distributions(data['results']['district'])['1']
+        population_1 = convert_to_distributions(data['results']['population'])[str(cfg.zealot_state)]
+        district_1 = convert_to_distributions(data['results']['district'])[str(cfg.zealot_state)]
 
         pop_mean_set[i] = np.mean(population_1)
         pop_std_set[i] = np.std(population_1)
@@ -120,25 +118,27 @@ def plot_zealot_susceptibility(config):
                                       pop_mean_set - pop_std_set,
                                       pop_mean_set + pop_std_set))
     ylim = [min(all_values), max(all_values)]
-    plot_mean_std(pop_mean_set, pop_std_set, 'Multi-member', suffix, ylim=ylim)
-    plot_mean_std(dist_mean_set, dist_std_set, 'Single-member', suffix, ylim=ylim)
 
-    plot_heatmap(pop_hist_set, bins, 'Multi-member', suffix)
-    plot_heatmap(dist_hist_set, bins, 'Single-member', suffix)
+    plot_mean_std(pop_mean_set, pop_std_set, 'Multi-member', suffix, ylim=ylim,
+                  ylab='election result of {}'.format(cfg.zealot_state))
+    plot_mean_std(dist_mean_set, dist_std_set, 'Single-member', suffix, ylim=ylim,
+                  ylab='election result of {}'.format(cfg.zealot_state))
+
+    plot_heatmap(pop_hist_set, bins, 'Multi-member', suffix, ylab='distribution of {}'.format(cfg.zealot_state))
+    plot_heatmap(dist_hist_set, bins, 'Single-member', suffix, ylab='distribution of {}'.format(cfg.zealot_state))
 
 
 if __name__ == '__main__':
+    cfg = get_arguments()
+
     ##################################################################################
     # this section can be modified depending on the environment where you want to run
     # this simulations, e.g. you might want to use multiprocessing to spawn jobs
     # on multiple cores, or just modify the command to use external parallelization,
-    # remember if you want to overwrite default parameters for main.py they should
-    # be written at the top of this file to use the same ones for plotting
+    # remember if you want to overwrite default parameters for main.py you have to
+    # run this script with them and pass them into the main.py run below
     for zealots in zn_set:
-        os.system('python3 main.py -zn {} -s {}'.format(zealots, SAMPLE_SIZE))
+        os.system('python3 main.py -zn {} -s {}'.format(zealots, cfg.cmd_args.SAMPLE_SIZE))
     ##################################################################################
 
-    cfg = get_arguments()
-    # here overwrite default configuration parameters with the same values as above
-    cfg.cmd_args.SAMPLE_SIZE = SAMPLE_SIZE
     plot_zealot_susceptibility(cfg)
