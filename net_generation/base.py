@@ -2,17 +2,17 @@ import igraph as ig
 import numpy as np
 
 
-def planted_affinity(q, c, fractions, ratio, n):
+def planted_affinity(q, avg_deg, fractions, ratio, n):
     """
 
     :param q: number of districts
-    :param c: average degree
+    :param avg_deg: average degree
     :param fractions: fractions of each district (numpy array with shape = (q,))
     :param ratio: ratio between density outside and inside of districts
     :param n: network size
     :return: list object with shape = (q, q).
     """
-    p_in = c / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
+    p_in = avg_deg / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
     p_out = ratio * p_in
     p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
     return p.tolist()
@@ -36,13 +36,14 @@ def initial_state_abc(n):
     return np.random.choice(['a', 'b', 'c'], size=n)
 
 
-def init_sbm(n, affinity, state_generator=default_initial_state):
+def init_sbm(n, affinity, state_generator=default_initial_state, districts_are_communities=True):
     """
-
-    :param n: network size
-    :param affinity: affinity matrix for SBM model
+    Generates initial graph for simulations
+    :param n: network size (int)
+    :param affinity: affinity matrix for SBM model (list())
     :param state_generator: function that generates the states
-    :return: ig.Graph() object with...
+    :param districts_are_communities: whether districts and communities should be the same (bool)
+    :return: network with states, zealots, districts etc. (ig.Graph())
     """
     q = len(affinity)
     block_sizes = np.repeat(n / q, q).tolist()
@@ -54,7 +55,10 @@ def init_sbm(n, affinity, state_generator=default_initial_state):
     group = np.zeros(n, dtype='int')
     for i in range(q - 1):
         group[int(np.sum(block_sizes[:(i + 1)])):] = i + 1
-    g.vs['district'] = group
+    if districts_are_communities:
+        g.vs['district'] = group
+    else:
+        g.vs['district'] = np.random.permutation(group)
     return g
 
 
@@ -65,8 +69,8 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
     :param g: ig.Graph() object
     :param m: number of zealots
     :param one_district: boolean, whether to add them to one district or randomly
-    :param district: if one_district==True, which district to choose? In 'None', district is chosen randomly
-    :param degree_driven: if True choose nodes proportionaly to the degree
+    :param district: if one_district==True, which district to choose? If 'None', district is chosen randomly
+    :param degree_driven: if True choose nodes proportionally to the degree
     :param zealot_state: state to assign for zealots
     :return: ig.Graph() object
     """

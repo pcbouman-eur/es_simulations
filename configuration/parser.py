@@ -46,6 +46,13 @@ parser.add_argument('-ra', '--ratio', action='store', default=0.1,
                     type=float, dest='ratio',
                     help='The ratio used to plant the affinities')
 
+parser.add_argument('-avg_deg', '--average_degree', action='store', default=5,
+                    type=int, dest='avg_deg',
+                    help='The average degree - defines network density.')
+
+parser.add_argument('--distr_eq_comm', action='store_const', default=True, const=True, dest='distr_eq_comm',
+                    help='whether districts should be the same as communities')
+
 parser.add_argument('--reset', action='store_const', default=False, const=True, dest='reset',
                     help='whether to reset states after each simulation, draw new zealots and run thermalization again')
 

@@ -61,13 +61,14 @@ def save_data(config, results, suffix, output_dir='results/'):
         json.dump(result, out_file, indent=3)
 
 
-def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio, **kwargs):
+def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio, avg_deg, **kwargs):
     # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
-    AFFINITY = planted_affinity(q, 5, np.ones(q) / q, ratio, N)  # all districts the same size and density
+    AFFINITY = planted_affinity(q, avg_deg, np.ones(q) / q, ratio, N)  # all districts the same size and density
 
     suffix = config.suffix
 
-    init_g = init_sbm(N, AFFINITY, state_generator=config.initialize_states)
+    init_g = init_sbm(N, AFFINITY, state_generator=config.initialize_states,
+                      districts_are_communities=config.distr_eq_comm)
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
     g, traj = run_thermalization(config, init_g, EPS, THERM_TIME, each=100, n=N)
