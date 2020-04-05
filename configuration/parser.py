@@ -50,7 +50,8 @@ parser.add_argument('-avg_deg', '--average_degree', action='store', default=5,
                     type=int, dest='avg_deg',
                     help='The average degree - defines network density.')
 
-parser.add_argument('--distr_eq_comm', action='store_const', default=True, const=True, dest='distr_eq_comm',
+parser.add_argument('-distr_eq_comm', '--districts_eq_communities', action='store', default=True,
+                    type=bool, dest='distr_eq_comm',
                     help='whether districts should be the same as communities')
 
 parser.add_argument('--reset', action='store_const', default=False, const=True, dest='reset',
