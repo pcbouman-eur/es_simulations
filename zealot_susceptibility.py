@@ -140,7 +140,12 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for zealots in zn_set:
-        os.system('python3 main.py -zn {} -s {}'.format(zealots, cfg.cmd_args.SAMPLE_SIZE))
+        file_name = 'abc_script_zealots_reset_{}.sh'.format(zealots)
+        with open(file_name, 'w') as _file:
+            _file.write(
+                '/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py -zn {} -s 10000 -e 0.5 -p majority --reset --abc'.format(
+                    zealots))
+        os.system('run bash {}'.format(file_name))
     ##################################################################################
 
     plot_zealot_susceptibility(cfg)
