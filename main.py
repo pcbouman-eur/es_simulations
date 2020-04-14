@@ -20,7 +20,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
         distr = distribution[key]
 
         plt.figure(figsize=(4, 3))
-        plt.hist(distr, bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color=col)
+        plt.hist(distr, bins=np.linspace(0.0, 1.0, 16), range=(0, 1), density=True, color=col)
 
         avg = np.mean(distr)
         std = np.std(distr)
@@ -64,42 +64,47 @@ def save_data(config, results, suffix, output_dir='results/'):
 
 
 def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio, avg_deg, **kwargs):
-    # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
-    AFFINITY = planted_affinity(q, avg_deg, np.ones(q) / q, ratio, N)  # all districts the same size and density
-
+    # # AFFINITY = [[0.2, 0.2], [0.2, 0.2]]  # change to get different network from SBM
+    # AFFINITY = planted_affinity(q, avg_deg, np.ones(q) / q, ratio, N)  # all districts the same size and density
+    #
     suffix = config.suffix
+    #
+    # init_g = init_sbm(N, AFFINITY, state_generator=config.initialize_states,
+    #                   districts_are_communities=config.distr_eq_comm)
+    # init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+    #
+    # g, traj = run_thermalization(config, init_g, EPS, THERM_TIME, each=100, n=N)
+    # plot_traj(traj, suffix)
+    #
+    # results = {system: [] for system in config.voting_systems.keys()}
+    #
+    # for i in range(SAMPLE_SIZE):
+    #     print(i)
+    #
+    #     if config.reset:
+    #         g.vs()["state"] = config.initialize_states(N)
+    #         # we have to reset zealots, otherwise they would have states different than 'zealot_state'
+    #         # TODO: maybe whole initialization of SBM should be repeated? for now seems not necessary
+    #         g.vs()["zealot"] = np.zeros(N)
+    #         g = add_zealots(g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+    #         g = run_thermalization_silent(config, g, EPS, THERM_TIME, n=N)
+    #
+    #     g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
+    #
+    #     for system, fun in config.voting_systems.items():
+    #         outcome = fun(g.vs)['fractions']
+    #         results[system].append(outcome)
 
-    init_g = init_sbm(N, AFFINITY, state_generator=config.initialize_states,
-                      districts_are_communities=config.distr_eq_comm)
-    init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
-
-    g, traj = run_thermalization(config, init_g, EPS, THERM_TIME, each=100, n=N)
-    plot_traj(traj, suffix)
-
-    results = {system: [] for system in config.voting_systems.keys()}
-
-    for i in range(SAMPLE_SIZE):
-        print(i)
-
-        if config.reset:
-            g.vs()["state"] = config.initialize_states(N)
-            # we have to reset zealots, otherwise they would have states different than 'zealot_state'
-            # TODO: maybe whole initialization of SBM should be repeated? for now seems not necessary
-            g.vs()["zealot"] = np.zeros(N)
-            g = add_zealots(g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
-            g = run_thermalization_silent(config, g, EPS, THERM_TIME, n=N)
-
-        g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
-
-        for system, fun in config.voting_systems.items():
-            outcome = fun(g.vs)['fractions']
-            results[system].append(outcome)
+    loc = 'results/results{}.json'.format(suffix)
+    with open(loc) as json_file:
+        data = json.load(json_file)
+    results = data['results']
 
     for system in config.voting_systems.keys():
         distr = convert_to_distributions(results[system])
         plot_hist(distr, system, suffix)
 
-    save_data(config, results, suffix)
+    # save_data(config, results, suffix)
 
 
 def main():
