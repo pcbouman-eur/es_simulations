@@ -1,6 +1,9 @@
 '''
 Functions that model different election systems
 
+system_bundestag: mix of population majority and district majority. 
+The half of seats is allocated proportionally to population, the other half according to districts results.
+
 TODO: explain more here
 '''
 import numpy as np
@@ -66,7 +69,15 @@ def system_district_majority(voters, district_voting=system_population_majority)
         district_count += 1
     return counts_to_result(counts, district_count)
 
-
+def system_bundestag(voters, district_voting=system_population_majority):
+    pop = system_population_majority(voters)
+    dist = system_district_majority(voters, district_voting=system_population_majority)
+    result = pop['fractions'] + dist['fractions']
+    for key in result:
+        result[key] *= 0.5
+    winner = max(result.keys(), key=result.get)
+    return {'winner': winner, 'fractions': result}
+    
 # def run_voting_system(network, system=system_population_majority):
 #     return system_population_majority(extract_voters(network))
 
