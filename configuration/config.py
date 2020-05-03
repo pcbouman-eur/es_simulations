@@ -48,8 +48,8 @@ class Config:
             self.propagate = f
 
         # Filename suffix
-        self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}' \
-                      '_R_{ratio}_c_{avg_deg}_p_{propagation}_zn_{n_zealots}'.format_map(vars(cmd_args))
+        self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}_R_{ratio}' \
+                      '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(vars(cmd_args))
 
         # 3 states version of the model (abc)
         if self.abc:

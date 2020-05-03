@@ -5,24 +5,26 @@ from collections import Counter
 from electoral_sys.electoral_system import system_population_majority
 
 
-def default_mutation(node):
+def default_mutation(node, p):
     """
     Default mutation mechanism that updates the state of a node whenever
     noise is applied. The default mechanism multiplies the state of the
     agent by -1
     :param node: the node for which a new state is generated because of noise
+    :param p: probability of switching to state -1 - mass media effect
     :result: the new mutated state for the node
     """
-    return np.random.choice([-1, 1])
+    return np.random.choice([-1, 1], p=[p, (1.0 - p)])
 
 
-def mutation_abc(node):
+def mutation_abc(node, p):
     """
     Mutation in the 3-satate model where states are 'a', 'b', 'c'
     :param node: the node for which a new state is generated because of noise
+    :param p: probability of switching to state 'a' - mass media effect
     :result: the new mutated state for the node
     """
-    return np.random.choice(['a', 'b', 'c'])
+    return np.random.choice(['a', 'b', 'c'], p=[p, (0.5 - p / 2.0), (0.5 - p / 2.0)])
 
 
 def default_propagation(node, g):
@@ -81,7 +83,7 @@ def run_simulation(config, g, noise_rate, max_step, n=None):
                 target["state"] = config.propagate(target, g)
             else:
                 # Mutate
-                target["state"] = config.mutate(target)
+                target["state"] = config.mutate(target, p=config.cmd_args.mm)
 
     return g
 
