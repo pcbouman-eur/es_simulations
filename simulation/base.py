@@ -83,7 +83,7 @@ def run_simulation(config, g, noise_rate, max_step, n=None):
                 target["state"] = config.propagate(target, g)
             else:
                 # Mutate
-                target["state"] = config.mutate(target, p=config.cmd_args.mm)
+                target["state"] = config.mutate(target, p=config.cmd_args.MASS_MEDIA)
 
     return g
 
