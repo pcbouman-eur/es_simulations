@@ -14,7 +14,7 @@ def default_mutation(node, p):
     :param p: probability of switching to state -1 - mass media effect
     :result: the new mutated state for the node
     """
-    return np.random.choice([-1, 1], p=[p, (1.0 - p)])
+    return np.random.choice([-1, 1], p=[(1.0 - p), p])
 
 
 def mutation_abc(node, p):
