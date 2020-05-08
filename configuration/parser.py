@@ -21,6 +21,9 @@ parser.add_argument('-q', type=int, action='store', default=25, dest='q',
 parser.add_argument('-e', '--EPS', type=float, action='store', default=0.01,
                     dest='EPS', help='noise rate')
 
+parser.add_argument('-mm', '--mass_media', type=float, action='store', default=0.5,
+                    dest='MASS_MEDIA', help='independent flip probability - mass media effect')
+
 parser.add_argument('-s', '--samples', type=int, action='store', default=500,
                     help='number of points', dest='SAMPLE_SIZE')
 
