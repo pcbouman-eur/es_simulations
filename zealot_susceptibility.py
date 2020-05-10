@@ -101,8 +101,8 @@ def plot_zealot_susceptibility(config):
         with open(loc) as json_file:
             data = json.load(json_file)
 
-        population_1 = convert_to_distributions(data['results']['population'])[str(cfg.zealot_state)]
-        district_1 = convert_to_distributions(data['results']['district'])[str(cfg.zealot_state)]
+        population_1 = convert_to_distributions(data['results']['population'])[str(config.zealot_state)]
+        district_1 = convert_to_distributions(data['results']['district'])[str(config.zealot_state)]
 
         pop_mean_set[i] = np.mean(population_1)
         pop_std_set[i] = np.std(population_1)
@@ -120,12 +120,12 @@ def plot_zealot_susceptibility(config):
     ylim = [min(all_values), max(all_values)]
 
     plot_mean_std(pop_mean_set, pop_std_set, 'Multi-member', suffix, ylim=ylim,
-                  ylab='election result of {}'.format(cfg.zealot_state))
+                  ylab='election result of {}'.format(config.zealot_state))
     plot_mean_std(dist_mean_set, dist_std_set, 'Single-member', suffix, ylim=ylim,
-                  ylab='election result of {}'.format(cfg.zealot_state))
+                  ylab='election result of {}'.format(config.zealot_state))
 
-    plot_heatmap(pop_hist_set, bins, 'Multi-member', suffix, ylab='distribution of {}'.format(cfg.zealot_state))
-    plot_heatmap(dist_hist_set, bins, 'Single-member', suffix, ylab='distribution of {}'.format(cfg.zealot_state))
+    plot_heatmap(pop_hist_set, bins, 'Multi-member', suffix, ylab='distribution of {}'.format(config.zealot_state))
+    plot_heatmap(dist_hist_set, bins, 'Single-member', suffix, ylab='distribution of {}'.format(config.zealot_state))
 
 
 if __name__ == '__main__':
