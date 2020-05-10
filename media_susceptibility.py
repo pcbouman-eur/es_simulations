@@ -8,7 +8,7 @@ from configuration.parser import get_arguments
 from tools import convert_to_distributions
 
 # parameters of simulations not present in the config module
-media_influence = np.arange(0.0, 1.0, 0.02)  # range of considered media influence
+media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influence
 bins = 25  # how many bins in heat-map histogram
 
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
-        os.system('python3 main.py -zn {} -s {}'.format(media, cfg.cmd_args.SAMPLE_SIZE))
+        os.system('python3 main.py -mm {} -s {}'.format(media, cfg.cmd_args.SAMPLE_SIZE))
     ##################################################################################
 
     plot_media_susceptibility(cfg)
