@@ -8,8 +8,8 @@ from configuration.parser import get_arguments
 from tools import convert_to_distributions
 
 # parameters of simulations not present in the config module
-media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influence
-bins = 25  # how many bins in heat-map histogram
+media_influence = np.arange(0.0, 1.0, 0.5)  # range of considered media influence
+bins = 2  # how many bins in heat-map histogram
 
 
 def plot_mean_std(y, std, name, suffix, y_lab='election result of 1', x=media_influence,
@@ -114,16 +114,21 @@ def plot_media_susceptibility(config):
         with open(loc) as json_file:
             data = json.load(json_file)
 
-        population_1 = convert_to_distributions(data['results']['population'])[str(media_state)]
-        district_1 = convert_to_distributions(data['results']['district'])[str(media_state)]
-
+        if str(media_state) in convert_to_distributions(data['results']['population']):
+            population_1 = convert_to_distributions(data['results']['population'])[str(media_state)]
+        else:
+            population_1 = 0.0
         pop_mean_set[i] = np.mean(population_1)
         pop_std_set[i] = np.std(population_1)
-        pop_hist_set[i, :] = np.histogram(population_1, bins=bins_hist_pop, normed=True)[0]
+        pop_hist_set[i, :] = np.histogram(population_1, bins=bins_hist_pop, density=True)[0]
 
+        if str(media_state) in convert_to_distributions(data['results']['district']):
+            district_1 = convert_to_distributions(data['results']['district'])[str(media_state)]
+        else:
+            district_1 = 0.0
         dist_mean_set[i] = np.mean(district_1)
         dist_std_set[i] = np.std(district_1)
-        dist_hist_set[i, :] = np.histogram(district_1, bins=bins_hist_dist, normed=True)[0]
+        dist_hist_set[i, :] = np.histogram(district_1, bins=bins_hist_dist, density=True)[0]
 
     # plot figures
     all_values = list(itertools.chain(dist_mean_set - dist_std_set,

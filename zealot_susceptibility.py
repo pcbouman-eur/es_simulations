@@ -106,11 +106,11 @@ def plot_zealot_susceptibility(config):
 
         pop_mean_set[i] = np.mean(population_1)
         pop_std_set[i] = np.std(population_1)
-        pop_hist_set[i, :] = np.histogram(population_1, bins=bins_hist_pop, normed=True)[0]
+        pop_hist_set[i, :] = np.histogram(population_1, bins=bins_hist_pop, density=True)[0]
 
         dist_mean_set[i] = np.mean(district_1)
         dist_std_set[i] = np.std(district_1)
-        dist_hist_set[i, :] = np.histogram(district_1, bins=bins_hist_dist, normed=True)[0]
+        dist_hist_set[i, :] = np.histogram(district_1, bins=bins_hist_dist, density=True)[0]
 
     # plot figures
     all_values = list(itertools.chain(dist_mean_set - dist_std_set,
