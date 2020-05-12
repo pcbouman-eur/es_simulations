@@ -4,12 +4,13 @@ import json
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 from configuration.parser import get_arguments
 from tools import convert_to_distributions
 
 # parameters of simulations not present in the config module
-media_influence = np.arange(0.0, 1.0, 0.5)  # range of considered media influence
-bins = 2  # how many bins in heat-map histogram
+media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influence
+bins = 25  # how many bins in heat-map histogram
 
 
 def plot_mean_std(y, std, name, suffix, y_lab='election result of 1', x=media_influence,
@@ -60,11 +61,12 @@ def plot_heat_map(heat_map, l_bins, name, suffix, y_lab='distribution of 1', x_l
     transposed_heat_map = np.transpose(heat_map)
 
     plt.figure(figsize=(3.5, 3.1))
-    plt.imshow(transposed_heat_map, origin='lower', aspect='auto', cmap=colormap)
+    plt.imshow(transposed_heat_map, origin='lower', aspect='auto', cmap=colormap, norm=LogNorm())
     cb = plt.colorbar()
     cb.ax.tick_params(labelsize=9)
 
     plt.title(name)
+    plt.xticks(np.linspace(0, heat_map.shape[0], 5) - 0.5, np.linspace(0, 1, 5))
     plt.yticks(np.linspace(0, l_bins, 5) - 0.5, np.linspace(0, 1, 5))
     plt.xlabel(x_lab)
     plt.ylabel(y_lab)
