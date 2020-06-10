@@ -25,7 +25,8 @@ class Config:
     initialize_states = staticmethod(ng.default_initial_state)
     voting_systems = {'population': es.system_population_majority,
                       'district': es.system_district_majority,
-                      'bundestag': es.system_bundestag}
+                      'bundestag': es.system_bundestag,
+                      'threshold': es.system_district_majority_with_threshold}
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
     zealot_state = 1

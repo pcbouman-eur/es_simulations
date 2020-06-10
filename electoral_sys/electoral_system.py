@@ -69,6 +69,7 @@ def system_district_majority(voters, district_voting=system_population_majority)
         district_count += 1
     return counts_to_result(counts, district_count)
 
+#mixing results from system_population_majority and system_district_majority
 def system_bundestag(voters, district_voting=system_population_majority):
     pop = system_population_majority(voters)
     dist = system_district_majority(voters, district_voting=system_population_majority)
@@ -77,7 +78,21 @@ def system_bundestag(voters, district_voting=system_population_majority):
         result[key] *= 0.5
     winner = max(result.keys(), key=result.get)
     return {'winner': winner, 'fractions': result}
+
+#do not consider votes for parties below the treshold
+#calculates parties below treshold and removes their voters from the network
+def system_district_majority_with_threshold(voters, district_voting=system_population_majority):
+    # TODO: add argument for threshold, which is currently hard-coded
+    threshold = 0.3 
+    results_without_threshold = system_population_majority(voters)['fractions']
+    states_above_threshold = [state for state in results_without_threshold 
+                              if results_without_threshold[state] > threshold]
+    #indexes of vertices which are above threshold
+    voters_indexes = list(np.where(np.isin(voters['state'], states_above_threshold))[0])
+    voters_above_threshold = voters[[int(item) for item in voters_indexes]] #have to use int instead of np.int64
+    return system_district_majority(voters_above_threshold, district_voting=system_population_majority)
     
+
 # def run_voting_system(network, system=system_population_majority):
 #     return system_population_majority(extract_voters(network))
 
