@@ -5,26 +5,27 @@ from collections import Counter
 from electoral_sys.electoral_system import system_population_majority
 
 
-def default_mutation(node, p):
+def default_mutation(node, all_states, p):
     """
     Default mutation mechanism that updates the state of a node whenever
-    noise is applied. The default mechanism multiplies the state of the
-    agent by -1
+    noise is applied.
     :param node: the node for which a new state is generated because of noise
-    :param p: probability of switching to state -1 - mass media effect
+    :param all_states: possible states of nodes
+    :param p: probability of switching to state 1 - mass media effect
     :result: the new mutated state for the node
     """
-    return np.random.choice([-1, 1], p=[(1.0 - p), p])
+    return np.random.choice(all_states, p=[p, (1.0 - p)])
 
 
-def mutation_abc(node, p):
+def mutation_abc(node, all_states, p):
     """
     Mutation in the 3-satate model where states are 'a', 'b', 'c'
     :param node: the node for which a new state is generated because of noise
+    :param all_states: possible states of nodes
     :param p: probability of switching to state 'a' - mass media effect
     :result: the new mutated state for the node
     """
-    return np.random.choice(['a', 'b', 'c'], p=[p, (0.5 - p / 2.0), (0.5 - p / 2.0)])
+    return np.random.choice(all_states, p=[p, (0.5 - p / 2.0), (0.5 - p / 2.0)])
 
 
 def default_propagation(node, g):
@@ -83,18 +84,18 @@ def run_simulation(config, g, noise_rate, max_step, n=None):
                 target["state"] = config.propagate(target, g)
             else:
                 # Mutate
-                target["state"] = config.mutate(target, p=config.cmd_args.MASS_MEDIA)
+                target["state"] = config.mutate(target, all_states=config.all_states, p=config.cmd_args.MASS_MEDIA)
 
     return g
 
 
 def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
-    traj = {k: [v] for k, v in system_population_majority(g.vs)['fractions'].items()}
+    traj = {k: [v] for k, v in system_population_majority(g.vs, states=config.all_states)['fractions'].items()}
     nrun = round(therm_time / each)
 
     for t in range(nrun):
         g = run_simulation(config, g, noise_rate, each, n=n)
-        for key, value in system_population_majority(g.vs)['fractions'].items():
+        for key, value in system_population_majority(g.vs, states=config.all_states)['fractions'].items():
             traj[key].append(value)
 
     return g, traj

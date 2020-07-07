@@ -18,37 +18,45 @@ def planted_affinity(q, avg_deg, fractions, ratio, n):
     return p.tolist()
 
 
-def default_initial_state(n):
+def default_initial_state(n, all_states, **kwargs):
     """
-    Generates n default -1 or 1 initial states with equal probabilities
+    Generates n default initial states with equal probabilities, drawn from all_states
     :param n: the number of states to generate
+    :param all_states: possible states of nodes
     :return: a numpy array of n states
     """
-    return np.random.randint(0, 2, n) * 2 - 1
+    return np.random.choice(all_states, size=n)
 
 
-def initial_state_abc(n):
+def consensus_initial_state(n, all_states, state=None, **kwargs):
     """
-    Generates n initial states from values 'a', 'b', and 'c' with equal probabilities
+    Generates n identical states to create a full consensus
     :param n: the number of states to generate
+    :param all_states: possible states of nodes
+    :param state: the initial state for every node
     :return: a numpy array of n states
     """
-    return np.random.choice(['a', 'b', 'c'], size=n)
+    if state is None:
+        state = all_states[1]
+    return [state for _ in range(n)]
 
 
-def init_sbm(n, affinity, state_generator=default_initial_state, districts_are_communities=True):
+def init_sbm(n, affinity, state_generator=default_initial_state, districts_are_communities=True, initial_state=None,
+             all_states=None):
     """
     Generates initial graph for simulations
     :param n: network size (int)
     :param affinity: affinity matrix for SBM model (list())
     :param state_generator: function that generates the states
     :param districts_are_communities: whether districts and communities should be the same (bool)
+    :param initial_state: initial state for the nodes used in the consensus initialization
+    :param all_states: possible states of nodes
     :return: network with states, zealots, districts etc. (ig.Graph())
     """
     q = len(affinity)
     block_sizes = np.repeat(n / q, q).tolist()
     g = ig.Graph.SBM(n, affinity, block_sizes)
-    g.vs()["state"] = state_generator(n)
+    g.vs()["state"] = state_generator(n, all_states=all_states, state=initial_state)
 
     g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
 
