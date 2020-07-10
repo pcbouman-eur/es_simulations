@@ -8,6 +8,7 @@ from tools import convert_to_distributions, prepare_json
 from configuration.parser import get_arguments
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_simulation, run_thermalization, run_thermalization_silent
+from electoral_system import electoral_threshold
 
 
 def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
@@ -90,7 +91,7 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
         g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
 
         for system, fun in config.voting_systems.items():
-            outcome = fun(g.vs)['fractions']
+            outcome = fun(electoral_threshold(g.vs, config.threshold))['fractions']
             results[system].append(outcome)
 
     for system in config.voting_systems.keys():

@@ -69,7 +69,8 @@ def system_district_majority(voters, district_voting=system_population_majority)
         district_count += 1
     return counts_to_result(counts, district_count)
 
-def system_bundestag(voters, district_voting=system_population_majority):
+#mixing results from system_population_majority and system_district_majority
+def system_mixing(voters, district_voting=system_population_majority):
     pop = system_population_majority(voters)
     dist = system_district_majority(voters, district_voting=system_population_majority)
     result = pop['fractions'] + dist['fractions']
@@ -81,6 +82,17 @@ def system_bundestag(voters, district_voting=system_population_majority):
 # def run_voting_system(network, system=system_population_majority):
 #     return system_population_majority(extract_voters(network))
 
+def electoral_threshold(voters, threshold):
+    if 0. < threshold <= 1.:
+        results_without_threshold = system_population_majority(voters)['fractions']
+        states_above_threshold = [state for state in results_without_threshold 
+                                  if results_without_threshold[state] > threshold]
+        #indexes of vertices which are above threshold
+        voters_indexes = list(np.where(np.isin(voters['state'], states_above_threshold))[0])
+        voters_above_threshold = voters[[int(item) for item in voters_indexes]] #have to use int instead of np.int64
+        return voters_above_threshold
+    else:
+        return voters
 
 if __name__ == '__main__':
     # This is some basic test code

@@ -25,7 +25,7 @@ class Config:
     initialize_states = staticmethod(ng.default_initial_state)
     voting_systems = {'population': es.system_population_majority,
                       'district': es.system_district_majority,
-                      'bundestag': es.system_bundestag}
+                      'mixing': es.system_mixing}
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
     zealot_state = 1
@@ -38,6 +38,7 @@ class Config:
         self.reset = cmd_args.reset
         self.distr_eq_comm = cmd_args.distr_eq_comm
         self.abc = cmd_args.abc
+
 
         # Propagation mechanisms
         if cmd_args.propagation == 'majority':
@@ -71,3 +72,8 @@ class Config:
             self.zealots_config = {'degree_driven': False,
                                    'one_district': False,
                                    'district': None}
+        
+        # Electoral threshold
+        self.threshold = cmd_args.treshold
+        if 0. < self.threshold <= 1.:
+            self.suffix += f"_tr_{self.threshold}"
