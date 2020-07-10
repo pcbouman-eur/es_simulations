@@ -1,7 +1,7 @@
 '''
 Functions that model different election systems
 
-system_bundestag: mix of population majority and district majority. 
+mixed system: mix of population majority and district majority. 
 The half of seats is allocated proportionally to population, the other half according to districts results.
 
 TODO: explain more here
@@ -70,7 +70,7 @@ def system_district_majority(voters, district_voting=system_population_majority)
     return counts_to_result(counts, district_count)
 
 # mixing results from system_population_majority and system_district_majority
-def system_mixing(voters, district_voting=system_population_majority):
+def system_mixed(voters, district_voting=system_population_majority):
     pop = system_population_majority(voters)
     dist = system_district_majority(voters, district_voting=system_population_majority)
     result = pop['fractions'] + dist['fractions']
