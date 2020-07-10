@@ -8,7 +8,7 @@ from tools import convert_to_distributions, prepare_json
 from configuration.parser import get_arguments
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_simulation, run_thermalization, run_thermalization_silent
-from electoral_system import electoral_threshold
+from electoral_sys.electoral_system import electoral_threshold
 
 
 def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):

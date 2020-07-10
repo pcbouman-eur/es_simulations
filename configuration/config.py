@@ -74,6 +74,6 @@ class Config:
                                    'district': None}
         
         # Electoral threshold
-        self.threshold = cmd_args.treshold
+        self.threshold = cmd_args.threshold
         if 0. < self.threshold <= 1.:
             self.suffix += f"_tr_{self.threshold}"

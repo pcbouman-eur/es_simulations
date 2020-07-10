@@ -69,7 +69,7 @@ def system_district_majority(voters, district_voting=system_population_majority)
         district_count += 1
     return counts_to_result(counts, district_count)
 
-#mixing results from system_population_majority and system_district_majority
+# mixing results from system_population_majority and system_district_majority
 def system_mixing(voters, district_voting=system_population_majority):
     pop = system_population_majority(voters)
     dist = system_district_majority(voters, district_voting=system_population_majority)
@@ -82,6 +82,7 @@ def system_mixing(voters, district_voting=system_population_majority):
 # def run_voting_system(network, system=system_population_majority):
 #     return system_population_majority(extract_voters(network))
 
+# application of electoral threshold (minimal share of total votes to be considered at all)
 def electoral_threshold(voters, threshold):
     if 0. < threshold <= 1.:
         results_without_threshold = system_population_majority(voters)['fractions']
