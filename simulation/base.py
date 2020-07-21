@@ -14,18 +14,9 @@ def default_mutation(node, all_states, p):
     :param p: probability of switching to state 1 - mass media effect
     :result: the new mutated state for the node
     """
-    return np.random.choice(all_states, p=[p, (1.0 - p)])
-
-
-def mutation_abc(node, all_states, p):
-    """
-    Mutation in the 3-satate model where states are 'a', 'b', 'c'
-    :param node: the node for which a new state is generated because of noise
-    :param all_states: possible states of nodes
-    :param p: probability of switching to state 'a' - mass media effect
-    :result: the new mutated state for the node
-    """
-    return np.random.choice(all_states, p=[p, (0.5 - p / 2.0), (0.5 - p / 2.0)])
+    k = len(all_states) - 1
+    probs = [p] + [(1.0 - p) / k for _ in range(k)]
+    return np.random.choice(all_states, p=probs)
 
 
 def default_propagation(node, g):

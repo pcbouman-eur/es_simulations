@@ -37,7 +37,7 @@ def consensus_initial_state(n, all_states, state=None, **kwargs):
     :return: a numpy array of n states
     """
     if state is None:
-        state = all_states[1]
+        state = all_states[-1]
     return [state for _ in range(n)]
 
 
