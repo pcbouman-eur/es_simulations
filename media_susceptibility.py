@@ -112,6 +112,7 @@ def plot_media_susceptibility(config):
 
     # load data
     for i, influence in enumerate(media_influence):
+        influence = str(influence).replace('.', '')
         loc = 'results/results{}{}{}{}.json'.format(suffix[0], suffix[1], influence, suffix[2])
         with open(loc) as json_file:
             data = json.load(json_file)
