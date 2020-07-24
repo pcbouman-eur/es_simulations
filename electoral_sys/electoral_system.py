@@ -84,13 +84,15 @@ def system_mixed(voters, district_voting=system_population_majority):
 
 # application of electoral threshold (minimal share of total votes to be considered at all)
 def electoral_threshold(voters, threshold):
-    if 0. < threshold <= 1.:
+    if threshold != 0.:
         results_without_threshold = system_population_majority(voters)['fractions']
-        states_above_threshold = [state for state in results_without_threshold 
-                                  if results_without_threshold[state] > threshold]
+        states_above_threshold = {state for state in results_without_threshold 
+                                  if results_without_threshold[state] > threshold}
         #indexes of vertices which are above threshold
-        voters_indexes = list(np.where(np.isin(voters['state'], states_above_threshold))[0])
-        voters_above_threshold = voters[[int(item) for item in voters_indexes]] #have to use int instead of np.int64
+        voters_indices = [idx for idx, state in enumerate(voters['state']) if state in states_above_threshold]
+        voters_above_threshold = voters[voters_indices]
+        #voters_indexes = list(np.where(np.isin(voters['state'], states_above_threshold))[0])
+        #voters_above_threshold = voters[[int(item) for item in voters_indexes]] #have to use int instead of np.int64
         return voters_above_threshold
     else:
         return voters

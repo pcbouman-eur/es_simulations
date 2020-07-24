@@ -75,5 +75,10 @@ class Config:
         
         # Electoral threshold
         self.threshold = cmd_args.threshold
-        if 0. < self.threshold <= 1.:
+        if self.threshold < 0. or self.threshold > 1.:
+            raise ValueError(f'The threshold should be in the range [0,1], \
+                             current threshold = {self.threshold}.')
+        elif self.threshold == 0.:
+            pass #for threshold == 0 we do not consider thresholding
+        else:
             self.suffix += f"_tr_{self.threshold}"
