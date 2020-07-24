@@ -27,8 +27,8 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
         plt.axvline(avg - std, linestyle='--', color='black')
         plt.axvline(avg + std, linestyle='--', color='black')
 
-        plt.title('Histogram of vote share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
-        plt.xlabel('fraction of votes')
+        plt.title('Histogram of seats share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
+        plt.xlabel('fraction of seats')
         plt.ylabel('probability')
 
         plt.tight_layout()
