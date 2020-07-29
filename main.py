@@ -7,6 +7,7 @@ from tools import convert_to_distributions, save_data, read_data, plot_hist, plo
 from configuration.parser import get_arguments
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_simulation, run_thermalization, run_thermalization_silent
+from electoral_sys.electoral_system import electoral_threshold
 
 
 def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio, avg_deg, **kwargs):
@@ -38,7 +39,7 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
         g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
 
         for system, fun in config.voting_systems.items():
-            outcome = fun(g.vs, states=config.all_states)['fractions']
+            outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)['fractions']
             results[system].append(outcome)
 
     save_data(config, results, suffix)

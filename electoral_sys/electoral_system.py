@@ -1,7 +1,7 @@
 '''
 Functions that model different election systems
 
-system_bundestag: mix of population majority and district majority. 
+mixed system: mix of population majority and district majority. 
 The half of seats is allocated proportionally to population, the other half according to districts results.
 
 TODO: explain more here
@@ -78,8 +78,8 @@ def system_district_majority(voters, district_voting=system_population_majority,
         district_count += 1
     return counts_to_result(counts, district_count)
 
-
-def system_bundestag(voters, district_voting=system_population_majority, states=None):
+# mixing results from system_population_majority and system_district_majority
+def system_mixed(voters, district_voting=system_population_majority, states=None):
     pop = system_population_majority(voters, states=states)
     dist = system_district_majority(voters, district_voting=district_voting, states=states)
     result = pop['fractions'] + dist['fractions']
@@ -88,6 +88,20 @@ def system_bundestag(voters, district_voting=system_population_majority, states=
     winner = max(result.keys(), key=result.get)
     return {'winner': winner, 'fractions': result}
 
+# application of electoral threshold (minimal share of total votes to be considered at all)
+def electoral_threshold(voters, threshold):
+    if threshold != 0.:
+        results_without_threshold = system_population_majority(voters)['fractions']
+        states_above_threshold = {state for state in results_without_threshold 
+                                  if results_without_threshold[state] > threshold}
+        #indexes of vertices which are above threshold
+        voters_indices = [idx for idx, state in enumerate(voters['state']) if state in states_above_threshold]
+        voters_above_threshold = voters[voters_indices]
+        #voters_indexes = list(np.where(np.isin(voters['state'], states_above_threshold))[0])
+        #voters_above_threshold = voters[[int(item) for item in voters_indexes]] #have to use int instead of np.int64
+        return voters_above_threshold
+    else:
+        return voters
 
 if __name__ == '__main__':
     # This is some basic test code

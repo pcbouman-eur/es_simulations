@@ -73,6 +73,10 @@ parser.add_argument('--abc', action='store_const', default=False, const=True,
                     dest='abc', help='if you want to run simulation for 3 states a, b, and c')
 # WARNING! When there is more than 2 states the default value of mass media (0.5) is no longer neutral!
 
+parser.add_argument('-tr', '--threshold', action='store', default=0.,
+                    type=float, dest='threshold',
+                    help='The electoral threshold (minimal share of votes to be considered)')
+
 
 def get_arguments():
     """
