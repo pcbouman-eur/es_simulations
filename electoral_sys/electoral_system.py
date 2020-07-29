@@ -42,8 +42,12 @@ def counts_to_result(counts, total):
 
 
 # Extracts the vote from each individual voter and computes the winner based on the majority
-def system_population_majority(voters):
+def system_population_majority(voters, states=None):
     counts = {}
+    if states is not None:
+        for state in states:
+            counts[state] = 0
+
     voter_count = 0
     for voter in voters:
         vote = extract_vote(voter)
@@ -56,10 +60,15 @@ def system_population_majority(voters):
 
 # Applies a voting system to each district, and then aggregates votes based on the
 # winner of each district
-def system_district_majority(voters, district_voting=system_population_majority):
+def system_district_majority(voters, district_voting=system_population_majority, states=None):
     voters_by_district = groupby(sorted(voters, key=extract_district), key=extract_district)
     results_by_district = {d: district_voting(vs) for d, vs in voters_by_district}
+
     counts = {}
+    if states is not None:
+        for state in states:
+            counts[state] = 0
+
     district_count = 0
     for district, res in results_by_district.items():
         winner = res['winner']
@@ -70,17 +79,14 @@ def system_district_majority(voters, district_voting=system_population_majority)
     return counts_to_result(counts, district_count)
 
 # mixing results from system_population_majority and system_district_majority
-def system_mixed(voters, district_voting=system_population_majority):
-    pop = system_population_majority(voters)
-    dist = system_district_majority(voters, district_voting=system_population_majority)
+def system_mixed(voters, district_voting=system_population_majority, states=None):
+    pop = system_population_majority(voters, states=states)
+    dist = system_district_majority(voters, district_voting=district_voting, states=states)
     result = pop['fractions'] + dist['fractions']
     for key in result:
         result[key] *= 0.5
     winner = max(result.keys(), key=result.get)
     return {'winner': winner, 'fractions': result}
-    
-# def run_voting_system(network, system=system_population_majority):
-#     return system_population_majority(extract_voters(network))
 
 # application of electoral threshold (minimal share of total votes to be considered at all)
 def electoral_threshold(voters, threshold):

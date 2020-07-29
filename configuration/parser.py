@@ -60,6 +60,9 @@ parser.add_argument('--districts_eq_communities', action='store_const', default=
 parser.add_argument('--reset', action='store_const', default=False, const=True, dest='reset',
                     help='whether to reset states after each simulation, draw new zealots and run thermalization again')
 
+parser.add_argument('--consensus', action='store_const', default=False, const=True, dest='consensus',
+                    help='whether to initialize the network in a consensus state (other than the zealot state)')
+
 parser.add_argument('-p', '--propagation', action='store', default='standard',
                     choices=('standard', 'majority', 'minority'),
                     dest='propagation',
@@ -68,6 +71,7 @@ parser.add_argument('-p', '--propagation', action='store', default='standard',
 
 parser.add_argument('--abc', action='store_const', default=False, const=True,
                     dest='abc', help='if you want to run simulation for 3 states a, b, and c')
+# WARNING! When there is more than 2 states the default value of mass media (0.5) is no longer neutral!
 
 parser.add_argument('-tr', '--threshold', action='store', default=0.,
                     type=float, dest='threshold',

@@ -29,13 +29,17 @@ class Config:
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
     zealot_state = 1
+    not_zealot_state = -1
+    all_states = (1, -1)  # the order matters in the mutation function! zealot first
     reset = False
+    consensus = False
     abc = False
 
     def __init__(self, cmd_args):
         # Command line arguments
         self.cmd_args = cmd_args
         self.reset = cmd_args.reset
+        self.consensus = cmd_args.consensus
         self.distr_eq_comm = cmd_args.distr_eq_comm
         self.abc = cmd_args.abc
 
@@ -51,13 +55,18 @@ class Config:
         # Filename suffix
         self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}_R_{ratio}' \
                       '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(vars(cmd_args))
+        self.suffix = self.suffix.replace('.', '')
 
         # 3 states version of the model (abc)
         if self.abc:
-            self.mutate = sim.mutation_abc
-            self.initialize_states = ng.initial_state_abc
             self.zealot_state = 'a'
+            self.not_zealot_state = 'c'
+            self.all_states = ('a', 'b', 'c')  # the order matters in the mutation function!
             self.suffix = ''.join(['_abc', self.suffix])
+
+        # initialization in the consensus state
+        if self.consensus:
+            self.initialize_states = ng.consensus_initial_state
 
         # Zealot configuration options
         if cmd_args.where_zealots == 'degree':
