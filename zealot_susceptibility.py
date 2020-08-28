@@ -2,13 +2,11 @@
 import os
 import json
 import numpy as np
-import itertools
-import matplotlib.pyplot as plt
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
 
 # parameters of simulations not present in the config module
-zn_set = range(6)  # range of considered number of zealots
+zn_set = range(4)  # range of considered number of zealots
 bins = 25  # how many bins in heatmap histogram
 
 def plot_zealot_susceptibility(config):
@@ -18,21 +16,22 @@ def plot_zealot_susceptibility(config):
     :return: None
     """
     # create variables for data
-    #suffix = split_suffix(config.suffix, 'zn')
-    suffix = config.suffix.split('_zn_')[0]
-    l_zn_set = len(zn_set)
+    suffix = split_suffix(cfg.suffix, 'zn')
+    l_set = len(zn_set)
     bins_hist = np.linspace(0, 1, num=bins + 1)
     results = {}
     
     for system in cfg.voting_systems.keys():
-        results[system] = {'mean_set':np.zeros(l_zn_set), 
-                           'std_set':np.zeros(l_zn_set), 
-                           'hist_set':np.zeros((l_zn_set, bins))}
+        results[system] = {'mean_set':np.zeros(l_set), 
+                           'std_set':np.zeros(l_set), 
+                           'hist_set':np.zeros((l_set, bins))}
     
     # load data
     ylim = [np.inf, -np.inf]
     for i, zn in enumerate(zn_set):
-        loc = 'results/results{}_zn_{}.json'.format(suffix, zn)
+        zn_string = f'_zn_{zn}'
+        s = suffix.format(valuetoinsert=zn_string)
+        loc = f'results/results{s}.json'
         with open(loc) as json_file:
             data = json.load(json_file)
         for system in cfg.voting_systems.keys():
@@ -63,7 +62,6 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     #for zealots in zn_set:
-    #    print(cfg.suffix)
     #    os.system(f'/Users/jklamut/anaconda3/bin/python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME}')
     ##################################################################################
     plot_zealot_susceptibility(cfg)

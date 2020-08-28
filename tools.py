@@ -113,9 +113,12 @@ def split_suffix(suffix, parameter):
     parameters_and_values = suffix.split('_')
     parameter_index = parameters_and_values.index(parameter)
     pre_suffix = '_'.join(parameters_and_values[:parameter_index])
-    param_suffix = '_' + parameters_and_values[parameter_index] + '_'
-    su_suffix = '_' + '_'.join(parameters_and_values[(parameter_index+2):])
-    return pre_suffix, param_suffix, su_suffix
+    #param_suffix = '_' + parameters_and_values[parameter_index] + '_'
+    su_suffix = '_'.join(parameters_and_values[(parameter_index+2):])
+    if len(su_suffix):
+        su_suffix = '_' + su_suffix
+    suffix = pre_suffix + '{valuetoinsert}' + su_suffix
+    return suffix
 
 def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab, 
                   ylab='election result of 1', ylim=(), save_file=True):
@@ -145,7 +148,9 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
     plt.ylabel(ylab)
     plt.tight_layout()
     if save_file:
-        plt.savefig(f'plots/{quantity}_election_system_{election_system}{suffix}.pdf')
+        s = suffix.format(valuetoinsert='')
+        print(s)
+        plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.pdf')
         #plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{suffix[0]}{suffix[2]}.pdf')
     else:
         plt.show()
@@ -177,6 +182,8 @@ def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='numbe
     plt.ylabel(ylab)
     plt.tight_layout()
     if save_file:
-        plt.savefig(f'plots/heatmap_{quantity}_election_system_{election_system}{suffix}.pdf')
+        s = suffix.format(valuetoinsert='')
+        print(s)
+        plt.savefig(f'plots/heatmap_{quantity}_susceptibility_{election_system}{s}.pdf')
     else:
         plt.show()

@@ -2,81 +2,13 @@
 import os
 import json
 import numpy as np
-import itertools
-import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from configuration.parser import get_arguments
-from tools import convert_to_distributions
+from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
 
 # parameters of simulations not present in the config module
-media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influence
+media_influence = np.arange(0.0, 1.0, 0.2)  # range of considered media influence
 bins = 25  # how many bins in heat-map histogram
-
-
-def plot_mean_std(y, std, name, suffix, y_lab='election result of 1', 
-    x=media_influence,
-                  x_lab='media influence', y_lim=(), save_file=True):
-    """
-    Plots a plot of mean +/- std of given variable vs mass media influence
-    :param y: given variable
-    :param std: standard deviation of y
-    :param name: name of quantity (Population or District)
-    :param suffix: suffix with params values
-    :param y_lab: y-axis label
-    :param x: array with distinct media influence
-    :param x_lab: x-axis label
-    :param y_lim: y-axis limits as [ymin, ymax]
-    :param save_file: bool if save plot to file
-    """
-    plt.figure(figsize=(4, 3))
-
-    plt.plot(x, y, color='cornflowerblue', linestyle='-')
-    plt.plot(x, y + std, color='tomato', linestyle='--')
-    plt.plot(x, y - std, color='tomato', linestyle='--')
-    if y_lim:
-        plt.ylim(y_lim)
-
-    plt.title(name)
-    plt.xlabel(x_lab)
-    plt.ylabel(y_lab)
-    plt.tight_layout()
-    if save_file:
-        plt.savefig('plots/{quantity}_susceptibility_{}{}{}.pdf'.format(name, suffix[0], suffix[2]))
-    else:
-        plt.show()
-
-
-def plot_heat_map(heat_map, l_bins, name, suffix, y_lab='distribution of 1', x_lab='media influence',
-                  save_file=True, colormap='jet'):
-    """
-    Plots a heat map of given variable vs mass media influence
-    :param heat_map: histogram of given variable
-    :param l_bins: number of bins in the distribution
-    :param name: name of quantity (Population / District)
-    :param suffix: suffix with params values
-    :param y_lab: y-axis label
-    :param x_lab: x-axis label
-    :param save_file: bool if save plot to file
-    :param colormap: change colormap
-    """
-    transposed_heat_map = np.transpose(heat_map)
-
-    plt.figure(figsize=(3.5, 3.1))
-    plt.imshow(transposed_heat_map, origin='lower', aspect='auto', cmap=colormap, norm=LogNorm())
-    cb = plt.colorbar()
-    cb.ax.tick_params(labelsize=9)
-
-    plt.title(name)
-    plt.xticks(np.linspace(0, heat_map.shape[0], 5) - 0.5, np.linspace(0, 1, 5))
-    plt.yticks(np.linspace(0, l_bins, 5) - 0.5, np.linspace(0, 1, 5))
-    plt.xlabel(x_lab)
-    plt.ylabel(y_lab)
-    plt.tight_layout()
-    if save_file:
-        plt.savefig('plots/heat_map_media_sus_{}{}{}.pdf'.format(name, suffix[0], suffix[2]))
-    else:
-        plt.show()
-
 
 def plot_media_susceptibility(config):
     """
@@ -85,63 +17,53 @@ def plot_media_susceptibility(config):
     """
     # create variables for data
     suffix = split_suffix(config.suffix, 'media')
-    media_influence_n = len(media_influence)
-
-    bins_hist_pop = np.linspace(0, 1, num=bins+1)
-    pop_mean_set = np.zeros(media_influence_n)
-    pop_std_set = np.zeros(media_influence_n)
-    pop_hist_set = np.zeros((media_influence_n, bins))
-
-    bins_hist_dist = np.linspace(0, 1, num=bins+1)
-    dist_mean_set = np.zeros(media_influence_n)
-    dist_std_set = np.zeros(media_influence_n)
-    dist_hist_set = np.zeros((media_influence_n, bins))
+    l_set = len(media_influence)
+    bins_hist = np.linspace(0, 1, num=bins + 1)
+    results = {}
 
     if config.abc:
         media_state = 'a'
     else:
-        media_state = 1
+        media_state = str(1)
+
+    for system in cfg.voting_systems.keys():
+        results[system] = {'mean_set':np.zeros(l_set), 
+                           'std_set':np.zeros(l_set), 
+                           'hist_set':np.zeros((l_set, bins))}
 
     # load data
+    ylim = [np.inf, -np.inf]
     for i, influence in enumerate(media_influence):
         influence = str(influence).replace('.', '')
-        loc = 'results/results{}{}{}{}.json'.format(suffix[0], suffix[1], influence, suffix[2])
+        influence_string = f'_media_{influence}'
+        s = suffix.format(valuetoinsert=influence_string)
+        loc = f'results/results{s}.json'
         with open(loc) as json_file:
             data = json.load(json_file)
-
-        if str(media_state) in convert_to_distributions(data['results']['population']):
-            population_1 = convert_to_distributions(data['results']['population'])[str(media_state)]
-        else:
-            population_1 = 0.0
-        pop_mean_set[i] = np.mean(population_1)
-        pop_std_set[i] = np.std(population_1)
-        pop_hist_set[i, :] = np.histogram(population_1, bins=bins_hist_pop, density=True)[0]
-
-        if str(media_state) in convert_to_distributions(data['results']['district']):
-            district_1 = convert_to_distributions(data['results']['district'])[str(media_state)]
-        else:
-            district_1 = 0.0
-        dist_mean_set[i] = np.mean(district_1)
-        dist_std_set[i] = np.std(district_1)
-        dist_hist_set[i, :] = np.histogram(district_1, bins=bins_hist_dist, density=True)[0]
+        for system in cfg.voting_systems.keys():
+            distribution = convert_to_distributions(data['results'][system])[media_state]
+            dist_mean = np.mean(distribution)
+            dist_std = np.std(distribution)
+            results[system]['mean_set'][i] = dist_mean
+            results[system]['std_set'][i] = dist_std
+            results[system]['hist_set'][i,:] = np.histogram(distribution, bins=bins_hist, density=True)[0]
+            ylim = [min(ylim[0], dist_mean - dist_std), max(ylim[1], dist_mean + dist_std)]
 
     # plot figures
-    all_values = list(itertools.chain(dist_mean_set - dist_std_set,
-                                      dist_mean_set + dist_std_set,
-                                      pop_mean_set - pop_std_set,
-                                      pop_mean_set + pop_std_set))
-    y_lim = [min(all_values), max(all_values)]
+    for system in cfg.voting_systems.keys():
+        plot_mean_std(x=media_influence, y=results[system]['mean_set'], std=results[system]['std_set'], 
+                      quantity='zealots', election_system=system, suffix=suffix, xlab='number of zealots',
+                      ylab=f'election result of {media_state}', ylim=ylim, save_file=True)
+        plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
+                     election_system=system, suffix=suffix, xlab='number of zealots', 
+                     ylab=f'distribution of {media_state}', save_file=True, colormap='jet')
 
-    plot_mean_std(x=media_influence, pop_mean_set, pop_std_set, 'Multi-member', suffix, y_lim=y_lim,
-                  xlab='media influence', y_lab='election result of {}'.format(media_state))
-    plot_mean_std(x=media_influence, dist_mean_set, dist_std_set, 'Single-member', suffix, y_lim=y_lim,
-                  xlab='media influence', y_lab='election result of {}'.format(media_state))
-
-    plot_heat_map(pop_hist_set, bins, 'Multi-member', suffix,
-                  y_lab='distribution of {}'.format(media_state))
-    plot_heat_map(dist_hist_set, bins, 'Single-member', suffix,
-                  y_lab='distribution of {}'.format(media_state))
-
+    #TODO: does this problem still happens sometimes? do we need this?
+    #if str(media_state) in convert_to_distributions(data['results']['population']):
+    #    population_1 = convert_to_distributions(data['results']['population'])[str(media_state)]
+    #else:
+    #    population_1 = 0.0
+    
 
 if __name__ == '__main__':
     cfg = get_arguments()
@@ -153,7 +75,7 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
-        os.system('python3 main.py -mm {} -s {}'.format(media, cfg.cmd_args.SAMPLE_SIZE))
+        os.system(f'/Users/jklamut/anaconda3/bin/python3 main.py --abc -mm {media} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME}')
     ##################################################################################
 
     plot_media_susceptibility(cfg)
