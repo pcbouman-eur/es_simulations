@@ -6,7 +6,7 @@ from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
 
 # parameters of simulations not present in the config module
-zn_set = range(4)  # range of considered number of zealots
+zn_set = range(61)  # range of considered number of zealots
 bins = 25  # how many bins in heatmap histogram
 
 def plot_zealot_susceptibility(config):
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # on multiple cores, or just modify the command to use external parallelization,
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
-    #for zealots in zn_set:
-    #    os.system(f'/Users/jklamut/anaconda3/bin/python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME}')
+    for zealots in zn_set:
+        os.system(f'python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE}')
     ##################################################################################
     plot_zealot_susceptibility(cfg)

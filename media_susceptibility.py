@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
-        os.system(f'/Users/jklamut/anaconda3/bin/python3 main.py --abc -mm {media} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME}')
+        os.system(f'python3 main.py --abc -mm {media} -s {cfg.cmd_args.SAMPLE_SIZE}')
     ##################################################################################
 
     plot_media_susceptibility(cfg)
