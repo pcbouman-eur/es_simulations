@@ -13,7 +13,8 @@ media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influen
 bins = 25  # how many bins in heat-map histogram
 
 
-def plot_mean_std(y, std, name, suffix, y_lab='election result of 1', x=media_influence,
+def plot_mean_std(y, std, name, suffix, y_lab='election result of 1', 
+    x=media_influence,
                   x_lab='media influence', y_lim=(), save_file=True):
     """
     Plots a plot of mean +/- std of given variable vs mass media influence
@@ -40,7 +41,7 @@ def plot_mean_std(y, std, name, suffix, y_lab='election result of 1', x=media_in
     plt.ylabel(y_lab)
     plt.tight_layout()
     if save_file:
-        plt.savefig('plots/media_susceptibility_{}{}{}.pdf'.format(name, suffix[0], suffix[2]))
+        plt.savefig('plots/{quantity}_susceptibility_{}{}{}.pdf'.format(name, suffix[0], suffix[2]))
     else:
         plt.show()
 
@@ -75,15 +76,6 @@ def plot_heat_map(heat_map, l_bins, name, suffix, y_lab='distribution of 1', x_l
         plt.savefig('plots/heat_map_media_sus_{}{}{}.pdf'.format(name, suffix[0], suffix[2]))
     else:
         plt.show()
-
-
-def split_suffix(suffix, parameter):
-    parameters_and_values = suffix.split('_')
-    parameter_index = parameters_and_values.index(parameter)
-    pre_suffix = '_'.join(parameters_and_values[:parameter_index])
-    param_suffix = '_' + parameters_and_values[parameter_index] + '_'
-    su_suffix = '_' + '_'.join(parameters_and_values[(parameter_index+2):])
-    return pre_suffix, param_suffix, su_suffix
 
 
 def plot_media_susceptibility(config):
@@ -140,10 +132,10 @@ def plot_media_susceptibility(config):
                                       pop_mean_set + pop_std_set))
     y_lim = [min(all_values), max(all_values)]
 
-    plot_mean_std(pop_mean_set, pop_std_set, 'Multi-member', suffix, y_lim=y_lim,
-                  y_lab='election result of {}'.format(media_state))
-    plot_mean_std(dist_mean_set, dist_std_set, 'Single-member', suffix, y_lim=y_lim,
-                  y_lab='election result of {}'.format(media_state))
+    plot_mean_std(x=media_influence, pop_mean_set, pop_std_set, 'Multi-member', suffix, y_lim=y_lim,
+                  xlab='media influence', y_lab='election result of {}'.format(media_state))
+    plot_mean_std(x=media_influence, dist_mean_set, dist_std_set, 'Single-member', suffix, y_lim=y_lim,
+                  xlab='media influence', y_lab='election result of {}'.format(media_state))
 
     plot_heat_map(pop_hist_set, bins, 'Multi-member', suffix,
                   y_lab='distribution of {}'.format(media_state))

@@ -5,75 +5,11 @@ import numpy as np
 import itertools
 import matplotlib.pyplot as plt
 from configuration.parser import get_arguments
-from tools import convert_to_distributions
+from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
 
 # parameters of simulations not present in the config module
-zn_set = range(61)  # range of considered number of zealots
+zn_set = range(6)  # range of considered number of zealots
 bins = 25  # how many bins in heatmap histogram
-
-
-def plot_mean_std(y, std, name, suffix, ylab='election result of 1', x=zn_set, xlab='number of zealots', ylim=(),
-                  save_file=True):
-    """
-    Plots a plot of mean +/- std of given variable vs number of zealots 
-    :param y: given variable
-    :param std: standard deviation of y
-    :param name: name of quantity (Population or District)
-    :param suffix: suffix with params values
-    :param ylab: y-axis label
-    :param x: array with number of zealots
-    :param xlab: x-axis label
-    :param ylim: y-axis limits as [ymin, ymax]
-    :param save_file: bool if save plot to file
-    """
-    plt.figure(figsize=(4, 3))
-
-    plt.plot(x, y, color='cornflowerblue', linestyle='-')
-    plt.plot(x, y + std, color='tomato', linestyle='--')
-    plt.plot(x, y - std, color='tomato', linestyle='--')
-    if ylim:
-        plt.ylim(ylim)
-
-    plt.title(name)
-    plt.xlabel(xlab)
-    plt.ylabel(ylab)
-    plt.tight_layout()
-    if save_file:
-        plt.savefig('plots/zealot_susceptibility_{}{}.pdf'.format(name, suffix))
-    else:
-        plt.show()
-
-
-def plot_heatmap(heatmap, l_bins, name, suffix, ylab='distribution of 1', xlab='number of zealots', save_file=True,
-                 colormap='jet'):
-    """
-    Plots a heatmap of given variable vs number of zealots 
-    :param heatmap: histogram of given variable
-    :param l_bins: number of bins in the distribution
-    :param name: name of quantity (Population / District)
-    :param suffix: suffix with params values
-    :param ylab: y-axis label
-    :param xlab: x-axis label
-    :param save_file: bool if save plot to file
-    :param colormap: change colormap
-    """
-    transposed_heatmap = np.transpose(heatmap)
-
-    plt.figure(figsize=(3.5, 3.1))
-    plt.imshow(transposed_heatmap, origin='lower', aspect='auto', cmap=colormap)
-    cb = plt.colorbar()
-    cb.ax.tick_params(labelsize=9)
-
-    plt.title(name)
-    plt.yticks(np.linspace(0, l_bins, 5) - 0.5, np.linspace(0, 1, 5))
-    plt.xlabel(xlab)
-    plt.ylabel(ylab)
-    plt.tight_layout()
-    if save_file:
-        plt.savefig('plots/heatmap_zealot_sus_{}{}.pdf'.format(name, suffix))
-    else:
-        plt.show()
-
 
 def plot_zealot_susceptibility(config):
     """
@@ -82,51 +18,40 @@ def plot_zealot_susceptibility(config):
     :return: None
     """
     # create variables for data
+    #suffix = split_suffix(config.suffix, 'zn')
     suffix = config.suffix.split('_zn_')[0]
     l_zn_set = len(zn_set)
-
-    bins_hist_pop = np.linspace(0, 1, num=bins + 1)
-    pop_mean_set = np.zeros(l_zn_set)
-    pop_std_set = np.zeros(l_zn_set)
-    pop_hist_set = np.zeros((l_zn_set, bins))
-
-    bins_hist_dist = np.linspace(0, 1, num=bins + 1)
-    dist_mean_set = np.zeros(l_zn_set)
-    dist_std_set = np.zeros(l_zn_set)
-    dist_hist_set = np.zeros((l_zn_set, bins))
-
+    bins_hist = np.linspace(0, 1, num=bins + 1)
+    results = {}
+    
+    for system in cfg.voting_systems.keys():
+        results[system] = {'mean_set':np.zeros(l_zn_set), 
+                           'std_set':np.zeros(l_zn_set), 
+                           'hist_set':np.zeros((l_zn_set, bins))}
+    
     # load data
+    ylim = [np.inf, -np.inf]
     for i, zn in enumerate(zn_set):
         loc = 'results/results{}_zn_{}.json'.format(suffix, zn)
         with open(loc) as json_file:
             data = json.load(json_file)
-
-        population_1 = convert_to_distributions(data['results']['population'])[str(config.zealot_state)]
-        district_1 = convert_to_distributions(data['results']['district'])[str(config.zealot_state)]
-
-        pop_mean_set[i] = np.mean(population_1)
-        pop_std_set[i] = np.std(population_1)
-        pop_hist_set[i, :] = np.histogram(population_1, bins=bins_hist_pop, density=True)[0]
-
-        dist_mean_set[i] = np.mean(district_1)
-        dist_std_set[i] = np.std(district_1)
-        dist_hist_set[i, :] = np.histogram(district_1, bins=bins_hist_dist, density=True)[0]
+        for system in cfg.voting_systems.keys():
+            distribution = convert_to_distributions(data['results'][system])[str(config.zealot_state)]
+            dist_mean = np.mean(distribution)
+            dist_std = np.std(distribution)
+            results[system]['mean_set'][i] = dist_mean
+            results[system]['std_set'][i] = dist_std
+            results[system]['hist_set'][i,:] = np.histogram(distribution, bins=bins_hist, density=True)[0]
+            ylim = [min(ylim[0], dist_mean - dist_std), max(ylim[1], dist_mean + dist_std)]
 
     # plot figures
-    all_values = list(itertools.chain(dist_mean_set - dist_std_set,
-                                      dist_mean_set + dist_std_set,
-                                      pop_mean_set - pop_std_set,
-                                      pop_mean_set + pop_std_set))
-    ylim = [min(all_values), max(all_values)]
-
-    plot_mean_std(pop_mean_set, pop_std_set, 'Multi-member', suffix, ylim=ylim,
-                  ylab='election result of {}'.format(config.zealot_state))
-    plot_mean_std(dist_mean_set, dist_std_set, 'Single-member', suffix, ylim=ylim,
-                  ylab='election result of {}'.format(config.zealot_state))
-
-    plot_heatmap(pop_hist_set, bins, 'Multi-member', suffix, ylab='distribution of {}'.format(config.zealot_state))
-    plot_heatmap(dist_hist_set, bins, 'Single-member', suffix, ylab='distribution of {}'.format(config.zealot_state))
-
+    for system in cfg.voting_systems.keys():
+        plot_mean_std(x=zn_set, y=results[system]['mean_set'], std=results[system]['std_set'], 
+                      quantity='zealots', election_system=system, suffix=suffix, xlab='number of zealots',
+                      ylab=f'election result of {config.zealot_state}', ylim=ylim, save_file=True)
+        plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
+                     election_system=system, suffix=suffix, xlab='number of zealots', 
+                     ylab=f'distribution of {config.zealot_state}', save_file=True, colormap='jet')
 
 if __name__ == '__main__':
     cfg = get_arguments()
@@ -137,8 +62,8 @@ if __name__ == '__main__':
     # on multiple cores, or just modify the command to use external parallelization,
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
-    for zealots in zn_set:
-        os.system('python3 main.py -zn {} -s {}'.format(zealots, cfg.cmd_args.SAMPLE_SIZE))
+    #for zealots in zn_set:
+    #    print(cfg.suffix)
+    #    os.system(f'/Users/jklamut/anaconda3/bin/python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME}')
     ##################################################################################
-
     plot_zealot_susceptibility(cfg)
