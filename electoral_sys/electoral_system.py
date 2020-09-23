@@ -9,7 +9,7 @@ TODO: explain more here
 import numpy as np
 from itertools import groupby
 from collections import Counter
-
+from electoral_sys.seat_assignment import default_rule as default_assignment
 
 # Retrieve the voters from a network
 def extract_voters(network):
@@ -27,18 +27,19 @@ def extract_district(voter):
 
 
 # Convenience function that produces the outcome of an election based on counts per option
-def counts_to_result(counts, total):
+def counts_to_result(counts, total, seats=1, assignment=default_assignment):
     winner = max(counts.keys(), key=counts.get)
     _max = counts[winner]
     winners = [w for w, v in counts.items() if v == _max]
     winner = np.random.choice(winners, 1)[0]
     fractions = Counter({k: 1.0 * v / total for k, v in counts.items()})
+    seat_assignment = Counter(assignment(seats, fractions))
     # TODO: in 3-state model this does't add up to 1.0 due to floating point numbers arithmetics,
     #  decide either to ignore it or fix it with decimals
     # total = sum(fractions.values())
     # if total < 1.0:
     #     print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBB :', str(total))
-    return {'winner': winner, 'fractions': fractions}
+    return {'winner': winner, 'fractions': fractions, 'seats': seat_assignment}
 
 
 # Extracts the vote from each individual voter and computes the winner based on the majority
@@ -84,10 +85,11 @@ def system_mixed(voters, district_voting=system_population_majority, states=None
     pop = system_population_majority(voters, states=states)
     dist = system_district_majority(voters, district_voting=district_voting, states=states)
     result = pop['fractions'] + dist['fractions']
+    seats  = pop['seats'] + dist['seats']
     for key in result:
         result[key] *= 0.5
     winner = max(result.keys(), key=result.get)
-    return {'winner': winner, 'fractions': result}
+    return {'winner': winner, 'fractions': result, 'seats': seats}
 
 
 # application of electoral threshold (minimal share of total votes to be considered at all)

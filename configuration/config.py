@@ -91,3 +91,8 @@ class Config:
             pass  # for threshold == 0 we do not consider thresholding
         else:
             self.suffix += f"_tr_{self.threshold}"
+
+        # Seat allocation rules
+        seats = cmd_args.seats
+        self.seats_per_district = [seats[i % len(seats)] for i in range(cmd_args.q)]
+        self.seat_rounding_rule = cmd_args.seatrule

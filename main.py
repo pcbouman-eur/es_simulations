@@ -39,8 +39,10 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
         g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
 
         for system, fun in config.voting_systems.items():
-            outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)['fractions']
-            results[system].append(outcome)
+            #outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)['fractions']
+            outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)
+            results[system].append(outcome['fractions'])
+            print(system, outcome['seats'])
 
     save_data(config, results, suffix)
 
