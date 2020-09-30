@@ -2,13 +2,13 @@
 import os
 import json
 import numpy as np
-from matplotlib.colors import LogNorm
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
 
 # parameters of simulations not present in the config module
 media_influence = np.arange(0.0, 1.0, 0.2)  # range of considered media influence
 bins = 25  # how many bins in heat-map histogram
+
 
 def plot_media_susceptibility(config):
     """
@@ -27,9 +27,9 @@ def plot_media_susceptibility(config):
         media_state = str(1)
 
     for system in cfg.voting_systems.keys():
-        results[system] = {'mean_set':np.zeros(l_set), 
-                           'std_set':np.zeros(l_set), 
-                           'hist_set':np.zeros((l_set, bins))}
+        results[system] = {'mean_set': np.zeros(l_set),
+                           'std_set': np.zeros(l_set),
+                           'hist_set': np.zeros((l_set, bins))}
 
     # load data
     ylim = [np.inf, -np.inf]
@@ -46,16 +46,16 @@ def plot_media_susceptibility(config):
             dist_std = np.std(distribution)
             results[system]['mean_set'][i] = dist_mean
             results[system]['std_set'][i] = dist_std
-            results[system]['hist_set'][i,:] = np.histogram(distribution, bins=bins_hist, density=True)[0]
+            results[system]['hist_set'][i, :] = np.histogram(distribution, bins=bins_hist, density=True)[0]
             ylim = [min(ylim[0], dist_mean - dist_std), max(ylim[1], dist_mean + dist_std)]
 
     # plot figures
     for system in cfg.voting_systems.keys():
         plot_mean_std(x=media_influence, y=results[system]['mean_set'], std=results[system]['std_set'], 
-                      quantity='zealots', election_system=system, suffix=suffix, xlab='number of zealots',
+                      quantity='media', election_system=system, suffix=suffix, xlab='media influence',
                       ylab=f'election result of {media_state}', ylim=ylim, save_file=True)
-        plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
-                     election_system=system, suffix=suffix, xlab='number of zealots', 
+        plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='media',
+                     election_system=system, suffix=suffix, xlab='media influence',
                      ylab=f'distribution of {media_state}', save_file=True, colormap='jet')
 
     #TODO: does this problem still happens sometimes? do we need this?

@@ -9,6 +9,7 @@ from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_he
 zn_set = range(61)  # range of considered number of zealots
 bins = 25  # how many bins in heatmap histogram
 
+
 def plot_zealot_susceptibility(config):
     """
     Loads the data files saved by main.py and plots them.
@@ -22,9 +23,9 @@ def plot_zealot_susceptibility(config):
     results = {}
     
     for system in cfg.voting_systems.keys():
-        results[system] = {'mean_set':np.zeros(l_set), 
-                           'std_set':np.zeros(l_set), 
-                           'hist_set':np.zeros((l_set, bins))}
+        results[system] = {'mean_set': np.zeros(l_set),
+                           'std_set': np.zeros(l_set),
+                           'hist_set': np.zeros((l_set, bins))}
     
     # load data
     ylim = [np.inf, -np.inf]
@@ -40,7 +41,7 @@ def plot_zealot_susceptibility(config):
             dist_std = np.std(distribution)
             results[system]['mean_set'][i] = dist_mean
             results[system]['std_set'][i] = dist_std
-            results[system]['hist_set'][i,:] = np.histogram(distribution, bins=bins_hist, density=True)[0]
+            results[system]['hist_set'][i, :] = np.histogram(distribution, bins=bins_hist, density=True)[0]
             ylim = [min(ylim[0], dist_mean - dist_std), max(ylim[1], dist_mean + dist_std)]
 
     # plot figures
@@ -51,6 +52,7 @@ def plot_zealot_susceptibility(config):
         plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
                      election_system=system, suffix=suffix, xlab='number of zealots', 
                      ylab=f'distribution of {config.zealot_state}', save_file=True, colormap='jet')
+
 
 if __name__ == '__main__':
     cfg = get_arguments()

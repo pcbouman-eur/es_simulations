@@ -109,6 +109,7 @@ def run_with_time(func):
             print(f'Function <{func.__name__}> finished in {round(minutes / 60, 1)} h')
     return inner
 
+
 def split_suffix(suffix, parameter):
     parameters_and_values = suffix.split('_')
     parameter_index = parameters_and_values.index(parameter)
@@ -119,6 +120,7 @@ def split_suffix(suffix, parameter):
         su_suffix = '_' + su_suffix
     suffix = pre_suffix + '{valuetoinsert}' + su_suffix
     return suffix
+
 
 def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab, 
                   ylab='election result of 1', ylim=(), save_file=True):
@@ -154,6 +156,7 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
         #plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{suffix[0]}{suffix[2]}.pdf')
     else:
         plt.show()
+
 
 def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='number of zealots', 
                  ylab='distribution of 1', save_file=True, colormap='jet'):
