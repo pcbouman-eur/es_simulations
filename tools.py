@@ -108,3 +108,85 @@ def run_with_time(func):
         else:
             print(f'Function <{func.__name__}> finished in {round(minutes / 60, 1)} h')
     return inner
+
+
+def split_suffix(suffix, parameter):
+    parameters_and_values = suffix.split('_')
+    parameter_index = parameters_and_values.index(parameter)
+    pre_suffix = '_'.join(parameters_and_values[:parameter_index])
+    #param_suffix = '_' + parameters_and_values[parameter_index] + '_'
+    su_suffix = '_'.join(parameters_and_values[(parameter_index+2):])
+    if len(su_suffix):
+        su_suffix = '_' + su_suffix
+    suffix = pre_suffix + '{valuetoinsert}' + su_suffix
+    return suffix
+
+
+def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab, 
+                  ylab='election result of 1', ylim=(), save_file=True):
+    """
+    Plots a plot of mean +/- std of given variable vs number of zealots 
+    :param x: array with considered quantitity (zealots / media influence)
+    :param y: given variable
+    :param std: standard deviation of 
+    :param quantity: we calculate susceptibility of that quantity
+    :param election_system: name of election system
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param ylim: y-axis limits as [ymin, ymax]
+    :param save_file: bool if save plot to file
+    """
+    plt.figure(figsize=(4, 3))
+
+    plt.plot(x, y, color='cornflowerblue', linestyle='-')
+    plt.plot(x, y + std, color='tomato', linestyle='--')
+    plt.plot(x, y - std, color='tomato', linestyle='--')
+    if ylim:
+        plt.ylim(ylim)
+
+    plt.title(election_system)
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        print(s)
+        plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.pdf')
+        #plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{suffix[0]}{suffix[2]}.pdf')
+    else:
+        plt.show()
+
+
+def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='number of zealots', 
+                 ylab='distribution of 1', save_file=True, colormap='jet'):
+    """
+    Plots a heatmap of given variable vs number of zealots 
+    :param heatmap: histogram of given variable
+    :param l_bins: number of bins in the distribution
+    :param quantity: we calculate susceptibility of that quantity
+    :param election_system: name of election system
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param save_file: bool if save plot to file
+    :param colormap: change colormap
+    """
+    transposed_heatmap = np.transpose(heatmap)
+
+    plt.figure(figsize=(3.5, 3.1))
+    plt.imshow(transposed_heatmap, origin='lower', aspect='auto', cmap=colormap)
+    cb = plt.colorbar()
+    cb.ax.tick_params(labelsize=9)
+
+    plt.title(election_system)
+    plt.yticks(np.linspace(0, l_bins, 5) - 0.5, np.linspace(0, 1, 5))
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        print(s)
+        plt.savefig(f'plots/heatmap_{quantity}_susceptibility_{election_system}{s}.pdf')
+    else:
+        plt.show()
