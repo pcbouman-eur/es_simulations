@@ -3,7 +3,8 @@ import os
 import json
 import numpy as np
 from configuration.parser import get_arguments
-from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per
+from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per, \
+    plot_mean_diff
 
 # parameters of simulations not present in the config module
 zn_set = range(17)  # range of considered number of zealots
@@ -59,6 +60,9 @@ def plot_zealot_susceptibility(cfg):
                  save_file=True)
         plot_mean_per(x=zn_set, y=results[system]['mean_set'], quantity='zealots', election_system=system,
                       suffix=suffix, xlab='number of zealots', ylab=f'susceptibility per', ylim=(), save_file=True)
+        plot_mean_diff(x=zn_set, y=results[system]['mean_set'], quantity='zealots', election_system=system,
+                       suffix=suffix, xlab='number of zealots', ylab=f'susceptibility derivative',
+                       ylim=(), save_file=True)
 
 
 if __name__ == '__main__':
