@@ -3,11 +3,11 @@ import os
 import json
 import numpy as np
 from configuration.parser import get_arguments
-from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
+from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per
 
 # parameters of simulations not present in the config module
-zn_set = range(11)  # range of considered number of zealots
-bins = 25  # how many bins in heatmap histogram
+zn_set = range(17)  # range of considered number of zealots
+bins = 20  # how many bins in heatmap histogram
 
 
 def plot_zealot_susceptibility(cfg):
@@ -28,7 +28,8 @@ def plot_zealot_susceptibility(cfg):
                            'hist_set': np.zeros((l_set, bins))}
     
     # load data
-    ylim = [np.inf, -np.inf]
+    ylim_mean = [np.inf, -np.inf]
+    ylim_std = [0, -np.inf]
     for i, zn in enumerate(zn_set):
         zn_string = f'_zn_{zn}'
         s = suffix.format(valuetoinsert=zn_string)
@@ -42,16 +43,22 @@ def plot_zealot_susceptibility(cfg):
             results[system]['mean_set'][i] = dist_mean
             results[system]['std_set'][i] = dist_std
             results[system]['hist_set'][i, :] = np.histogram(distribution, bins=bins_hist, density=True)[0]
-            ylim = [min(ylim[0], dist_mean - dist_std), max(ylim[1], dist_mean + dist_std)]
+            ylim_mean = [min(ylim_mean[0], dist_mean - dist_std), max(ylim_mean[1], dist_mean + dist_std)]
+            ylim_std = [0, max(ylim_std[1], dist_std)]
 
     # plot figures
     for system in cfg.voting_systems.keys():
         plot_mean_std(x=zn_set, y=results[system]['mean_set'], std=results[system]['std_set'], 
                       quantity='zealots', election_system=system, suffix=suffix, xlab='number of zealots',
-                      ylab=f'election result of {cfg.zealot_state}', ylim=ylim, save_file=True)
+                      ylab=f'election result of {cfg.zealot_state}', ylim=ylim_mean, save_file=True)
         plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
                      election_system=system, suffix=suffix, xlab='number of zealots', 
                      ylab=f'distribution of {cfg.zealot_state}', save_file=True, colormap='jet')
+        plot_std(x=zn_set, std=results[system]['std_set'], quantity='zealots', election_system=system, suffix=suffix,
+                 xlab='number of zealots', ylab=f'std of election result of {cfg.zealot_state}', ylim=ylim_std,
+                 save_file=True)
+        plot_mean_per(x=zn_set, y=results[system]['mean_set'], quantity='zealots', election_system=system,
+                      suffix=suffix, xlab='number of zealots', ylab=f'susceptibility per', ylim=(), save_file=True)
 
 
 if __name__ == '__main__':
