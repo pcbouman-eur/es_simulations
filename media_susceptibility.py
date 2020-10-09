@@ -10,18 +10,18 @@ media_influence = np.arange(0.0, 1.0, 0.2)  # range of considered media influenc
 bins = 25  # how many bins in heat-map histogram
 
 
-def plot_media_susceptibility(config):
+def plot_media_susceptibility(cfg):
     """
     Loads the data files saved by main.py and plots them.
-    :param config: Config class from configuration module
+    :param cfg: Config class from configuration module
     """
     # create variables for data
-    suffix = split_suffix(config.suffix, 'media')
+    suffix = split_suffix(cfg.suffix, 'media')
     l_set = len(media_influence)
     bins_hist = np.linspace(0, 1, num=bins + 1)
     results = {}
 
-    if config.abc:
+    if cfg.abc:
         media_state = 'a'
     else:
         media_state = str(1)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
-        os.system(f'python3 main.py --abc -mm {media} -s {cfg.cmd_args.SAMPLE_SIZE}')
+        os.system(f'python3 main.py --abc -mm {media} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME} -N {cfg.cmd_args.N} -q {cfg.cmd_args.q}')
     ##################################################################################
 
     plot_media_susceptibility(cfg)

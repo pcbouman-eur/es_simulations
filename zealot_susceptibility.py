@@ -6,14 +6,14 @@ from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap
 
 # parameters of simulations not present in the config module
-zn_set = range(61)  # range of considered number of zealots
+zn_set = range(11)  # range of considered number of zealots
 bins = 25  # how many bins in heatmap histogram
 
 
-def plot_zealot_susceptibility(config):
+def plot_zealot_susceptibility(cfg):
     """
     Loads the data files saved by main.py and plots them.
-    :param config: Config class from configuration module
+    :param cfg: Config class from configuration module
     :return: None
     """
     # create variables for data
@@ -36,7 +36,7 @@ def plot_zealot_susceptibility(config):
         with open(loc) as json_file:
             data = json.load(json_file)
         for system in cfg.voting_systems.keys():
-            distribution = convert_to_distributions(data['results'][system])[str(config.zealot_state)]
+            distribution = convert_to_distributions(data['results'][system])[str(cfg.zealot_state)]
             dist_mean = np.mean(distribution)
             dist_std = np.std(distribution)
             results[system]['mean_set'][i] = dist_mean
@@ -48,10 +48,10 @@ def plot_zealot_susceptibility(config):
     for system in cfg.voting_systems.keys():
         plot_mean_std(x=zn_set, y=results[system]['mean_set'], std=results[system]['std_set'], 
                       quantity='zealots', election_system=system, suffix=suffix, xlab='number of zealots',
-                      ylab=f'election result of {config.zealot_state}', ylim=ylim, save_file=True)
+                      ylab=f'election result of {cfg.zealot_state}', ylim=ylim, save_file=True)
         plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
                      election_system=system, suffix=suffix, xlab='number of zealots', 
-                     ylab=f'distribution of {config.zealot_state}', save_file=True, colormap='jet')
+                     ylab=f'distribution of {cfg.zealot_state}', save_file=True, colormap='jet')
 
 
 if __name__ == '__main__':
@@ -64,6 +64,6 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for zealots in zn_set:
-        os.system(f'python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE}')
+        os.system(f'python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME} -N {cfg.cmd_args.N} -q {cfg.cmd_args.q}')
     ##################################################################################
     plot_zealot_susceptibility(cfg)
