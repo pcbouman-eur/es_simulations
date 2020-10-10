@@ -12,6 +12,22 @@ zn_set = np.arange(61)  # range of considered number of zealots
 media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influence
 
 
+def create_heatmap(data, system, suffix, name='mean', save=True):
+    plt.figure(figsize=(3.5, 3.1))
+    plt.imshow(data, origin='lower', aspect='auto', cmap='jet')
+    cb = plt.colorbar()
+    cb.ax.tick_params(labelsize=9)
+
+    plt.title(system + ' - ' + name)
+    plt.xlabel('media')
+    plt.ylabel('zealots')
+    plt.tight_layout()
+    if save:
+        plt.savefig(f'plots/media_vs_zealots_{system}{suffix}_{name}.pdf')
+    else:
+        plt.show()
+
+
 def plot_media_vs_zealots(config):
     """
     Loads the data files saved by main.py and plots them.
@@ -64,19 +80,10 @@ def plot_media_vs_zealots(config):
                 results[system]['std'][i, j] = dist_std
 
     # plot figures
+    s = suffix.format(zn_value='', media_value='')
     for system in config.voting_systems.keys():
-        plt.figure(figsize=(3.5, 3.1))
-        plt.imshow(results[system]['mean'], origin='lower', aspect='auto', cmap='jet')
-        cb = plt.colorbar()
-        cb.ax.tick_params(labelsize=9)
-
-        plt.title(system)
-        plt.xlabel('media')
-        plt.ylabel('zealots')
-        plt.tight_layout()
-        s = suffix.format(zn_value='', media_value='')
-        plt.savefig(f'plots/media_vs_zealots_{system}{s}.pdf')
-        # TODO: add a plot of std's
+        create_heatmap(results[system]['mean'], system, s, name='mean', save=True)
+        create_heatmap(results[system]['std'], system, s, name='mean', save=True)
 
 
 if __name__ == '__main__':
