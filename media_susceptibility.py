@@ -40,6 +40,7 @@ def plot_media_susceptibility(cfg):
         influence_string = f'_media_{influence}'
         s = suffix.format(valuetoinsert=influence_string)
         loc = f'results/results{s}.json'
+        print(loc)
         with open(loc) as json_file:
             data = json.load(json_file)
         for system in cfg.voting_systems.keys():
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
-        os.system(f'python3 main.py --abc -mm {media} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME} -N {cfg.cmd_args.N} -q {cfg.cmd_args.q}')
+        os.system(f'python3 main.py -mm {media}')
     ##################################################################################
 
     plot_media_susceptibility(cfg)

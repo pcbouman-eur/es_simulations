@@ -7,8 +7,8 @@ from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_he
     plot_mean_diff
 
 # parameters of simulations not present in the config module
-zn_set = range(17)  # range of considered number of zealots
-bins = 20  # how many bins in heatmap histogram
+zn_set = range(31)  # range of considered number of zealots
+bins = 25  # how many bins in heatmap histogram
 
 
 def plot_zealot_susceptibility(cfg):
@@ -75,6 +75,6 @@ if __name__ == '__main__':
     # remember if you want to overwrite default parameters for main.py you have to
     # run this script with them and pass them into the main.py run below
     for zealots in zn_set:
-        os.system(f'python3 main.py --abc -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -t {cfg.cmd_args.THERM_TIME} -N {cfg.cmd_args.N} -q {cfg.cmd_args.q}')
+        os.system(f'python3 main.py -zn {zealots}')
     ##################################################################################
     plot_zealot_susceptibility(cfg)
