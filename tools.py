@@ -125,7 +125,7 @@ def split_suffix(suffix, parameter):
 def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab, 
                   ylab='election result of 1', ylim=(), save_file=True):
     """
-    Plots a plot of mean +/- std of given variable vs number of zealots 
+    Plots mean +/- std of given variable vs quantity (eg number of zealots)
     :param x: array with considered quantitity (zealots / media influence)
     :param y: given variable
     :param std: standard deviation of 
@@ -151,9 +151,102 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        print(s)
+        #print(s)
         plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.pdf')
         #plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{suffix[0]}{suffix[2]}.pdf')
+    else:
+        plt.show()
+
+
+def plot_std(x, std, quantity, election_system, suffix, xlab,
+             ylab='election result of 1', ylim=(), save_file=True):
+    """
+    Plots std of given variable vs quantity (eg number of zealots)
+    :param x: array with considered quantitity (zealots / media influence)
+    :param std: standard deviation of
+    :param quantity: we calculate susceptibility of that quantity
+    :param election_system: name of election system
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param ylim: y-axis limits as [ymin, ymax]
+    :param save_file: bool if save plot to file
+    """
+    plt.figure(figsize=(4, 3))
+
+    plt.plot(x, std, color='tomato', linestyle='-')
+    if ylim:
+        plt.ylim(ylim)
+
+    plt.title(election_system)
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        plt.savefig(f'plots/{quantity}_std_{election_system}{s}.pdf')
+    else:
+        plt.show()
+
+
+def plot_mean_diff(x, y, quantity, election_system, suffix, xlab,
+                   ylab='derivative of susceptibility', ylim=(), save_file=True):
+    """
+    Plots (right) derivative of mean of given variable vs quantity (eg number of zealots)
+    :param x: array with considered quantitity (zealots / media influence)
+    :param y: given variable
+    :param quantity: we calculate susceptibility of that quantity
+    :param election_system: name of election system
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param ylim: y-axis limits as [ymin, ymax]
+    :param save_file: bool if save plot to file
+    """
+    plt.figure(figsize=(4, 3))
+
+    plt.plot(x[:-1], (y[1:]-y[:-1])/np.diff(x), color='mediumseagreen', linestyle='-')
+    if ylim:
+        plt.ylim(ylim)
+
+    plt.title(election_system)
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        plt.savefig(f'plots/{quantity}_derivative_{election_system}{s}.pdf')
+    else:
+        plt.show()
+
+
+def plot_mean_per(x, y, quantity, election_system, suffix, xlab,
+                  ylab='election result of 1', ylim=(), save_file=True):
+    """
+    Plots change of mean of given variable divided by quantity (eg divided by number of zealots)
+    :param x: array with considered quantitity (zealots / media influence)
+    :param y: given variable
+    :param quantity: we calculate susceptibility of that quantity
+    :param election_system: name of election system
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param ylim: y-axis limits as [ymin, ymax]
+    :param save_file: bool if save plot to file
+    """
+    plt.figure(figsize=(4, 3))
+
+    plt.plot(x[1:], (y[1:]-y[0])/x[1:], color='mediumseagreen', linestyle='-')
+    if ylim:
+        plt.ylim(ylim)
+
+    plt.title(election_system)
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        plt.savefig(f'plots/{quantity}_susceptibilityPer_{election_system}{s}.pdf')
     else:
         plt.show()
 
@@ -161,7 +254,7 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
 def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='number of zealots', 
                  ylab='distribution of 1', save_file=True, colormap='jet'):
     """
-    Plots a heatmap of given variable vs number of zealots 
+    Plots a heatmap of given variable vs given quantity (eg number of zealots)
     :param heatmap: histogram of given variable
     :param l_bins: number of bins in the distribution
     :param quantity: we calculate susceptibility of that quantity
@@ -186,7 +279,6 @@ def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='numbe
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        print(s)
         plt.savefig(f'plots/heatmap_{quantity}_susceptibility_{election_system}{s}.pdf')
     else:
         plt.show()
