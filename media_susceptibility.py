@@ -40,7 +40,7 @@ def plot_media_susceptibility(config):
         influence_string = f'_media_{influence}'
         s = suffix.format(valuetoinsert=influence_string)
         loc = f'results/results{s}.json'
-        print(loc)
+        # print(loc)
         with open(loc) as json_file:
             data = json.load(json_file)
         for system in config.voting_systems.keys():
