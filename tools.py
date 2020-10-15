@@ -157,10 +157,11 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
     else:
         plt.show()
 
+
 def plot_std(x, std, quantity, election_system, suffix, xlab,
              ylab='election result of 1', ylim=(), save_file=True):
     """
-    Plots a plot of mean +/- std of given variable vs number of zealots
+    Plots a plot of std of given variable vs number of zealots
     :param x: array with considered quantitity (zealots / media influence)
     :param std: standard deviation of
     :param quantity: we calculate susceptibility of that quantity
@@ -187,8 +188,9 @@ def plot_std(x, std, quantity, election_system, suffix, xlab,
     else:
         plt.show()
 
-def plot_mean_diff(x, y, quantity, election_system, suffix, xlab, ylab='derivative of susceptibility',
-                   ylim=(), save_file=True):
+
+def plot_mean_diff(x, y, quantity, election_system, suffix, xlab,
+                   ylab='derivative of susceptibility', ylim=(), save_file=True):
     """
     Plots a plot of mean +/- std of given variable vs number of zealots
     :param x: array with considered quantitity (zealots / media influence)
@@ -216,6 +218,7 @@ def plot_mean_diff(x, y, quantity, election_system, suffix, xlab, ylab='derivati
         plt.savefig(f'plots/{quantity}_derivative_{election_system}{s}.pdf')
     else:
         plt.show()
+
 
 def plot_mean_per(x, y, quantity, election_system, suffix, xlab,
                   ylab='election result of 1', ylim=(), save_file=True):
@@ -246,6 +249,7 @@ def plot_mean_per(x, y, quantity, election_system, suffix, xlab,
         plt.savefig(f'plots/{quantity}_susceptibilityPer_{election_system}{s}.pdf')
     else:
         plt.show()
+
 
 def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='number of zealots', 
                  ylab='distribution of 1', save_file=True, colormap='jet'):

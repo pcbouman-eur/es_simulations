@@ -11,23 +11,23 @@ media_influence = np.arange(0.0, 1.0, 0.1)  # range of considered media influenc
 bins = 25  # how many bins in heat-map histogram
 
 
-def plot_media_susceptibility(cfg):
+def plot_media_susceptibility(config):
     """
     Loads the data files saved by main.py and plots them.
-    :param cfg: Config class from configuration module
+    :param config: Config class from configuration module
     """
     # create variables for data
-    suffix = split_suffix(cfg.suffix, 'media')
+    suffix = split_suffix(config.suffix, 'media')
     l_set = len(media_influence)
     bins_hist = np.linspace(0, 1, num=bins + 1)
     results = {}
 
-    if cfg.abc:
+    if config.abc:
         media_state = 'a'
     else:
         media_state = str(1)
 
-    for system in cfg.voting_systems.keys():
+    for system in config.voting_systems.keys():
         results[system] = {'mean_set': np.zeros(l_set),
                            'std_set': np.zeros(l_set),
                            'hist_set': np.zeros((l_set, bins))}
@@ -43,7 +43,7 @@ def plot_media_susceptibility(cfg):
         print(loc)
         with open(loc) as json_file:
             data = json.load(json_file)
-        for system in cfg.voting_systems.keys():
+        for system in config.voting_systems.keys():
             distribution = convert_to_distributions(data['results'][system])[media_state]
             dist_mean = np.mean(distribution)
             dist_std = np.std(distribution)
@@ -54,7 +54,7 @@ def plot_media_susceptibility(cfg):
             ylim_std = [0, max(ylim_std[1], dist_std)]
 
     # plot figures
-    for system in cfg.voting_systems.keys():
+    for system in config.voting_systems.keys():
         plot_mean_std(x=media_influence, y=results[system]['mean_set'], std=results[system]['std_set'], 
                       quantity='media', election_system=system, suffix=suffix, xlab='media influence',
                       ylab=f'election result of {media_state}', ylim=ylim_mean, save_file=True)
@@ -62,7 +62,7 @@ def plot_media_susceptibility(cfg):
                      election_system=system, suffix=suffix, xlab='media influence',
                      ylab=f'distribution of {media_state}', save_file=True, colormap='jet')
         plot_std(x=media_influence, std=results[system]['std_set'], quantity='media', election_system=system,
-                 suffix=suffix, xlab='media influence', ylab=f'std of election result of {cfg.zealot_state}',
+                 suffix=suffix, xlab='media influence', ylab=f'std of election result of {config.zealot_state}',
                  ylim=ylim_std, save_file=True)
         plot_mean_per(x=media_influence, y=results[system]['mean_set'], quantity='media', election_system=system,
                       suffix=suffix, xlab='media influence', ylab=f'susceptibility per', ylim=(), save_file=True)
