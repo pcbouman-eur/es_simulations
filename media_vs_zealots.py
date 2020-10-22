@@ -9,7 +9,7 @@ from tools import convert_to_distributions
 
 # parameters of simulations not present in the config module
 zn_set = np.arange(61)  # range of considered number of zealots
-media_influence = np.arange(0.0, 1.0, 0.04)  # range of considered media influence
+media_influence = np.arange(0.0, 1.0, 0.02)  # range of considered media influence
 
 
 def create_heatmap(data, system, suffix, name='mean', save=True):
@@ -40,8 +40,9 @@ def plot_media_vs_zealots(config):
     first_index = min(media_index, zealots_index)
     second_index = max(media_index, zealots_index)
     pre_suffix = '_'.join(parameters_and_values[:first_index])
-    inter_suffix = '_'.join(parameters_and_values[first_index:(second_index+2)])
-    inter_suffix = '_' + inter_suffix
+    inter_suffix = '_'.join(parameters_and_values[(first_index+2):second_index])
+    if len(inter_suffix):
+        inter_suffix = '_' + inter_suffix
     su_suffix = '_'.join(parameters_and_values[(second_index+2):])
     if len(su_suffix):
         su_suffix = '_' + su_suffix
