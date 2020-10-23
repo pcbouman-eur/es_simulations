@@ -258,7 +258,7 @@ def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='numbe
     :param heatmap: histogram of given variable
     :param l_bins: number of bins in the distribution
     :param quantity: we calculate susceptibility of that quantity
-    :param election_system: name of election system
+    :param election_system: name of electoral system
     :param suffix: suffix with params values
     :param xlab: x-axis label
     :param ylab: y-axis label

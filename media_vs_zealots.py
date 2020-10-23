@@ -13,6 +13,15 @@ media_influence = np.arange(0.0, 1.0, 0.02)  # range of considered media influen
 
 
 def create_heatmap(data, system, suffix, name='mean', save=True):
+    """
+    Draws a heatmap based on data variable.
+
+    :param data: two dimensional matrix of values for the heatmap (numpy.array)
+    :param system: name of electoral system (string)
+    :param suffix: suffix with params values (string)
+    :param name: name of the variable - mean, std etc. (string)
+    :param save: variable deciding whether to save the plot or not (bool)
+    """
     plt.figure(figsize=(3.5, 3.1))
     plt.imshow(data, origin='lower', aspect='auto', cmap='jet')
     cb = plt.colorbar()
@@ -21,6 +30,7 @@ def create_heatmap(data, system, suffix, name='mean', save=True):
     plt.title(system + ' - ' + name)
     plt.xlabel('media')
     plt.ylabel('zealots')
+    plt.xticks(np.linspace(0, media_influence.shape[0], 5) - 0.5, np.linspace(0, 1, 5))
     plt.tight_layout()
     if save:
         plt.savefig(f'plots/media_vs_zealots_{system}{suffix}_{name}.pdf')
@@ -31,7 +41,8 @@ def create_heatmap(data, system, suffix, name='mean', save=True):
 def plot_media_vs_zealots(config):
     """
     Loads the data files saved by main.py and plots them.
-    :param config: Config class from configuration module
+
+    :param config: Config class from configuration module (Config)
     """
     # create suffix with both media and zealots
     parameters_and_values = config.suffix.split('_')
