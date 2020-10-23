@@ -66,6 +66,7 @@ def plot_zealot_susceptibility(config):
 
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(os.path.dirname(__file__)))
     cfg = get_arguments()
 
     ##################################################################################
