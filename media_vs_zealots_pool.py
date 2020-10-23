@@ -3,6 +3,7 @@ import numpy as np
 import json
 import os
 from matplotlib import pyplot as plt
+from multiprocessing import Pool
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions
@@ -97,6 +98,7 @@ def plot_media_vs_zealots(config):
         create_heatmap(results[system]['mean'], system, s, name='mean', save=True)
         create_heatmap(results[system]['std'], system, s, name='mean', save=True)
 
+
 def run_sim(cfg, media, zealots):
     # for developing (can run small simulation)
     #os.system(f'python3 main.py -mm {media} -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -N {cfg.cmd_args.N} -q {cfg.cmd_args.q} -t {cfg.cmd_args.THERM_TIME}')
@@ -107,6 +109,7 @@ def run_sim(cfg, media, zealots):
 
 if __name__ == '__main__':
     cfg = get_arguments()
+    parameters = []
 
     ##################################################################################
     # this section can be modified depending on the environment where you want to run
@@ -116,7 +119,9 @@ if __name__ == '__main__':
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
         for zealots in zn_set:
-            run_sim(cfg, media, zealots)   
+            parameters.append([cfg, media, zealots])
+    pool = Pool()
+    pool.starmap(run_sim, parameters)
     ##################################################################################
 
     plot_media_vs_zealots(cfg)
