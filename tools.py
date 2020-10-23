@@ -114,7 +114,6 @@ def split_suffix(suffix, parameter):
     parameters_and_values = suffix.split('_')
     parameter_index = parameters_and_values.index(parameter)
     pre_suffix = '_'.join(parameters_and_values[:parameter_index])
-    #param_suffix = '_' + parameters_and_values[parameter_index] + '_'
     su_suffix = '_'.join(parameters_and_values[(parameter_index+2):])
     if len(su_suffix):
         su_suffix = '_' + su_suffix
@@ -151,9 +150,7 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        #print(s)
         plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.pdf')
-        #plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{suffix[0]}{suffix[2]}.pdf')
     else:
         plt.show()
 
@@ -221,7 +218,7 @@ def plot_mean_diff(x, y, quantity, election_system, suffix, xlab,
 
 
 def plot_mean_per(x, y, quantity, election_system, suffix, xlab,
-                  ylab='election result of 1', ylim=(), save_file=True):
+                  ylab='relative result', ylim=(), save_file=True):
     """
     Plots change of mean of given variable divided by quantity (eg divided by number of zealots)
     :param x: array with considered quantitity (zealots / media influence)

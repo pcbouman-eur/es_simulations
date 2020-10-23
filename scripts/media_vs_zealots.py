@@ -97,6 +97,7 @@ def plot_media_vs_zealots(config):
         create_heatmap(results[system]['mean'], system, s, name='mean', save=True)
         create_heatmap(results[system]['std'], system, s, name='mean', save=True)
 
+
 def run_sim(cfg, media, zealots):
     # for developing (can run small simulation)
     #os.system(f'python3 main.py -mm {media} -zn {zealots} -s {cfg.cmd_args.SAMPLE_SIZE} -N {cfg.cmd_args.N} -q {cfg.cmd_args.q} -t {cfg.cmd_args.THERM_TIME}')
@@ -106,6 +107,7 @@ def run_sim(cfg, media, zealots):
 
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(os.path.dirname(__file__)))
     cfg = get_arguments()
 
     ##################################################################################
@@ -116,7 +118,7 @@ if __name__ == '__main__':
     # run this script with them and pass them into the main.py run below
     for media in media_influence:
         for zealots in zn_set:
-            run_sim(cfg, media, zealots)   
+            run_sim(cfg, media, zealots)
     ##################################################################################
 
     plot_media_vs_zealots(cfg)
