@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import json
 import numpy as np
+
+sys.path.insert(0, '..')
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per, \
     plot_mean_diff
@@ -78,7 +81,7 @@ def plot_media_susceptibility(config):
     
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.path.dirname(__file__)))
+    os.chdir(os.path.dirname(os.getcwd()))
     cfg = get_arguments()
 
     ##################################################################################

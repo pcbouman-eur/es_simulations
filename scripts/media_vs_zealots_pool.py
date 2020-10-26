@@ -2,9 +2,11 @@
 import numpy as np
 import json
 import os
+import sys
 from matplotlib import pyplot as plt
 from multiprocessing import Pool
 
+sys.path.insert(0, '..')
 from configuration.parser import get_arguments
 from tools import convert_to_distributions
 
@@ -108,6 +110,7 @@ def run_sim(cfg, media, zealots):
 
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(os.getcwd()))
     cfg = get_arguments()
     parameters = []
 
