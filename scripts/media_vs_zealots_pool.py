@@ -26,7 +26,7 @@ def create_heatmap(data, system, suffix, name='mean', save=True):
     :param save: variable deciding whether to save the plot or not (bool)
     """
     plt.figure(figsize=(3.5, 3.1))
-    plt.imshow(data, origin='lower', aspect='auto', cmap='jet')
+    plt.imshow(data.T, origin='lower', aspect='auto', cmap='jet')
     cb = plt.colorbar()
     cb.ax.tick_params(labelsize=9)
 
