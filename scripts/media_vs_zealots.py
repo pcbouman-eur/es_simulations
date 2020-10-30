@@ -25,7 +25,7 @@ def create_heatmap(data, system, suffix, name='mean', save=True):
     :param save: variable deciding whether to save the plot or not (bool)
     """
     plt.figure(figsize=(3.5, 3.1))
-    plt.imshow(data, origin='lower', aspect='auto', cmap='jet')
+    plt.imshow(data.T, origin='lower', aspect='auto', cmap='jet')
     cb = plt.colorbar()
     cb.ax.tick_params(labelsize=9)
 
@@ -97,7 +97,7 @@ def plot_media_vs_zealots(config):
     s = suffix.format(zn_value='', media_value='')
     for system in config.voting_systems.keys():
         create_heatmap(results[system]['mean'], system, s, name='mean', save=True)
-        create_heatmap(results[system]['std'], system, s, name='mean', save=True)
+        create_heatmap(results[system]['std'], system, s, name='std', save=True)
 
 
 def run_sim(cfg, media, zealots):

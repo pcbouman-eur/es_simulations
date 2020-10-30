@@ -98,7 +98,7 @@ def plot_media_vs_zealots(config):
     s = suffix.format(zn_value='', media_value='')
     for system in config.voting_systems.keys():
         create_heatmap(results[system]['mean'], system, s, name='mean', save=True)
-        create_heatmap(results[system]['std'], system, s, name='mean', save=True)
+        create_heatmap(results[system]['std'], system, s, name='std', save=True)
 
 
 def run_sim(cfg, media, zealots):
