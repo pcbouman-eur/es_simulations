@@ -3,7 +3,8 @@ import numpy as np
 import sys
 from pprint import pprint
 
-from tools import convert_to_distributions, save_data, read_data, plot_hist, plot_traj, run_with_time
+from tools import convert_to_distributions, save_data, read_data, plot_hist, plot_traj, run_with_time, \
+    calculate_indexes, plot_indexes
 from configuration.parser import get_arguments
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_simulation, run_thermalization, run_thermalization_silent
@@ -61,9 +62,12 @@ def main():
 
     # plot the results
     res, _ = read_data(cfg.suffix)
+    voting_distribution = convert_to_distributions(res['population'])
     for system in cfg.voting_systems.keys():
         distribution = convert_to_distributions(res[system])
         plot_hist(distribution, system, cfg.suffix)
+        indexes = calculate_indexes(voting_distribution, distribution)
+        plot_indexes(indexes, system, cfg.suffix)
 
 
 if __name__ == '__main__':

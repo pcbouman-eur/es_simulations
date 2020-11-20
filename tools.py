@@ -8,7 +8,6 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-
 def convert_to_distributions(series, missing_value=0):
     """
     Converts a list of dicts into a dict of lists
@@ -60,6 +59,56 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
 
         plt.tight_layout()
         plt.savefig(output_dir + name + '_' + str(key) + suffix + '.pdf')
+
+def calculate_indexes(voting_distribution, distribution):
+    keys = sorted(distribution.keys())
+    diff = {}
+    value = {}
+    for key in keys:
+        votes = voting_distribution[key]
+        seats = distribution[key]
+        diff[key] = np.array(seats) - np.array(votes)
+        value[key] = np.array(seats)
+    length = len(diff[keys[0]])
+    gallagher_index = np.zeros(length)
+    loosemore_hanby_index = np.zeros(length)
+    effective_number_of_parties = np.zeros(length)
+    for i in range(length):
+        diffs = np.zeros(len(keys))
+        values = np.zeros(len(keys))
+        for j, key in enumerate(keys):
+            diffs[j] = diff[key][i]
+            values[j] = value[key][i]
+        gallagher_index[i] = np.sqrt(np.sum(diffs**2)*0.5)
+        loosemore_hanby_index[i] = np.sum(np.abs(diffs)) * 0.5
+        effective_number_of_parties[i] = 1./np.sum(values**2.)
+
+    return {'Gallagher index': gallagher_index, 'Loosemore Hanby index': loosemore_hanby_index,
+            'Eff. No of Parties': effective_number_of_parties}
+
+
+def plot_indexes(indexes, name, suffix, output_dir='plots/'):
+    for index in indexes:
+        values = indexes[index]
+
+        lim0 = np.min([0, np.min(values)])
+        lim1 = np.max([1, np.max(values)])
+
+        plt.figure(figsize=(4, 3))
+        plt.hist(values, bins=np.linspace(lim0, lim1, 21), range=(0, 1), density=True)
+
+        avg = np.mean(values)
+        std = np.std(values)
+        plt.axvline(avg, linestyle='-', color='black')
+        plt.axvline(avg - std, linestyle='--', color='black')
+        plt.axvline(avg + std, linestyle='--', color='black')
+
+        plt.title(f'Histogram of {index} \n avg={round(avg, 2)}, std={round(std, 2)}')
+        plt.xlabel(f'{index}')
+        plt.ylabel('probability')
+
+        plt.tight_layout()
+        plt.savefig(output_dir + name + '_' + index + suffix + '.pdf')
 
 
 def plot_traj(traj, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
