@@ -60,7 +60,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
         plt.tight_layout()
         plt.savefig(output_dir + name + '_' + str(key) + suffix + '.pdf')
 
-def calculate_indexes(voting_distribution, distribution):
+def calculate_indexes(voting_distribution, distribution, sample_size):
     keys = sorted(distribution.keys())
     diff = {}
     value = {}
@@ -69,11 +69,10 @@ def calculate_indexes(voting_distribution, distribution):
         seats = distribution[key]
         diff[key] = np.array(seats) - np.array(votes)
         value[key] = np.array(seats)
-    length = len(diff[keys[0]])
-    gallagher_index = np.zeros(length)
-    loosemore_hanby_index = np.zeros(length)
-    effective_number_of_parties = np.zeros(length)
-    for i in range(length):
+    gallagher_index = np.zeros(sample_size)
+    loosemore_hanby_index = np.zeros(sample_size)
+    effective_number_of_parties = np.zeros(sample_size)
+    for i in range(sample_size):
         diffs = np.zeros(len(keys))
         values = np.zeros(len(keys))
         for j, key in enumerate(keys):
@@ -88,9 +87,7 @@ def calculate_indexes(voting_distribution, distribution):
 
 
 def plot_indexes(indexes, name, suffix, output_dir='plots/'):
-    for index in indexes:
-        values = indexes[index]
-
+    for index, values in indexes.items():
         lim0 = np.min([0, np.min(values)])
         lim1 = np.max([1, np.max(values)])
 
