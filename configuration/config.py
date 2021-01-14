@@ -88,6 +88,6 @@ class Config:
             raise ValueError(f'The threshold should be in the range [0,1], \
                              current threshold = {self.threshold}.')
         elif self.threshold == 0.:
-            pass #for threshold == 0 we do not consider thresholding
+            pass  # for threshold == 0 we do not consider thresholding
         else:
             self.suffix += f"_tr_{self.threshold}"
