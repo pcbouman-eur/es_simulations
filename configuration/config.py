@@ -43,7 +43,6 @@ class Config:
         self.distr_eq_comm = cmd_args.distr_eq_comm
         self.abc = cmd_args.abc
 
-
         # Propagation mechanisms
         if cmd_args.propagation == 'majority':
             self.propagate = sim.majority_propagation

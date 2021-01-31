@@ -21,7 +21,7 @@ def density_to_histogram(density, m):
     """
     N = density.shape[0] - 1
     bins = np.linspace(0.0, 1.0, m + 1)
-    bins[-1] += 1e-8
+    bins[-1] += 1e-8  # We want 1.0 to be included
     bins_ids = np.digitize(np.arange(N + 1) / N, bins)
 
     hist = np.zeros(m)
@@ -43,29 +43,36 @@ def get_binom_hist(config_args, m, system):
     """
     p = 0.5 * (1.0 - config_args.EPS) + config_args.EPS * config_args.MASS_MEDIA  # effective state '1' probability
     if system == 'population':
-        density = st.binom(config_args.N, p).pmf(np.arange(config_args.N + 1))  # density for single votrs
+        eff_N = config_args.N - config_args.n_zealots  # number of non-zealot voters
+        sub_density = st.binom(eff_N, p).pmf(np.arange(eff_N + 1))  # density for single voters
+        density = np.zeros(config_args.N + 1)  # density including zealots
+        density[config_args.n_zealots:] = sub_density
         hist = density_to_histogram(density, m)
     elif system == 'district':
         n_d = config_args.N / config_args.q  # number of voters per district
+        n_z = config_args.n_zealots / config_args.q  # average number of zealots per district
+
+        # In contrast to the 'population' case, here we only approximate the effect of zealots.
+        # Otherwise, we would need to sum over all possible combinations.
         if n_d % 2:
-            p_d = 1.0 - st.binom(n_d, p).cdf(n_d // 2)  # probability of winning in a district
+            p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z)  # probability of winning in a district
         else:
-            p_d = 1.0 - st.binom(n_d, p).cdf(n_d / 2) + st.binom(n_d, p).pmf(n_d / 2) * 0.5
+            p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d / 2 - n_z) + st.binom(n_d - n_z, p).pmf(n_d / 2 - n_z) * 0.5
         density_d = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
         hist = density_to_histogram(density_d, m)
-    # TODO: mixed system (how does it work?)
     else:
-        raise Exception('Unknown electoral system')
+        raise Exception('Electoral system unknown or not supported for binomial approximation.')
     return hist
 
 
-def plot_hist_with_coin(distribution, m, hist, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
+def plot_hist_with_binom_approx(distribution, m, hist, name, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     """
     Plots a histogram with results of the simulation and binomial approximation on top of that.
 
     @param distribution: sample of fractions for each state. (dict)
     @param m: number of bins in the produced histogram. (int)
     @param hist: histogram bar sizes of a binomial approximation. (numpy.array)
+    @param name: name of the saved figure. (string)
     @param colors: set of colors to be used in the plot. (tuple)
     """
     for idx, key in enumerate(sorted(distribution.keys())):
@@ -92,7 +99,7 @@ def plot_hist_with_coin(distribution, m, hist, colors=('tomato', 'mediumseagreen
         plt.ylabel('probability')
 
         plt.tight_layout()
-        plt.show()  # TODO: change it to save.
+        plt.savefig(f'plots/{name}.pdf')
 
 
 if __name__ == '__main__':
@@ -100,15 +107,15 @@ if __name__ == '__main__':
     cfg = get_arguments()  # reading arguments
     if cfg.cmd_args.abc:
         raise Exception("Argument 'abc' is not supported for binomial approximation.")
+    if cfg.cmd_args.where_zealots != 'random':
+        raise Exception("Non random zealots are not supported for binomial approximation.")
 
     m = 20  # number of bins in the histogram
-    p = 0.5 * (1.0 - cfg.cmd_args.EPS) + cfg.cmd_args.EPS * cfg.cmd_args.MASS_MEDIA  # effective state '1' probability
 
     res, _ = read_data(cfg.suffix)  # loading data
-    for system in ['population', 'district']:  # TODO: change into 'cfg.voting_systems.keys()'
+    for system in ['population', 'district']:
         distribution = convert_to_distributions(res[system])
         hist = get_binom_hist(cfg.cmd_args, m, system)
 
-        plot_hist_with_coin(distribution, m, hist)
-
-    # TODO: add zealots
+        s = 'binom_approx_' + system + cfg.suffix
+        plot_hist_with_binom_approx(distribution, m, hist, s)
