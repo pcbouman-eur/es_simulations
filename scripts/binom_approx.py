@@ -62,17 +62,18 @@ def get_binom_hist(config_args, m, system):
         hist = density_to_histogram(density, m)
     else:
         raise Exception('Electoral system unknown or not supported for binomial approximation.')
-    return hist
+    return hist, density
 
 
-def plot_hist_with_binom_approx(distribution, m, hist, suffix, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
+def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     """
     Plots a histogram with results of the simulation and binomial approximation on top of that.
 
     @param distribution: sample of fractions for each state. (dict)
     @param m: number of bins in the produced histogram. (int)
     @param hist: histogram bar sizes of a binomial approximation. (numpy.array)
-    @param name: name of the saved figure. (string)
+    @param density: exact density of a binomial approximation. (numpy.array)
+    @param suffix: suffix with parameters for the name of the saved figure. (string)
     @param colors: set of colors to be used in the plot. (tuple)
     """
     for idx, key in enumerate(sorted(distribution.keys())):
@@ -90,6 +91,9 @@ def plot_hist_with_binom_approx(distribution, m, hist, suffix, colors=('tomato',
         else:
             plt.plot(xs, np.flip(hist), 'xr')
 
+        N = density.shape[0]
+        plt.plot(np.linspace(0.0, 1.0, N), N * density)
+
         avg = np.mean(distr)
         std = np.std(distr)
         plt.axvline(avg, linestyle='-', color='black')
@@ -101,7 +105,7 @@ def plot_hist_with_binom_approx(distribution, m, hist, suffix, colors=('tomato',
         plt.ylabel('probability')
 
         plt.tight_layout()
-        plt.savefig(f'plots/{name}.png')
+        plt.savefig(f'plots/{name}.pdf')
 
 
 if __name__ == '__main__':
@@ -117,7 +121,7 @@ if __name__ == '__main__':
     res, _ = read_data(cfg.suffix)  # loading data
     for system in ['population', 'district']:
         distribution = convert_to_distributions(res[system])
-        hist = get_binom_hist(cfg.cmd_args, m, system)
+        hist, density = get_binom_hist(cfg.cmd_args, m, system)
 
         s = system + cfg.suffix
-        plot_hist_with_binom_approx(distribution, m, hist, s)
+        plot_hist_with_binom_approx(distribution, m, hist, density, s)
