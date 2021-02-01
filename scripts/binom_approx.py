@@ -9,6 +9,9 @@ sys.path.insert(0, '..')
 from configuration.parser import get_arguments
 from tools import read_data, convert_to_distributions
 
+# parameters of simulations not present in the config module
+m = 20  # the number of bins in the histogram
+
 
 def density_to_histogram(density, m):
     """
@@ -116,9 +119,11 @@ if __name__ == '__main__':
     if cfg.cmd_args.where_zealots != 'random':
         raise Exception("Non random zealots are not supported for binomial approximation.")
 
-    m = 20  # number of bins in the histogram
-
-    res, _ = read_data(cfg.suffix)  # loading data
+    try:
+        res, _ = read_data(cfg.suffix)  # loading data
+    except (OSError, IOError) as e:
+        raise Exception("Data for the given configuration was not found, "
+                        "run main.py with the same configuration first.")
     for system in ['population', 'district']:
         distribution = convert_to_distributions(res[system])
         hist, density = get_binom_hist(cfg.cmd_args, m, system)
