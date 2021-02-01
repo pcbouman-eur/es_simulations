@@ -58,14 +58,14 @@ def get_binom_hist(config_args, m, system):
             p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z)  # probability of winning in a district
         else:
             p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d / 2 - n_z) + st.binom(n_d - n_z, p).pmf(n_d / 2 - n_z) * 0.5
-        density_d = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
-        hist = density_to_histogram(density_d, m)
+        density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
+        hist = density_to_histogram(density, m)
     else:
         raise Exception('Electoral system unknown or not supported for binomial approximation.')
     return hist
 
 
-def plot_hist_with_binom_approx(distribution, m, hist, name, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
+def plot_hist_with_binom_approx(distribution, m, hist, suffix, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     """
     Plots a histogram with results of the simulation and binomial approximation on top of that.
 
@@ -76,6 +76,8 @@ def plot_hist_with_binom_approx(distribution, m, hist, name, colors=('tomato', '
     @param colors: set of colors to be used in the plot. (tuple)
     """
     for idx, key in enumerate(sorted(distribution.keys())):
+        name = 'binom_approx_' + key + '_' + suffix
+
         col = colors[idx % len(colors)]
         distr = distribution[key]
         bins = np.linspace(0.0, 1.0, m + 1)
@@ -99,7 +101,7 @@ def plot_hist_with_binom_approx(distribution, m, hist, name, colors=('tomato', '
         plt.ylabel('probability')
 
         plt.tight_layout()
-        plt.savefig(f'plots/{name}.pdf')
+        plt.savefig(f'plots/{name}.png')
 
 
 if __name__ == '__main__':
@@ -117,5 +119,5 @@ if __name__ == '__main__':
         distribution = convert_to_distributions(res[system])
         hist = get_binom_hist(cfg.cmd_args, m, system)
 
-        s = 'binom_approx_' + system + cfg.suffix
+        s = system + cfg.suffix
         plot_hist_with_binom_approx(distribution, m, hist, s)
