@@ -1,11 +1,11 @@
-'''
+"""
 Functions that model different election systems
 
 mixed system: mix of population majority and district majority. 
 The half of seats is allocated proportionally to population, the other half according to districts results.
 
 TODO: explain more here
-'''
+"""
 import numpy as np
 from itertools import groupby
 from collections import Counter
@@ -78,6 +78,7 @@ def system_district_majority(voters, district_voting=system_population_majority,
         district_count += 1
     return counts_to_result(counts, district_count)
 
+
 # mixing results from system_population_majority and system_district_majority
 def system_mixed(voters, district_voting=system_population_majority, states=None):
     pop = system_population_majority(voters, states=states)
@@ -87,6 +88,7 @@ def system_mixed(voters, district_voting=system_population_majority, states=None
         result[key] *= 0.5
     winner = max(result.keys(), key=result.get)
     return {'winner': winner, 'fractions': result}
+
 
 # application of electoral threshold (minimal share of total votes to be considered at all)
 def electoral_threshold(voters, threshold):
@@ -102,6 +104,7 @@ def electoral_threshold(voters, threshold):
         return voters_above_threshold
     else:
         return voters
+
 
 if __name__ == '__main__':
     # This is some basic test code

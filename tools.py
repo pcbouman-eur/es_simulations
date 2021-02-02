@@ -8,6 +8,7 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
+
 def convert_to_distributions(series, missing_value=0):
     """
     Converts a list of dicts into a dict of lists
@@ -59,6 +60,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
 
         plt.tight_layout()
         plt.savefig(output_dir + name + '_' + str(key) + suffix + '.pdf')
+
 
 def calculate_indexes(voting_distribution, distribution, sample_size):
     keys = sorted(distribution.keys())

@@ -43,7 +43,6 @@ class Config:
         self.distr_eq_comm = cmd_args.distr_eq_comm
         self.abc = cmd_args.abc
 
-
         # Propagation mechanisms
         if cmd_args.propagation == 'majority':
             self.propagate = sim.majority_propagation
@@ -88,6 +87,6 @@ class Config:
             raise ValueError(f'The threshold should be in the range [0,1], \
                              current threshold = {self.threshold}.')
         elif self.threshold == 0.:
-            pass #for threshold == 0 we do not consider thresholding
+            pass  # for threshold == 0 we do not consider thresholding
         else:
             self.suffix += f"_tr_{self.threshold}"

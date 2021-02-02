@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import igraph as ig
 import numpy as np
 
