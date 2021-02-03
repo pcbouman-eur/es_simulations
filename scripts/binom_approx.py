@@ -87,15 +87,16 @@ def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=(
         bins = np.linspace(0.0, 1.0, m + 1)
         xs = (bins[:-1] + bins[1:]) / 2.0
 
+        N = density.shape[0]
+
         plt.figure(figsize=(4, 3))
         plt.hist(distr, bins=bins, range=(0, 1), density=True, color=col)
         if key == '1':
             plt.plot(xs, hist, 'xr')
+            plt.plot(np.linspace(0.0, 1.0, N), N * density)
         else:
             plt.plot(xs, np.flip(hist), 'xr')
-
-        N = density.shape[0]
-        plt.plot(np.linspace(0.0, 1.0, N), N * density)
+            plt.plot(np.linspace(0.0, 1.0, N), N * np.flip(density))
 
         avg = np.mean(distr)
         std = np.std(distr)
