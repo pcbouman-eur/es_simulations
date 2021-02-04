@@ -53,9 +53,9 @@ parser.add_argument('-avg_deg', '--average_degree', action='store', default=5,
                     type=int, dest='avg_deg',
                     help='The average degree - defines network density.')
 
-parser.add_argument('--districts_eq_communities', action='store_const', default=True,
-                    const=False, dest='distr_eq_comm',
-                    help='whether districts should be the same as communities')
+parser.add_argument('--random_districts', action='store_const', default=False,
+                    const=True, dest='random_dist',
+                    help='whether districts should be random and not correspond to the topological communities')
 
 parser.add_argument('--reset', action='store_const', default=False, const=True, dest='reset',
                     help='whether to reset states after each simulation, draw new zealots and run thermalization again')

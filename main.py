@@ -16,9 +16,8 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
 
     suffix = config.suffix
 
-    init_g = init_sbm(N, affinity, state_generator=config.initialize_states,
-                      districts_are_communities=config.distr_eq_comm, initial_state=config.not_zealot_state,
-                      all_states=config.all_states)
+    init_g = init_sbm(N, affinity, state_generator=config.initialize_states, random_dist=config.random_dist,
+                      initial_state=config.not_zealot_state, all_states=config.all_states)
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
     g, traj = run_thermalization(config, init_g, EPS, THERM_TIME, each=100, n=N)
