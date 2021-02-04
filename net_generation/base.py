@@ -42,14 +42,14 @@ def consensus_initial_state(n, all_states, state=None, **kwargs):
     return [state for _ in range(n)]
 
 
-def init_sbm(n, affinity, state_generator=default_initial_state, districts_are_communities=True, initial_state=None,
+def init_sbm(n, affinity, state_generator=default_initial_state, random_dist=False, initial_state=None,
              all_states=None):
     """
     Generates initial graph for simulations
     :param n: network size (int)
     :param affinity: affinity matrix for SBM model (list())
     :param state_generator: function that generates the states
-    :param districts_are_communities: whether districts and communities should be the same (bool)
+    :param random_dist: whether districts should be random (otherwise the same as communities) (bool)
     :param initial_state: initial state for the nodes used in the consensus initialization
     :param all_states: possible states of nodes
     :return: network with states, zealots, districts etc. (ig.Graph())
@@ -64,7 +64,7 @@ def init_sbm(n, affinity, state_generator=default_initial_state, districts_are_c
     group = np.zeros(n, dtype='int')
     for i in range(q - 1):
         group[int(np.sum(block_sizes[:(i + 1)])):] = i + 1
-    if districts_are_communities:
+    if not random_dist:
         g.vs['district'] = group
     else:
         g.vs['district'] = np.random.permutation(group)

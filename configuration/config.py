@@ -33,6 +33,7 @@ class Config:
     all_states = (1, -1)  # the order matters in the mutation function! zealot first
     reset = False
     consensus = False
+    random_dist = False
     abc = False
 
     def __init__(self, cmd_args):
@@ -40,7 +41,7 @@ class Config:
         self.cmd_args = cmd_args
         self.reset = cmd_args.reset
         self.consensus = cmd_args.consensus
-        self.distr_eq_comm = cmd_args.distr_eq_comm
+        self.random_dist = cmd_args.random_dist
         self.abc = cmd_args.abc
 
         # Propagation mechanisms
