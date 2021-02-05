@@ -34,7 +34,7 @@ class Config:
     reset = False
     consensus = False
     random_dist = False
-    abc = False
+    num_parties = 2
 
     def __init__(self, cmd_args):
         # Command line arguments
@@ -42,7 +42,7 @@ class Config:
         self.reset = cmd_args.reset
         self.consensus = cmd_args.consensus
         self.random_dist = cmd_args.random_dist
-        self.abc = cmd_args.abc
+        self.num_parties = cmd_args.num_parties
 
         # Propagation mechanisms
         if cmd_args.propagation == 'majority':
@@ -57,12 +57,22 @@ class Config:
                       '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(vars(cmd_args))
         self.suffix = self.suffix.replace('.', '')
 
-        # 3 states version of the model (abc)
-        if self.abc:
-            self.zealot_state = 'a'
-            self.not_zealot_state = 'c'
-            self.all_states = ('a', 'b', 'c')  # the order matters in the mutation function!
-            self.suffix = ''.join(['_abc', self.suffix])
+        # Deteermine the number of states
+        if self.num_parties < 2:
+            raise ValueError('The simulation needs at least two states')
+        if self.num_parties > 2:
+            self.all_states = generate_state_labels(self.num_parties)
+            self.zealot_state = self.all_states[0]
+            self.not_zealot_state = self.all_states[-1]
+            self.suffix = ''.join(['_parties_'+str(self.num_parties), self.suffix])
+
+
+        # # 3 states version of the model (abc)
+        # if self.abc:
+        #     self.zealot_state = 'a'
+        #     self.not_zealot_state = 'c'
+        #     self.all_states = ('a', 'b', 'c')  # the order matters in the mutation function!
+        #     self.suffix = ''.join(['_abc', self.suffix])
 
         # initialization in the consensus state
         if self.consensus:
@@ -96,3 +106,33 @@ class Config:
         seats = cmd_args.seats
         self.seats_per_district = [seats[i % len(seats)] for i in range(cmd_args.q)]
         self.seat_rounding_rule = cmd_args.seatrule
+
+
+"""
+Converts a number into a alphabetic label, with support for labels beyond 26.
+I.e., 0 is converted to a, 1 to b, 26 to aa, 27 to ab, etcetera.
+
+:n: the number to convert to an alphabetic label
+"""
+def num_to_chars(n):
+    if not isinstance(n, int) or n < 0:
+        raise ValueError('Only a non-negative integer is supported')
+    first_char = 97
+    alphabet_length = 26
+    result = ''
+    while True:
+        result += chr(first_char + n % alphabet_length)
+        if n >= alphabet_length:
+            n = n // alphabet_length - 1
+        else:
+            break
+    return result[::-1]
+
+"""
+Generates an alphabetic list of labels in a sequence. For example, if three
+labels must be generated, the output will be ['a', 'b', 'c']
+
+:n: the number of labels to generate
+"""
+def generate_state_labels(n):
+    return [num_to_chars(i) for i in range(n)]
