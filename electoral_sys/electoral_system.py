@@ -28,8 +28,9 @@ def extract_district(voter):
 
 # Convenience function that produces the outcome of an election based on counts per option
 def counts_to_result(counts, total, seats=1, assignment=default_assignment):
+    # todo there is a double default on 'assignment' - here and in configuration, pehaps it should be taken only from the config to avoid issues
     winner = max(counts.keys(), key=counts.get)
-    _max = counts[winner]adaa
+    _max = counts[winner]
     winners = [w for w, v in counts.items() if v == _max]
     winner = np.random.choice(winners, 1)[0]
     fractions = Counter({k: 1.0 * v / total for k, v in counts.items()})

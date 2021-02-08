@@ -57,15 +57,14 @@ class Config:
                       '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(vars(cmd_args))
         self.suffix = self.suffix.replace('.', '')
 
-        # Deteermine the number of states
+        # Determine the number of states
         if self.num_parties < 2:
             raise ValueError('The simulation needs at least two states')
         if self.num_parties > 2:
             self.all_states = generate_state_labels(self.num_parties)
             self.zealot_state = self.all_states[0]
             self.not_zealot_state = self.all_states[-1]
-            self.suffix = ''.join(['_parties_'+str(self.num_parties), self.suffix])
-
+            self.suffix = ''.join(['_parties_', str(self.num_parties), self.suffix])
 
         # # 3 states version of the model (abc)
         # if self.abc:
@@ -108,13 +107,13 @@ class Config:
         self.seat_rounding_rule = cmd_args.seatrule
 
 
-"""
-Converts a number into a alphabetic label, with support for labels beyond 26.
-I.e., 0 is converted to a, 1 to b, 26 to aa, 27 to ab, etcetera.
-
-:n: the number to convert to an alphabetic label
-"""
 def num_to_chars(n):
+    """
+    Converts a number into a alphabetic label, with support for labels beyond 26.
+    I.e., 0 is converted to a, 1 to b, 26 to aa, 27 to ab, etcetera.
+    :param n: the number to convert to an alphabetic label
+    :return: string, a number converted to a label
+    """
     if not isinstance(n, int) or n < 0:
         raise ValueError('Only a non-negative integer is supported')
     first_char = 97
@@ -128,11 +127,12 @@ def num_to_chars(n):
             break
     return result[::-1]
 
-"""
-Generates an alphabetic list of labels in a sequence. For example, if three
-labels must be generated, the output will be ['a', 'b', 'c']
 
-:n: the number of labels to generate
-"""
 def generate_state_labels(n):
+    """
+    Generates an alphabetic list of labels in a sequence. For example, if three
+    labels must be generated, the output will be ['a', 'b', 'c']
+    :param n: the number of labels to generate
+    :return: list of strings with labels
+    """
     return [num_to_chars(i) for i in range(n)]

@@ -5,7 +5,7 @@ argparse module
 
 import argparse
 from configuration.config import Config
-from electoral_sys.seat_assignment import seat_assignment_rule_names
+from electoral_sys.seat_assignment import seat_assignment_rules
 
 # In the following part, the different command line arguments are defined
 
@@ -82,8 +82,8 @@ parser.add_argument('-tr', '--threshold', action='store', default=0.,
 parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, default=[1], dest='seats',
                     help='The number of seats per districts. If there are fewer seats than districts, the list is repeated')
 
-parser.add_argument('-qr', '--seatrule', action='store', choices=seat_assignment_rule_names, dest='seatrule',
-                    default=seat_assignment_rule_names[0], help='The rule used to assign seats within a district')
+parser.add_argument('-qr', '--seatrule', action='store', choices=seat_assignment_rules.keys(), dest='seatrule',
+                    default=seat_assignment_rules['default'], help='The rule used to assign seats within a district')
 
 
 def get_arguments():
