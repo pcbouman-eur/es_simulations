@@ -8,6 +8,8 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
+from configuration.logging import log
+
 
 def convert_to_distributions(series, missing_value=0):
     """
@@ -38,7 +40,7 @@ def prepare_json(d):
     return d
 
 
-def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
+def plot_hist(distribution, name, suffix, bins_num=21, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     os.makedirs(output_dir, exist_ok=True)
 
     for idx, key in enumerate(sorted(distribution.keys())):
@@ -46,7 +48,7 @@ def plot_hist(distribution, name, suffix, output_dir='plots/', colors=('tomato',
         distr = distribution[key]
 
         plt.figure(figsize=(4, 3))
-        plt.hist(distr, bins=np.linspace(0.0, 1.0, 21), range=(0, 1), density=True, color=col)
+        plt.hist(distr, bins=np.linspace(0.0, 1.0, bins_num), range=(0, 1), density=True, color=col)
 
         avg = np.mean(distr)
         std = np.std(distr)
@@ -152,9 +154,9 @@ def run_with_time(func):
 
         minutes = (end_time - start_time) / 60.0
         if minutes <= 60:
-            print(f'Function <{func.__name__}> finished in {round(minutes, 0)} min')
+            log.info(f'Function <{func.__name__}> finished in {round(minutes, 0)} min')
         else:
-            print(f'Function <{func.__name__}> finished in {round(minutes / 60, 1)} h')
+            log.info(f'Function <{func.__name__}> finished in {round(minutes / 60, 1)} h')
     return inner
 
 

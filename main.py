@@ -3,9 +3,10 @@ import numpy as np
 import sys
 from pprint import pprint
 
-from tools import convert_to_distributions, save_data, read_data, plot_hist, plot_traj, run_with_time, \
-    calculate_indexes, plot_indexes
+from tools import convert_to_distributions, save_data, read_data, run_with_time, calculate_indexes
+from tools import plot_indexes, plot_hist, plot_traj
 from configuration.parser import get_arguments
+from configuration.logging import log
 from net_generation.base import init_sbm, add_zealots, planted_affinity
 from simulation.base import run_simulation, run_thermalization, run_thermalization_silent
 from electoral_sys.electoral_system import electoral_threshold
@@ -26,12 +27,11 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
     results = {system: [] for system in config.voting_systems.keys()}
 
     for i in range(SAMPLE_SIZE):
-        print(i)
+        log.info(f"Computing sample no. {i}")
 
         if config.reset:
             g.vs()["state"] = config.initialize_states(N, all_states=config.all_states, state=config.not_zealot_state)
             # we have to reset zealots, otherwise they would have states different than 'zealot_state'
-            # TODO: maybe whole initialization of SBM should be repeated? for now seems not necessary
             g.vs()["zealot"] = np.zeros(N)
             g = add_zealots(g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
             g = run_thermalization_silent(config, g, EPS, THERM_TIME, n=N)
@@ -39,7 +39,7 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
         g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
 
         for system, fun in config.voting_systems.items():
-            #outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)['fractions']
+            # outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)['fractions']
             outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)
             results[system].append(outcome['fractions'])
             print(system, outcome['seats'])
@@ -56,9 +56,9 @@ def main():
     """
     cfg = get_arguments()
     args_dict = vars(cfg.cmd_args)
-    print('Running an experiment for the following settings:')
+    log.info('Running an experiment for the following configuration:')
     pprint(args_dict)
-    print('See other configuration options by running:', sys.argv[0], '--help')
+    log.info(f"See other configuration options by running: python {sys.argv[0].split('/')[-1]} --help")
     run_experiment(cfg, **args_dict)
 
     # plot the results
@@ -66,7 +66,7 @@ def main():
     voting_distribution = convert_to_distributions(res['population'])
     for system in cfg.voting_systems.keys():
         distribution = convert_to_distributions(res[system])
-        plot_hist(distribution, system, cfg.suffix)
+        plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+1)
         indexes = calculate_indexes(voting_distribution, distribution, args_dict['SAMPLE_SIZE'])
         plot_indexes(indexes, system, cfg.suffix)
 

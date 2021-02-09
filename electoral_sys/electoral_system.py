@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Functions that model different election systems
 

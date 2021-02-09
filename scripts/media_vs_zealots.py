@@ -66,10 +66,7 @@ def plot_media_vs_zealots(config):
     else:
         raise Exception("There is an issue with media or zealots index in the suffix.")
 
-    if config.abc:
-        shown_state = 'a'
-    else:
-        shown_state = str(1)
+    shown_state = config.zealot_state
 
     results = {}
     for system in config.voting_systems.keys():

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Contains a class an utilities that are used to store and access the
 configuration of the simulation
@@ -6,6 +7,7 @@ configuration of the simulation
 import electoral_sys.electoral_system as es
 import net_generation.base as ng
 import simulation.base as sim
+from configuration.logging import log
 
 
 class Config:
@@ -28,9 +30,9 @@ class Config:
                       'mixed': es.system_mixed}
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
-    zealot_state = 1
-    not_zealot_state = -1
-    all_states = (1, -1)  # the order matters in the mutation function! zealot first
+    zealot_state = 'a'
+    not_zealot_state = 'b'
+    all_states = ('a', 'b')  # the order matters in the mutation function! zealot first
     reset = False
     consensus = False
     random_dist = False
@@ -62,18 +64,10 @@ class Config:
             raise ValueError('The simulation needs at least two states')
         if self.num_parties > 2:
             self.all_states = generate_state_labels(self.num_parties)
-            self.zealot_state = self.all_states[0]
             self.not_zealot_state = self.all_states[-1]
             self.suffix = ''.join(['_parties_', str(self.num_parties), self.suffix])
 
-        # # 3 states version of the model (abc)
-        # if self.abc:
-        #     self.zealot_state = 'a'
-        #     self.not_zealot_state = 'c'
-        #     self.all_states = ('a', 'b', 'c')  # the order matters in the mutation function!
-        #     self.suffix = ''.join(['_abc', self.suffix])
-
-        # initialization in the consensus state
+        # Initialization in the consensus state
         if self.consensus:
             self.initialize_states = ng.consensus_initial_state
 
@@ -94,8 +88,8 @@ class Config:
         # Electoral threshold
         self.threshold = cmd_args.threshold
         if self.threshold < 0. or self.threshold > 1.:
-            raise ValueError(f'The threshold should be in the range [0,1], \
-                             current threshold = {self.threshold}.')
+            raise ValueError(f'The threshold should be in the range [0,1], '
+                             f'current threshold = {self.threshold}.')
         elif self.threshold == 0.:
             pass  # for threshold == 0 we do not consider thresholding
         else:
@@ -105,6 +99,12 @@ class Config:
         seats = cmd_args.seats
         self.seats_per_district = [seats[i % len(seats)] for i in range(cmd_args.q)]
         self.seat_rounding_rule = cmd_args.seatrule
+        if len(seats) < cmd_args.q:
+            log.warning("There is fewer seat numbers specified than districts in the network. "
+                        "The seat numbers will be repeated.")
+        elif len(seats) > cmd_args.q:
+            log.warning("There is more seat numbers specified than districts in the network. "
+                        "Not all seat numbers will be used.")
 
 
 def num_to_chars(n):

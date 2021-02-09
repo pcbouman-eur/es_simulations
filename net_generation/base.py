@@ -71,7 +71,7 @@ def init_sbm(n, affinity, state_generator=default_initial_state, random_dist=Fal
     return g
 
 
-def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state=1):
+def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state='a'):
     """
     Function creating zealots in the network.
     Overwrite as you wish.
