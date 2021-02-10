@@ -3,10 +3,10 @@
 This file contains configuration for a command line parser based on Python's
 argparse module
 """
-
 import argparse
 from configuration.config import Config
 from electoral_sys.seat_assignment import seat_assignment_rules
+
 
 # In the following part, the different command line arguments are defined
 
@@ -27,6 +27,25 @@ parser.add_argument('-ra', '--ratio', action='store', default=0.1, type=float, d
 parser.add_argument('-q', type=int, action='store', default=25, dest='q',
                     help='number of districts')
 
+parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=int, default=None, dest='district_sizes',
+                    help='The number of voters in districts. Order matters. If this argument is provided, it must be '
+                         'of length q, i.e. specified for every district, and size of the network N will be ignored. '
+                         'The network will be generated based on the sizes of districts.')
+
+
+# Electoral system configuration
+parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, default=[1], dest='seats',
+                    help='The number of seats per districts. Order matters.'
+                         'If there are fewer seats than districts, the list is repeated')
+
+parser.add_argument('-qr', '--seatrule', action='store', choices=seat_assignment_rules.keys(), dest='seatrule',
+                    default=seat_assignment_rules['default'],
+                    help='The rule used to assign seats within a district')
+
+parser.add_argument('-tr', '--threshold', action='store', default=0., type=float, dest='threshold',
+                    help='The electoral threshold (minimal share of votes to be considered)')
+
+
 # Simulation details
 parser.add_argument('-s', '--samples', type=int, action='store', default=500,
                     help='number of points', dest='SAMPLE_SIZE')
@@ -46,6 +65,7 @@ parser.add_argument('--random_districts', action='store_const', default=False, c
 parser.add_argument('--consensus', action='store_const', default=False, const=True, dest='consensus',
                     help='whether to initialize the network in a consensus state (other than the zealot state)')
 
+
 # Zealots and media configuration
 parser.add_argument('-zn', '--zealots_count', type=int, action='store', default=0,
                     help='number of zealots', dest='n_zealots')
@@ -60,20 +80,9 @@ parser.add_argument('-zd', '--zealots_district', action='store', default=None, t
 parser.add_argument('-mm', '--mass_media', type=float, action='store', default=0.5, dest='MASS_MEDIA',
                     help='independent flip probability - mass media effect')
 
-# Electoral system configuration
-parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, default=[1], dest='seats',
-                    help='The number of seats per districts.'
-                         'If there are fewer seats than districts, the list is repeated')
-
-parser.add_argument('-qr', '--seatrule', action='store', choices=seat_assignment_rules.keys(), dest='seatrule',
-                    default=seat_assignment_rules['default'],
-                    help='The rule used to assign seats within a district')
-
-parser.add_argument('-tr', '--threshold', action='store', default=0., type=float, dest='threshold',
-                    help='The electoral threshold (minimal share of votes to be considered)')
 
 # Voting process dynamics
-parser.add_argument('-e', '--EPS', type=float, action='store', default=0.01, dest='EPS',
+parser.add_argument('-e', '--epsilon', type=float, action='store', default=0.01, dest='EPS',
                     help='noise rate, i.e. the probability of choosing a random state')
 
 parser.add_argument('-p', '--propagation', action='store', default='standard',
@@ -85,12 +94,20 @@ parser.add_argument('-np', '--num_parties', type=int, action='store', default=2,
                     help='The number of parties to consider, i.e. the number of possible states of nodes')
 
 
+# File configuration for electoral systems
+parser.add_argument('--config_file', action='store', default=None, dest='config_file', type=argparse.FileType('r'),
+                    help='The path to a configuration file. It must be in json format and any parameter can '
+                         'be provided in the file. Parameters specified in the file take priority over those '
+                         'from the command line. The name of the parameter in the file should be the same '
+                         'as the name in the namespace ("dest" argument).')
+
+
 def get_arguments():
     """
-    Reads the arguments from the standard out and raises an error if some
+    Reads the arguments from the standard in and raises an error if some
     data is missing.
-
-    :result: a Namespace object with values for the arguments
+    :result: a Config class object with values for the arguments and other configuration
     """
-    return Config(parser.parse_args())
+    # necessary to pass this protected dict in order to trouble-check the redundant parameters
+    return Config(parser.parse_args(), parser._option_string_actions)
 

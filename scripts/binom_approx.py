@@ -115,9 +115,9 @@ def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=(
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.getcwd()))
     cfg = get_arguments()  # reading arguments
-    if cfg.cmd_args.num_parties > 2:
+    if cfg.cmd_args['num_parties'] > 2:
         raise ValueError("More than 2 parties are not supported for binomial approximation.")
-    if cfg.cmd_args.where_zealots != 'random':
+    if cfg.cmd_args['where_zealots'] != 'random':
         raise ValueError("Non random zealots are not supported for binomial approximation.")
 
     try:

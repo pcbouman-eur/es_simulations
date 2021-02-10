@@ -3,7 +3,8 @@
 Contains a class an utilities that are used to store and access the
 configuration of the simulation
 """
-
+import sys
+import json
 import electoral_sys.electoral_system as es
 import net_generation.base as ng
 import simulation.base as sim
@@ -38,25 +39,67 @@ class Config:
     random_dist = False
     num_parties = 2
 
-    def __init__(self, cmd_args):
+    def __init__(self, cmd_args, arg_dict):
+        """
+        Initialization of the configuration class with basic argument validation
+        :param cmd_args: Namespace with command line arguments
+        :param arg_dict: a private dict of the argparse parser to use only for parameters redundancy validation
+        """
+        # Read in the configuration file
+        if cmd_args.config_file is not None:
+            config_file = json.load(cmd_args.config_file)
+            log.info(f'Taking configuration from {cmd_args.config_file.name} file')
+        else:
+            config_file = dict()
+
+        # Parameters redundancy validation
+        for argument in sys.argv[1:]:
+            if argument[0] != '-':  # each command line arg starts with either '-' or '--', otherwise it's a value
+                continue
+            try:
+                store_name = arg_dict[argument].dest
+            except Exception:
+                raise Exception("This shouldn't happen...")
+            if store_name in config_file:
+                raise ValueError(f"Argument '{argument}' can not be provided in the command line and in the "
+                                 f"configuration file ('{store_name}') simultaneously!")
+
         # Command line arguments
-        self.cmd_args = cmd_args
-        self.reset = cmd_args.reset
-        self.consensus = cmd_args.consensus
-        self.random_dist = cmd_args.random_dist
-        self.num_parties = cmd_args.num_parties
+        self.cmd_args = dict(vars(cmd_args),
+                             config_file=cmd_args.config_file.name,
+                             **config_file)  # config file has the priority
+        cmd_args = None  # just to be sure that nobody will take any value from here
+        self.reset = self.cmd_args['reset']
+        self.consensus = self.cmd_args['consensus']
+        self.random_dist = self.cmd_args['random_dist']
+        self.num_parties = self.cmd_args['num_parties']
+
+        # Network structure
+        if self.cmd_args['district_sizes'] is not None:
+            self.district_sizes = self.cmd_args['district_sizes']
+            if len(self.district_sizes) != self.cmd_args['q']:
+                raise ValueError(f"The list of district sizes (len={len(self.district_sizes)}) "
+                                 f"must have a length equal to the number of districts (q={self.cmd_args['q']})!")
+            log.info('The network will be generated based on the district sizes')
+            self.cmd_args['N'] = sum(self.district_sizes)
+        else:
+            log.info('The network will be generated based on the number of districts and network size')
+            if self.cmd_args['N'] % self.cmd_args['q'] != 0:
+                raise ValueError('The number of nodes must be a multiplication of the number of districts!')
+            one_district_size = self.cmd_args['N'] // self.cmd_args['q']
+            self.district_sizes = [one_district_size for _ in range(self.cmd_args['q'])]
 
         # Propagation mechanisms
-        if cmd_args.propagation == 'majority':
+        if self.cmd_args['propagation'] == 'majority':
             self.propagate = sim.majority_propagation
-        elif cmd_args.propagation == 'minority':
+        elif self.cmd_args['propagation'] == 'minority':
             def f(n, g):
                 return sim.majority_propagation(n, g, True)
             self.propagate = f
 
         # Filename suffix
         self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}_R_{ratio}' \
-                      '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(vars(cmd_args))
+                      '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(self.cmd_args)
         self.suffix = self.suffix.replace('.', '')
 
         # Determine the number of states
@@ -72,21 +115,21 @@ class Config:
             self.initialize_states = ng.consensus_initial_state
 
         # Zealot configuration options
-        if cmd_args.where_zealots == 'degree':
+        if self.cmd_args['where_zealots'] == 'degree':
             self.zealots_config = {'degree_driven': True,
                                    'one_district': False,
                                    'district': None}
-        elif cmd_args.where_zealots == 'district':
+        elif self.cmd_args['where_zealots'] == 'district':
             self.zealots_config = {'degree_driven': False,
                                    'one_district': True,
-                                   'district': cmd_args.zealots_district}
+                                   'district': self.cmd_args['zealots_district']}
         else:
             self.zealots_config = {'degree_driven': False,
                                    'one_district': False,
                                    'district': None}
         
         # Electoral threshold
-        self.threshold = cmd_args.threshold
+        self.threshold = self.cmd_args['threshold']
         if self.threshold < 0. or self.threshold > 1.:
             raise ValueError(f'The threshold should be in the range [0,1], '
                              f'current threshold = {self.threshold}.')
@@ -96,13 +139,13 @@ class Config:
             self.suffix += f"_tr_{self.threshold}"
 
         # Seat allocation rules
-        seats = cmd_args.seats
-        self.seats_per_district = [seats[i % len(seats)] for i in range(cmd_args.q)]
-        self.seat_rounding_rule = cmd_args.seatrule
-        if len(seats) < cmd_args.q:
+        seats = self.cmd_args['seats']
+        self.seats_per_district = [seats[i % len(seats)] for i in range(self.cmd_args['q'])]
+        self.seat_rounding_rule = self.cmd_args['seatrule']
+        if len(seats) < self.cmd_args['q']:
             log.warning("There is fewer seat numbers specified than districts in the network. "
                         "The seat numbers will be repeated.")
-        elif len(seats) > cmd_args.q:
+        elif len(seats) > self.cmd_args['q']:
             log.warning("There is more seat numbers specified than districts in the network. "
                         "Not all seat numbers will be used.")
 

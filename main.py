@@ -12,7 +12,8 @@ from simulation.base import run_simulation, run_thermalization, run_thermalizati
 from electoral_sys.electoral_system import electoral_threshold
 
 
-def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio, avg_deg, **kwargs):
+def run_experiment(config, N=None, q=None, EPS=None, SAMPLE_SIZE=None, THERM_TIME=None, n_zealots=None, ratio=None,
+                   avg_deg=None, **kwargs):
     affinity = planted_affinity(q, avg_deg, np.ones(q) / q, ratio, N)  # all districts the same size and density
 
     suffix = config.suffix
@@ -36,7 +37,7 @@ def run_experiment(config, N, q, EPS, SAMPLE_SIZE, THERM_TIME, n_zealots, ratio,
             g = add_zealots(g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
             g = run_thermalization_silent(config, g, EPS, THERM_TIME, n=N)
 
-        g = run_simulation(config, g, EPS, N * config.cmd_args.mc_steps, n=N)
+        g = run_simulation(config, g, EPS, N * config.cmd_args['mc_steps'], n=N)
 
         for system, fun in config.voting_systems.items():
             # outcome = fun(electoral_threshold(g.vs, config.threshold), states=config.all_states)['fractions']
@@ -55,11 +56,10 @@ def main():
     run_experiment function.
     """
     cfg = get_arguments()
-    args_dict = vars(cfg.cmd_args)
     log.info('Running an experiment for the following configuration:')
-    pprint(args_dict)
+    pprint(cfg.cmd_args)
     log.info(f"See other configuration options by running: python {sys.argv[0].split('/')[-1]} --help")
-    run_experiment(cfg, **args_dict)
+    run_experiment(cfg, **cfg.cmd_args)
 
     # plot the results
     res, _ = read_data(cfg.suffix)
@@ -67,7 +67,7 @@ def main():
     for system in cfg.voting_systems.keys():
         distribution = convert_to_distributions(res[system])
         plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+1)
-        indexes = calculate_indexes(voting_distribution, distribution, args_dict['SAMPLE_SIZE'])
+        indexes = calculate_indexes(voting_distribution, distribution, cfg.cmd_args['SAMPLE_SIZE'])
         plot_indexes(indexes, system, cfg.suffix)
 
 
