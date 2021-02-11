@@ -44,15 +44,15 @@ def get_binom_hist(config_args, m, system):
 
     @return: histogram bar sizes for a given setting in a binomial approximation. (numpy.array)
     """
-    p = 0.5 * (1.0 - config_args.EPS) + config_args.EPS * config_args.MASS_MEDIA  # effective state 'a' probability
+    p = 0.5 * (1.0 - config_args.epsilon) + config_args.epsilon * config_args.mass_media  # effective state 'a' probability
     if system == 'population':
-        eff_N = config_args.N - config_args.n_zealots  # number of non-zealot voters
+        eff_N = config_args.n - config_args.n_zealots  # number of non-zealot voters
         sub_density = st.binom(eff_N, p).pmf(np.arange(eff_N + 1))  # density for single voters
-        density = np.zeros(config_args.N + 1)  # density including zealots
+        density = np.zeros(config_args.n + 1)  # density including zealots
         density[config_args.n_zealots:] = sub_density
         hist = density_to_histogram(density, m)
     elif system == 'district':
-        n_d = config_args.N / config_args.q  # number of voters per district
+        n_d = config_args.n / config_args.q  # number of voters per district
         n_z = config_args.n_zealots / config_args.q  # average number of zealots per district
 
         # In contrast to the 'population' case, here we only approximate the effect of zealots.
@@ -115,9 +115,9 @@ def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=(
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.getcwd()))
     cfg = get_arguments()  # reading arguments
-    if cfg.cmd_args['num_parties'] > 2:
+    if cfg.num_parties > 2:
         raise ValueError("More than 2 parties are not supported for binomial approximation.")
-    if cfg.cmd_args['where_zealots'] != 'random':
+    if cfg.where_zealots != 'random':
         raise ValueError("Non random zealots are not supported for binomial approximation.")
 
     try:
@@ -127,7 +127,7 @@ if __name__ == '__main__':
                       "run main.py with the same configuration first.")
     for system in ['population', 'district']:
         distribution = convert_to_distributions(res[system])
-        hist, density = get_binom_hist(cfg.cmd_args, m, system)
+        hist, density = get_binom_hist(cfg, m, system)
 
         s = system + cfg.suffix
         plot_hist_with_binom_approx(distribution, m, hist, density, s)

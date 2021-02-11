@@ -15,7 +15,7 @@ description = 'Simulation of voting process dynamics with different electoral ru
 parser = argparse.ArgumentParser(description=description)
 
 # Network characteristics
-parser.add_argument('-N', type=int, action='store', default=1875, dest='N',
+parser.add_argument('-n', type=int, action='store', default=1875, dest='n',
                     help='size of the network')
 
 parser.add_argument('-avg_deg', '--average_degree', action='store', default=5, type=int, dest='avg_deg',
@@ -29,7 +29,7 @@ parser.add_argument('-q', type=int, action='store', default=25, dest='q',
 
 parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=int, default=None, dest='district_sizes',
                     help='The number of voters in districts. Order matters. If this argument is provided, it must be '
-                         'of length q, i.e. specified for every district, and size of the network N will be ignored. '
+                         'of length q, i.e. specified for every district, and size of the network n will be ignored. '
                          'The network will be generated based on the sizes of districts.')
 
 
@@ -38,7 +38,7 @@ parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, defau
                     help='The number of seats per districts. Order matters.'
                          'If there are fewer seats than districts, the list is repeated')
 
-parser.add_argument('-qr', '--seatrule', action='store', choices=seat_assignment_rules.keys(), dest='seatrule',
+parser.add_argument('-qr', '--seat_rule', action='store', choices=seat_assignment_rules.keys(), dest='seat_rule',
                     default=seat_assignment_rules['default'],
                     help='The rule used to assign seats within a district')
 
@@ -48,10 +48,10 @@ parser.add_argument('-tr', '--threshold', action='store', default=0., type=float
 
 # Simulation details
 parser.add_argument('-s', '--samples', type=int, action='store', default=500,
-                    help='number of points', dest='SAMPLE_SIZE')
+                    help='number of points', dest='sample_size')
 
 parser.add_argument('-t', '--therm', type=int, action='store', default=300000,
-                    help='thermalization time steps', dest='THERM_TIME')
+                    help='thermalization time steps', dest='therm_time')
 
 parser.add_argument('-mc', '--mc_steps', type=int, action='store', default=50, dest='mc_steps',
                     help='number of MC steps between performing consecutive elections in the model')
@@ -77,12 +77,12 @@ parser.add_argument('-zw', '--zealots_where', action='store', default='random',
 parser.add_argument('-zd', '--zealots_district', action='store', default=None, type=int, dest='zealots_district',
                     help='if zealots are in one district, which district')
 
-parser.add_argument('-mm', '--mass_media', type=float, action='store', default=0.5, dest='MASS_MEDIA',
+parser.add_argument('-mm', '--mass_media', type=float, action='store', default=0.5, dest='mass_media',
                     help='independent flip probability - mass media effect')
 
 
 # Voting process dynamics
-parser.add_argument('-e', '--epsilon', type=float, action='store', default=0.01, dest='EPS',
+parser.add_argument('-e', '--epsilon', type=float, action='store', default=0.01, dest='epsilon',
                     help='noise rate, i.e. the probability of choosing a random state')
 
 parser.add_argument('-p', '--propagation', action='store', default='standard',

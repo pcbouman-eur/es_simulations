@@ -132,7 +132,7 @@ def plot_traj(traj, suffix, output_dir='plots/', colors=('tomato', 'mediumseagre
 
 def save_data(config, results, suffix, output_dir='results/'):
     os.makedirs(output_dir, exist_ok=True)
-    result = {'settings': vars(config.cmd_args),
+    result = {'settings': config._cmd_args,
               'results': prepare_json(results)}
     fname = output_dir + 'results' + suffix + '.json'
     with open(fname, 'w') as out_file:

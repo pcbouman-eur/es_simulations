@@ -99,7 +99,7 @@ def plot_media_vs_zealots(config):
 
 def run_sim(cfg, media, zealots):
     # for developing (can run small simulation)
-    #os.system(f'python3 main.py -mm {media} -zn {zealots} -s {cfg.cmd_args['SAMPLE_SIZE']} -N {cfg.cmd_args['N']} -q {cfg.cmd_args['q']} -t {cfg.cmd_args['THERM_TIME']}')
+    #os.system(f'python3 main.py -mm {media} -zn {zealots} -s {cfg.sample_size} -n {cfg.N} -q {cfg.q} -t {cfg.therm_time}')
     
     # for default parameters
     os.system(f'python3 main.py -mm {media} -zn {zealots}')

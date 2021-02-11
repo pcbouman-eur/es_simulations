@@ -15,16 +15,49 @@ class Config:
     """
     Holds the configuration of a simulation.
 
-    :cmd_args: an argparse Namespace with command line arguments
+    :_cmd_args: a dict with command line arguments
     :voting_system: a voting system function used to determine a winner
     :initialize_states: a function that generates a vector of initial states
     :propagate: a function that propagates states from neighbours to a node
     :mutate: a function that changes the state of a node at random
-    :reset: whether to generate new initial states after each simulation
+    :zealot_state: the state of zealot nodes
+    :not_zealot_state: the state taken as the opposition of the zealot state
+    :all_states: all possible states of the nodes
     :zealots_config: configuration for the zealot initialization
     :suffix: suggested file name suffix for output files
-    """
 
+    The rest of attributes are simply arguments defined in parser.py and described there
+    """
+    # parsed arguments that have default value defined in parser.py
+    n = None
+    q = None
+    avg_deg = None
+    ratio = None
+    district_sizes = None
+
+    seats = None
+    seat_rule = None
+    threshold = None
+
+    sample_size = None
+    therm_time = None
+    mc_steps = None
+    reset = None
+    random_dist = None
+    consensus = None
+
+    n_zealots = None
+    where_zealots = None
+    zealots_district = None
+    mass_media = None
+
+    epsilon = None
+    propagation = None
+    num_parties = None
+
+    config_file = None
+
+    # derivatives of parsed arguments and others
     initialize_states = staticmethod(ng.default_initial_state)
     voting_systems = {'population': es.system_population_majority,
                       'district': es.system_district_majority,
@@ -34,10 +67,6 @@ class Config:
     zealot_state = 'a'
     not_zealot_state = 'b'
     all_states = ('a', 'b')  # the order matters in the mutation function! zealot first
-    reset = False
-    consensus = False
-    random_dist = False
-    num_parties = 2
 
     def __init__(self, cmd_args, arg_dict):
         """
@@ -65,41 +94,41 @@ class Config:
                                  f"configuration file ('{store_name}') simultaneously!")
 
         # Command line arguments
-        self.cmd_args = dict(vars(cmd_args),
-                             config_file=cmd_args.config_file.name,
-                             **config_file)  # config file has the priority
+        self._cmd_args = dict(vars(cmd_args), config_file=cmd_args.config_file.name,
+                              **config_file)  # config file has the priority
         cmd_args = None  # just to be sure that nobody will take any value from here
-        self.reset = self.cmd_args['reset']
-        self.consensus = self.cmd_args['consensus']
-        self.random_dist = self.cmd_args['random_dist']
-        self.num_parties = self.cmd_args['num_parties']
+
+        # self._cmd_args is just to know what arguments the program was ran with
+        # parameters should be taken directly from class Config attributes, because they are manipulated below
+        for key, value in self._cmd_args.items():
+            self.__setattr__(key,  value)
 
         # Network structure
-        if self.cmd_args['district_sizes'] is not None:
-            self.district_sizes = self.cmd_args['district_sizes']
-            if len(self.district_sizes) != self.cmd_args['q']:
+        if self.district_sizes is not None:
+            if len(self.district_sizes) != self.q:
                 raise ValueError(f"The list of district sizes (len={len(self.district_sizes)}) "
-                                 f"must have a length equal to the number of districts (q={self.cmd_args['q']})!")
+                                 f"must have a length equal to the number of districts (q={self.q})!")
             log.info('The network will be generated based on the district sizes')
-            self.cmd_args['N'] = sum(self.district_sizes)
+            self.n = sum(self.district_sizes)
         else:
             log.info('The network will be generated based on the number of districts and network size')
-            if self.cmd_args['N'] % self.cmd_args['q'] != 0:
+            if self.n % self.q != 0:
                 raise ValueError('The number of nodes must be a multiplication of the number of districts!')
-            one_district_size = self.cmd_args['N'] // self.cmd_args['q']
-            self.district_sizes = [one_district_size for _ in range(self.cmd_args['q'])]
+            one_district_size = self.n // self.q
+            self.district_sizes = [one_district_size for _ in range(self.q)]
 
         # Propagation mechanisms
-        if self.cmd_args['propagation'] == 'majority':
+        if self.propagation == 'majority':
             self.propagate = sim.majority_propagation
-        elif self.cmd_args['propagation'] == 'minority':
+        elif self.propagation == 'minority':
             def f(n, g):
                 return sim.majority_propagation(n, g, True)
             self.propagate = f
 
         # Filename suffix
-        self.suffix = '_N_{N}_q_{q}_EPS_{EPS}_S_{SAMPLE_SIZE}_T_{THERM_TIME}_MC_{mc_steps}_R_{ratio}' \
-                      '_c_{avg_deg}_p_{propagation}_media_{MASS_MEDIA}_zn_{n_zealots}'.format_map(self.cmd_args)
+        self.suffix = (f'_N_{self.n}_q_{self.q}_EPS_{self.epsilon}_S_{self.sample_size}_T_{self.therm_time}_'
+                       f'MC_{self.mc_steps}_R_{self.ratio}_c_{self.avg_deg}_p_{self.propagation}_'
+                       f'media_{self.mass_media}_zn_{self.n_zealots}')
         self.suffix = self.suffix.replace('.', '')
 
         # Determine the number of states
@@ -115,21 +144,20 @@ class Config:
             self.initialize_states = ng.consensus_initial_state
 
         # Zealot configuration options
-        if self.cmd_args['where_zealots'] == 'degree':
+        if self.where_zealots == 'degree':
             self.zealots_config = {'degree_driven': True,
                                    'one_district': False,
                                    'district': None}
-        elif self.cmd_args['where_zealots'] == 'district':
+        elif self.where_zealots == 'district':
             self.zealots_config = {'degree_driven': False,
                                    'one_district': True,
-                                   'district': self.cmd_args['zealots_district']}
+                                   'district': self.zealots_district}
         else:
             self.zealots_config = {'degree_driven': False,
                                    'one_district': False,
                                    'district': None}
         
         # Electoral threshold
-        self.threshold = self.cmd_args['threshold']
         if self.threshold < 0. or self.threshold > 1.:
             raise ValueError(f'The threshold should be in the range [0,1], '
                              f'current threshold = {self.threshold}.')
@@ -139,13 +167,12 @@ class Config:
             self.suffix += f"_tr_{self.threshold}"
 
         # Seat allocation rules
-        seats = self.cmd_args['seats']
-        self.seats_per_district = [seats[i % len(seats)] for i in range(self.cmd_args['q'])]
-        self.seat_rounding_rule = self.cmd_args['seatrule']
-        if len(seats) < self.cmd_args['q']:
+        self.seats_per_district = [self.seats[i % len(self.seats)] for i in range(self.q)]
+        self.seat_rounding_rule = self.seat_rule
+        if len(self.seats) < self.q:
             log.warning("There is fewer seat numbers specified than districts in the network. "
                         "The seat numbers will be repeated.")
-        elif len(seats) > self.cmd_args['q']:
+        elif len(self.seats) > self.q:
             log.warning("There is more seat numbers specified than districts in the network. "
                         "Not all seat numbers will be used.")
 
