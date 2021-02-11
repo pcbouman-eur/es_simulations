@@ -11,13 +11,11 @@ from simulation.base import run_simulation, run_thermalization, run_thermalizati
 from electoral_sys.electoral_system import electoral_threshold
 
 
-def run_experiment(n=None, q=None, epsilon=None, sample_size=None, therm_time=None, n_zealots=None, ratio=None,
-                   avg_deg=None, config=None):
-    affinity = planted_affinity(q, avg_deg, np.ones(q) / q, ratio, n)  # all districts the same size and density
-
+def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_zealots=None, config=None):
     suffix = config.suffix
 
-    init_g = init_sbm(n, affinity, state_generator=config.initialize_states, random_dist=config.random_dist,
+    init_g = init_sbm(n, config.district_sizes, config.avg_deg, config.ratio,
+                      state_generator=config.initialize_states, random_dist=config.random_dist,
                       initial_state=config.not_zealot_state, all_states=config.all_states)
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
@@ -60,8 +58,8 @@ def main():
         log.info(' = '.join([key, str(value)]))
     log.info(f"See other configuration options by running: python {sys.argv[0].split('/')[-1]} --help")
 
-    run_experiment(n=cfg.n, q=cfg.q, epsilon=cfg.epsilon, sample_size=cfg.sample_size, therm_time=cfg.therm_time,
-                   n_zealots=cfg.n_zealots, ratio=cfg.ratio, avg_deg=cfg.avg_deg, config=cfg)
+    run_experiment(n=cfg.n, epsilon=cfg.epsilon, sample_size=cfg.sample_size, therm_time=cfg.therm_time,
+                   n_zealots=cfg.n_zealots, config=cfg)
 
     # plot the results
     res, _ = read_data(cfg.suffix)
