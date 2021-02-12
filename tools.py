@@ -6,6 +6,7 @@ import os
 import json
 import time
 import numpy as np
+from decimal import Decimal
 from matplotlib import pyplot as plt
 
 from configuration.logging import log
@@ -26,18 +27,20 @@ def convert_to_distributions(series, missing_value=0):
     return res
 
 
-def prepare_json(d):
-    if isinstance(d, dict) or isinstance(d, Counter):
+def prepare_json(_object):
+    if isinstance(_object, dict) or isinstance(_object, Counter):
         res = {}
-        for k, v in d.items():
+        for k, v in _object.items():
             if isinstance(k, numbers.Integral):
                 res[str(k)] = prepare_json(v)
             else:
                 res[k] = prepare_json(v)
         return res
-    if isinstance(d, Iterable):
-        return [prepare_json(i) for i in d]
-    return d
+    elif isinstance(_object, Iterable):
+        return [prepare_json(i) for i in _object]
+    elif isinstance(_object, Decimal):
+        return float(_object)
+    return _object
 
 
 def plot_hist(distribution, name, suffix, bins_num=21, output_dir='plots/', colors=('tomato', 'mediumseagreen', 'cornflowerblue')):

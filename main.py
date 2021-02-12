@@ -76,7 +76,7 @@ def main(silent=False):
     voting_distribution = convert_to_distributions(res['population'])
     for system in cfg.voting_systems.keys():
         distribution = convert_to_distributions(res[system])
-        plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+1)
+        plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+2)
         indexes = calculate_indexes(voting_distribution, distribution, cfg.sample_size)
         plot_indexes(indexes, system, cfg.suffix)
 
