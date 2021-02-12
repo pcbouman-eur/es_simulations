@@ -6,6 +6,7 @@ configuration of the simulation
 import sys
 import json
 import electoral_sys.electoral_system as es
+from electoral_sys.seat_assignment import seat_assignment_rules
 import net_generation.base as ng
 import simulation.base as sim
 from configuration.logging import log
@@ -59,11 +60,16 @@ class Config:
 
     # derivatives of parsed arguments and others
     initialize_states = staticmethod(ng.default_initial_state)
-    voting_systems = {'population': es.system_population_majority,
-                      'district': es.system_district_majority,
-                      'mixed': es.system_mixed}
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
+
+    voting_systems = {
+        'population': es.system_population_majority,  # the idealised proportional representation, ignores districts
+        'district': es.system_district_majority,  # a system with districts, either PR or first-past-the-post
+                                                  # depends on the seat assignment method
+        'mixed': es.system_mixed,  # a dummy mixed system mixing seats from two others in equal proportions
+    }
+
     zealot_state = 'a'
     not_zealot_state = 'b'
     all_states = ('a', 'b')  # the order matters in the mutation function! zealot first
@@ -158,23 +164,24 @@ class Config:
                                    'district': None}
         
         # Electoral threshold
-        if self.threshold < 0. or self.threshold > 1.:
+        if self.threshold < 0 or self.threshold > 1:
             raise ValueError(f'The threshold should be in the range [0,1], '
                              f'current threshold = {self.threshold}.')
-        elif self.threshold == 0.:
+        elif self.threshold == 0:
             pass  # for threshold == 0 we do not consider thresholding
         else:
             self.suffix += f"_tr_{self.threshold}"
 
         # Seat allocation rules
-        self.seats_per_district = [self.seats[i % len(self.seats)] for i in range(self.q)]
-        self.seat_rounding_rule = self.seat_rule
         if len(self.seats) < self.q:
             log.warning("There is fewer seat numbers specified than districts in the network. "
                         "The seat numbers will be repeated.")
         elif len(self.seats) > self.q:
             log.warning("There is more seat numbers specified than districts in the network. "
                         "Not all seat numbers will be used.")
+        self.seats_per_district = [self.seats[i % len(self.seats)] for i in range(self.q)]
+        self.total_seats = sum(self.seats_per_district)
+        self.seat_alloc_function = seat_assignment_rules[self.seat_rule]
 
 
 def num_to_chars(n):

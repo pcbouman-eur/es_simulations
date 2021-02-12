@@ -149,7 +149,7 @@ def read_data(suffix, input_dir='results/'):
 def run_with_time(func):
     def inner(*args, **kwargs):
         start_time = time.time()
-        func(*args, **kwargs)
+        res = func(*args, **kwargs)
         end_time = time.time()
 
         minutes = (end_time - start_time) / 60.0
@@ -157,6 +157,8 @@ def run_with_time(func):
             log.info(f'Function <{func.__name__}> finished in {round(minutes, 0)} min')
         else:
             log.info(f'Function <{func.__name__}> finished in {round(minutes / 60, 1)} h')
+
+        return res
     return inner
 
 

@@ -88,7 +88,7 @@ def run_simulation(config, g, noise_rate, steps, n=None):
     return g
 
 
-def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
+def run_thermalization(config, g, noise_rate, therm_time, each=100, n=None):
     """
     A function running the simulation for a given number of steps
     and computing the trajectory.
@@ -100,18 +100,21 @@ def run_thermalization(config, g, noise_rate, therm_time, each, n=None):
     :param n: the size of the network
     :return: the graph object after changes, the trajectory
     """
-    trajectory = {k: [v] for k, v in system_population_majority(g.vs, states=config.all_states)['fractions'].items()}
+    trajectory = {k: [v] for k, v in
+                  system_population_majority(g.vs, states=config.all_states, total_seats=config.total_seats,
+                                             assignment_func=config.seat_alloc_function)['fractions'].items()}
     big_steps = round(therm_time / each)
 
     for t in range(big_steps):
         g = run_simulation(config, g, noise_rate, each, n=n)
-        for key, value in system_population_majority(g.vs, states=config.all_states)['fractions'].items():
+        for key, value in system_population_majority(g.vs, states=config.all_states, total_seats=config.total_seats,
+                                                     assignment_func=config.seat_alloc_function)['fractions'].items():
             trajectory[key].append(value)
 
     return g, trajectory
 
 
-def run_thermalization_silent(config, g, noise_rate, therm_time, n=None):
+def run_thermalization_simple(config, g, noise_rate, therm_time, n=None):
     """
     A simple version of the function <run_thermalization> that doesn't save the trajectory.
     :param config: a configuration object
