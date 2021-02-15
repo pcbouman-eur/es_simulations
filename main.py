@@ -29,7 +29,8 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
     g, trajectory = run_thermalization(config, init_g, epsilon, therm_time, n=n)
-    plot_traj(trajectory, config.suffix)
+    if not silent:
+        plot_traj(trajectory, config.suffix)
 
     results = {system: [] for system in config.voting_systems.keys()}
 
@@ -56,7 +57,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
 
 @run_with_time
-def main(silent=False):
+def main(silent=True):
     """
     Uses the command line parser from the config.parse module to obtain
     the relevant arguments to run the experiments. These are passed to the
@@ -72,13 +73,14 @@ def main(silent=False):
                    n_zealots=cfg.n_zealots, config=cfg, silent=silent)
 
     # plot the results
-    res, _ = read_data(cfg.suffix)
-    voting_distribution = convert_to_distributions(res['population'])
-    for system in cfg.voting_systems.keys():
-        distribution = convert_to_distributions(res[system])
-        plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+2)
-        indexes = calculate_indexes(voting_distribution, distribution, cfg.sample_size)
-        plot_indexes(indexes, system, cfg.suffix)
+    if not silent:  # to avoid plotting huge number of plots when using scripts
+        res, _ = read_data(cfg.suffix)
+        voting_distribution = convert_to_distributions(res['population'])
+        for system in cfg.voting_systems.keys():
+            distribution = convert_to_distributions(res[system])
+            plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+2)
+            indexes = calculate_indexes(voting_distribution, distribution, cfg.sample_size)
+            plot_indexes(indexes, system, cfg.suffix)
 
 
 if __name__ == '__main__':

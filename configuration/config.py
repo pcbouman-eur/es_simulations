@@ -84,24 +84,26 @@ class Config:
         if cmd_args.config_file is not None:
             config_file = json.load(cmd_args.config_file)
             log.info(f'Taking configuration from {cmd_args.config_file.name} file')
+
+            # Parameters redundancy validation
+            for argument in sys.argv[1:]:
+                if argument[0] != '-':  # each command line arg starts with either '-' or '--', otherwise it's a value
+                    continue
+                try:
+                    store_name = arg_dict[argument].dest
+                except Exception:
+                    raise Exception("This shouldn't happen...")
+                if store_name in config_file:
+                    raise ValueError(f"Argument '{argument}' can not be provided in the command line and in the "
+                                     f"configuration file ('{store_name}') simultaneously!")
+
+            # Command line arguments
+            self._cmd_args = dict(vars(cmd_args), config_file=cmd_args.config_file.name,
+                                  **config_file)  # config file has the priority
         else:
-            config_file = dict()
+            # Command line arguments
+            self._cmd_args = vars(cmd_args)  # config file has the priority
 
-        # Parameters redundancy validation
-        for argument in sys.argv[1:]:
-            if argument[0] != '-':  # each command line arg starts with either '-' or '--', otherwise it's a value
-                continue
-            try:
-                store_name = arg_dict[argument].dest
-            except Exception:
-                raise Exception("This shouldn't happen...")
-            if store_name in config_file:
-                raise ValueError(f"Argument '{argument}' can not be provided in the command line and in the "
-                                 f"configuration file ('{store_name}') simultaneously!")
-
-        # Command line arguments
-        self._cmd_args = dict(vars(cmd_args), config_file=cmd_args.config_file.name,
-                              **config_file)  # config file has the priority
         cmd_args = None  # just to be sure that nobody will take any value from here
 
         # self._cmd_args is just to know what arguments the program was ran with

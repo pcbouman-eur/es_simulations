@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Script currently unrelated to the electoral systems project.
+Simulates a population of agents playing 2x2 games.
+"""
 import random
 from math import tanh
 import numpy as np

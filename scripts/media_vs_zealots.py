@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+A script running main.py many times with a given configuration
+and changing number of zealots and mass media influence,
+to then compute and plot comparision between them.
+"""
 import numpy as np
 import json
 import os
@@ -98,11 +103,7 @@ def plot_media_vs_zealots(config):
 
 
 def run_sim(cfg, media, zealots):
-    # for developing (can run small simulation)
-    #os.system(f'python3 main.py -mm {media} -zn {zealots} -s {cfg.sample_size} -n {cfg.N} -q {cfg.q} -t {cfg.therm_time}')
-    
-    # for default parameters
-    os.system(f'python3 main.py -mm {media} -zn {zealots}')
+    os.system(f'python3 main.py -mm {media} -zn {zealots} --config_file {cfg.config_file}')
 
 
 if __name__ == '__main__':
@@ -114,7 +115,9 @@ if __name__ == '__main__':
     # this simulations, e.g. you might want to use multiprocessing to spawn jobs
     # on multiple cores, or just modify the command to use external parallelization,
     # remember if you want to overwrite default parameters for main.py you have to
-    # run this script with them and pass them into the main.py run below
+    # run this script with them and pass them into the main.py run below, a convenient
+    # way of doing it is by creating a configuration file and passing just the file
+    # for this script and here below, careful not to set -mm and -zn params in the file
     for media in media_influence:
         for zealots in zn_set:
             run_sim(cfg, media, zealots)
