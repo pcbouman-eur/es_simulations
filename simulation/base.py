@@ -1,9 +1,20 @@
 # -*- coding: utf-8 -*-
+"""
+All the function necessary to run the dynamics of the simulation,
+i.e. simulate the social/voting processes, mutate and propagate
+states of the nodes etc.
+"""
 import random
 import numpy as np
 from collections import Counter
 from electoral_sys.electoral_system import system_population_majority
 
+
+###########################################################
+#                                                         #
+#               Mutation (random updates)                 #
+#                                                         #
+###########################################################
 
 def default_mutation(node, all_states, p):
     """
@@ -18,6 +29,12 @@ def default_mutation(node, all_states, p):
     probs = [p] + [(1.0 - p) / k for _ in range(k)]
     return np.random.choice(all_states, p=probs)
 
+
+###########################################################
+#                                                         #
+#              Propagation (social influence)             #
+#                                                         #
+###########################################################
 
 def default_propagation(node, g):
     """
@@ -59,6 +76,12 @@ def majority_propagation(node, g, inverse=False):
     return node["state"]
 
 
+###########################################################
+#                                                         #
+#                  The main algorithm                     #
+#                                                         #
+###########################################################
+
 def run_simulation(config, g, noise_rate, steps, n=None):
     """
     Main algorithm of the simulation. Picks a node at random and performs
@@ -87,6 +110,12 @@ def run_simulation(config, g, noise_rate, steps, n=None):
 
     return g
 
+
+###########################################################
+#                                                         #
+#                Thermalization function                  #
+#                                                         #
+###########################################################
 
 def run_thermalization(config, g, noise_rate, therm_time, each=100, n=None):
     """

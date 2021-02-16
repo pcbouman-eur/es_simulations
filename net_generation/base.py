@@ -1,23 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+All the function necessary to generate networks for the simulation
+"""
 import igraph as ig
 import numpy as np
 
 
-def planted_affinity(q, avg_deg, fractions, ratio, n):
-    """
-
-    :param q: number of districts
-    :param avg_deg: average degree
-    :param fractions: fractions of each district (numpy array with shape = (q,))
-    :param ratio: ratio between density outside and inside of districts
-    :param n: network size
-    :return: list object with shape = (q, q).
-    """
-    p_in = avg_deg / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
-    p_out = ratio * p_in
-    p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
-    return p.tolist()
-
+###########################################################
+#                                                         #
+#                State initialization                     #
+#                                                         #
+###########################################################
 
 def default_initial_state(n, all_states, **kwargs):
     """
@@ -42,10 +35,33 @@ def consensus_initial_state(n, all_states, state=None, **kwargs):
     return [state for _ in range(n)]
 
 
+###########################################################
+#                                                         #
+#                Generating the network                   #
+#                                                         #
+###########################################################
+
+def planted_affinity(q, avg_deg, fractions, ratio, n):
+    """
+    Generates a matrix of connection probabilities between different
+    communities in the Stochastic Bloc Model model.
+    :param q: number of districts
+    :param avg_deg: average degree
+    :param fractions: fractions of each district (numpy array with shape = (q,))
+    :param ratio: ratio between density outside and inside of districts
+    :param n: network size
+    :return: list object with shape = (q, q).
+    """
+    p_in = avg_deg / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
+    p_out = ratio * p_in
+    p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
+    return p.tolist()
+
+
 def init_sbm(n, block_sizes, avg_deg, ratio, state_generator=default_initial_state, random_dist=False,
              initial_state=None, all_states=None):
     """
-    Generates initial graph for simulations
+    Generates initial graph for simulations based on the Stochastic Bloc Model.
     :param n: network size (int)
     :param block_sizes: sizes of topological communities (list of ints)
     :param avg_deg: the average degree in the network (int)
@@ -73,6 +89,12 @@ def init_sbm(n, block_sizes, avg_deg, ratio, state_generator=default_initial_sta
         g.vs['district'] = np.random.permutation(group)
     return g
 
+
+###########################################################
+#                                                         #
+#                  Defining zealots                       #
+#                                                         #
+###########################################################
 
 def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state='a'):
     """

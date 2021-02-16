@@ -3,7 +3,7 @@ import numpy as np
 import sys
 
 from tools import convert_to_distributions, save_data, read_data, run_with_time, calculate_indexes
-from tools import plot_indexes, plot_hist, plot_traj
+from plotting import plot_indexes, plot_hist, plot_traj
 from configuration.parser import get_arguments
 from configuration.logging import log
 from net_generation.base import init_sbm, add_zealots

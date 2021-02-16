@@ -11,8 +11,8 @@ import numpy as np
 
 sys.path.insert(0, '..')
 from configuration.parser import get_arguments
-from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per, \
-    plot_mean_diff
+from tools import convert_to_distributions, split_suffix
+from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff
 
 # parameters of simulations not present in the config module
 zn_set = range(31)  # range of considered number of zealots
