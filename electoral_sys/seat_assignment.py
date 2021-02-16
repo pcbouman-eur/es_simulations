@@ -37,5 +37,53 @@ def simple_rule(total_seats, fractions):
     return assignment
 
 
+def jefferson_method(total_seats, fractions):
+    """
+    This function uses the Jefferson method for seat assignment
+    (also known as the D’Hondt method or Hagenbach-Bischoff method).
+    Originally it is defined for the numbers of votes, not fractions of votes,
+    but using fractions doesn't change the result, just normalizes the calculations.
+    :param total_seats: total number of seats available in the district
+    :param fractions: fractions of votes gained in the district
+    :return: seat assignment, a dict of a form {party_code: number_of_seats}
+    """
+    assignment = {party: 0 for party, fraction in fractions.items()}
+    quotients = {party: fraction / (assignment[party] + 1) for party, fraction in fractions.items()}
+
+    while sum(assignment.values()) < total_seats:
+        # find the party with the biggest quotient
+        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
+        _max = quotients[round_winner]
+
+        # if there is a draw, select a random single party (otherwise would be order-depending)
+        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
+        round_winner = np.random.choice(round_winners, 1)[0]
+
+        # increase the number of seats for that party by 1 and update the quotients
+        assignment[round_winner] += 1
+        quotients[round_winner] = fractions[round_winner] / (assignment[round_winner] + 1)
+
+    return assignment
+
+
 # collection of seat-assigning functions that can be used in configuration (--seat_rule argument)
-seat_assignment_rules = {'default': simple_rule}
+seat_assignment_rules = {
+    'default': simple_rule,
+    'jefferson': jefferson_method,
+    'dhondt': jefferson_method,
+}
+
+
+if __name__ == '__main__':
+    # a simple test for the example on https://en.wikipedia.org/wiki/D%27Hondt_method
+    # TODO use real unit tests at some point
+    from decimal import Decimal
+    votes = {'a': 100000, 'b': 80000, 'c': 30000, 'd': 20000}
+    sum_votes = sum(votes.values())
+    fracs = {party: Decimal(vote_num) / sum_votes for party, vote_num in votes.items()}
+    all_seats = 8
+    print(sum_votes)
+    print(fracs)
+    print({party: all_seats * frac for party, frac in fracs.items()})
+    print(jefferson_method(all_seats, fracs))
+
