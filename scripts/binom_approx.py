@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-sys.path.insert(0, '..')
 from configuration.parser import get_arguments
 from tools import read_data, convert_to_distributions
 

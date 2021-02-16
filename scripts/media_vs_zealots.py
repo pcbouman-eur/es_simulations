@@ -10,7 +10,6 @@ import os
 import sys
 from matplotlib import pyplot as plt
 
-sys.path.insert(0, '..')
 from configuration.parser import get_arguments
 from tools import convert_to_distributions
 

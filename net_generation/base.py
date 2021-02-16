@@ -130,6 +130,7 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
 
 
 if __name__ == '__main__':
+    # TODO move it to unit tests
     nodes = 100
     test_graph = init_sbm(nodes, [60, 40], 10, 0.05, all_states=['a', 'b'])
     colors = np.array(['blue', 'green'])

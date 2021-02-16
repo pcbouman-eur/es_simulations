@@ -72,18 +72,3 @@ seat_assignment_rules = {
     'jefferson': jefferson_method,
     'dhondt': jefferson_method,
 }
-
-
-if __name__ == '__main__':
-    # a simple test for the example on https://en.wikipedia.org/wiki/D%27Hondt_method
-    # TODO use real unit tests at some point
-    from decimal import Decimal
-    votes = {'a': 100000, 'b': 80000, 'c': 30000, 'd': 20000}
-    sum_votes = sum(votes.values())
-    fracs = {party: Decimal(vote_num) / sum_votes for party, vote_num in votes.items()}
-    all_seats = 8
-    print(sum_votes)
-    print(fracs)
-    print({party: all_seats * frac for party, frac in fracs.items()})
-    print(jefferson_method(all_seats, fracs))
-

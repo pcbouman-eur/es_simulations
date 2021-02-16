@@ -186,6 +186,7 @@ def system_mixed(voters, district_voting=system_population_majority, states=None
 
 
 if __name__ == '__main__':
+    # TODO move it to unit tests
     lst = [('a', 0), ('b', 0), ('b', 0), ('a', 0), ('a', 0), ('a', 1), ('a', 1),
            ('a', 1), ('c', 1), ('c', 1), ('b', 2), ('b', 2), ('b', 2), ('a', 2), ('c', 2), ('c', 2)]
     test_voters = [{'state': a, 'district': b} for a, b in lst]
