@@ -57,7 +57,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
 
 @run_with_time
-def main(silent=True):
+def main(silent=False):
     """
     Uses the command line parser from the config.parse module to obtain
     the relevant arguments to run the experiments. These are passed to the

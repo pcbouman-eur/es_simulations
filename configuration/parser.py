@@ -78,7 +78,7 @@ parser.add_argument('-zd', '--zealots_district', action='store', default=None, t
                     help='if zealots are in one district, which district')
 
 parser.add_argument('-mm', '--mass_media', type=float, action='store', default=0.5, dest='mass_media',
-                    help='independent flip probability - mass media effect')
+                    help='independent flip probability to the zealot state - mass media effect')
 
 
 # Voting process dynamics

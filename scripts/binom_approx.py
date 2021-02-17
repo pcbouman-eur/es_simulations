@@ -2,7 +2,6 @@
 import numpy as np
 import scipy.stats as st
 import matplotlib.pyplot as plt
-import sys
 import os
 
 from configuration.parser import get_arguments

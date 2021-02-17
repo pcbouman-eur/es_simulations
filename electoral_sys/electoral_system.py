@@ -6,6 +6,7 @@ import numpy as np
 from decimal import Decimal
 from itertools import groupby
 from collections import Counter
+
 from configuration.logging import log
 from electoral_sys.seat_assignment import simple_rule as default_assignment
 
@@ -137,8 +138,10 @@ def system_district_majority(voters, district_voting=system_population_majority,
     :param assignment_func: the function to use for assigning seats for parties
     :return: the winner, the fractions of votes obtained, and the number of seats obtained, per party/state
     """
-    # get the results for every district separately, ultimately only seats matter
-    voters_by_district = groupby(voters, key=lambda v: v['district'])
+    # get the results for every district separately, ultimately only seats matter;
+    # in normal circumstances voters are already sorted according to their district,
+    # but not always, e.g. not for parameter --random_districts, and then sorting is necessary
+    voters_by_district = groupby(sorted(voters, key=lambda v: v['district']), key=lambda v: v['district'])
     seats = Counter()
     for district, dist_voters in voters_by_district:
         seats += district_voting(dist_voters, states=states, total_seats=seats_per_district[district],
