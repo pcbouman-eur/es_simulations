@@ -44,7 +44,7 @@ def consensus_initial_state(n, all_states, state=None, **kwargs):
 def planted_affinity(q, avg_deg, fractions, ratio, n):
     """
     Generates a matrix of connection probabilities between different
-    communities in the Stochastic Bloc Model model.
+    communities in the Stochastic Block Model model.
     :param q: number of districts
     :param avg_deg: average degree
     :param fractions: fractions of each district (numpy array with shape = (q,))
@@ -61,10 +61,10 @@ def planted_affinity(q, avg_deg, fractions, ratio, n):
 def init_sbm(n, block_sizes, avg_deg, ratio, state_generator=default_initial_state, random_dist=False,
              initial_state=None, all_states=None):
     """
-    Generates initial graph for simulations based on the Stochastic Bloc Model.
+    Generates initial graph for simulations based on the Stochastic Block Model.
     :param n: network size (int)
     :param block_sizes: sizes of topological communities (list of ints)
-    :param avg_deg: the average degree in the network (int)
+    :param avg_deg: the average degree in the network (float)
     :param ratio: the ratio between density outside and inside of districts (float)
     :param state_generator: function that generates the states
     :param random_dist: whether districts should be random (otherwise the same as communities) (bool)

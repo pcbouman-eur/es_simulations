@@ -117,7 +117,7 @@ def run_simulation(config, g, noise_rate, steps, n=None):
 #                                                         #
 ###########################################################
 
-def run_thermalization(config, g, noise_rate, therm_time, each=100, n=None):
+def run_thermalization(config, g, noise_rate, therm_time, each=10000, n=None):
     """
     A function running the simulation for a given number of steps
     and computing the trajectory.

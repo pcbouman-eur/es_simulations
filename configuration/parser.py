@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description=description)
 parser.add_argument('-n', type=int, action='store', default=1875, dest='n',
                     help='size of the network')
 
-parser.add_argument('-avg_deg', '--average_degree', action='store', default=5, type=int, dest='avg_deg',
+parser.add_argument('-avg_deg', '--average_degree', action='store', default=5.0, type=float, dest='avg_deg',
                     help='The average degree - defines network density.')
 
 parser.add_argument('-ra', '--ratio', action='store', default=0.1, type=float, dest='ratio',

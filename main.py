@@ -28,9 +28,12 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
                       initial_state=config.not_zealot_state, all_states=config.all_states)
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
-    g, trajectory = run_thermalization(config, init_g, epsilon, therm_time, n=n)
+    log.info(f"Running thermalization for {therm_time} time steps")
     if not silent:
+        g, trajectory = run_thermalization(config, init_g, epsilon, therm_time, n=n)
         plot_traj(trajectory, config.suffix)
+    else:
+        g = run_thermalization_simple(config, init_g, epsilon, therm_time, n=n)
 
     results = {system: [] for system in config.voting_systems.keys()}
 
@@ -64,7 +67,7 @@ def main(silent=False):
     run_experiment function.
     """
     cfg = get_arguments()
-    log.info('Running an experiment for the following configuration:')
+    log.info('Running simulation for the following configuration:')
     for key, value in cfg._cmd_args.items():
         log.info(' = '.join([key, str(value)]))
     log.info(f"See other configuration options by running: python {sys.argv[0].split('/')[-1]} --help")
