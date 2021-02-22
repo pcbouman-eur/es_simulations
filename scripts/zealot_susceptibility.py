@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
+"""
+A script running main.py many times with a given configuration
+and changing number of zealots, to then compute and plot
+zealot susceptibility and related quantities.
+"""
 import os
 import sys
 import json
 import numpy as np
 
-sys.path.insert(0, '..')
 from configuration.parser import get_arguments
-from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per, \
-    plot_mean_diff
+from tools import convert_to_distributions, split_suffix
+from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff
 
 # parameters of simulations not present in the config module
 zn_set = range(31)  # range of considered number of zealots
-bins = 25  # how many bins in heatmap histogram
 
 
 def plot_zealot_susceptibility(config):
@@ -23,6 +26,7 @@ def plot_zealot_susceptibility(config):
     # create variables for data
     suffix = split_suffix(config.suffix, 'zn')
     l_set = len(zn_set)
+    bins = config.q + 2
     bins_hist = np.linspace(0, 1, num=bins + 1)
     results = {}
     
@@ -77,8 +81,10 @@ if __name__ == '__main__':
     # this simulations, e.g. you might want to use multiprocessing to spawn jobs
     # on multiple cores, or just modify the command to use external parallelization,
     # remember if you want to overwrite default parameters for main.py you have to
-    # run this script with them and pass them into the main.py run below
+    # run this script with them and pass them into the main.py run below, a convenient
+    # way of doing it is by creating a configuration file and passing just the file
+    # for this script and here below, careful not to set -zn param in the file
     for zealots in zn_set:
-        os.system(f'python3 main.py -zn {zealots}')
+        os.system(f'python3 main.py -zn {zealots} --config_file {cfg.config_file}')
     ##################################################################################
     plot_zealot_susceptibility(cfg)

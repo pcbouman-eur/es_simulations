@@ -1,23 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+All the function necessary to generate networks for the simulation
+"""
 import igraph as ig
 import numpy as np
 
 
-def planted_affinity(q, avg_deg, fractions, ratio, n):
-    """
-
-    :param q: number of districts
-    :param avg_deg: average degree
-    :param fractions: fractions of each district (numpy array with shape = (q,))
-    :param ratio: ratio between density outside and inside of districts
-    :param n: network size
-    :return: list object with shape = (q, q).
-    """
-    p_in = avg_deg / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
-    p_out = ratio * p_in
-    p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
-    return p.tolist()
-
+###########################################################
+#                                                         #
+#                State initialization                     #
+#                                                         #
+###########################################################
 
 def default_initial_state(n, all_states, **kwargs):
     """
@@ -42,23 +35,49 @@ def consensus_initial_state(n, all_states, state=None, **kwargs):
     return [state for _ in range(n)]
 
 
-def init_sbm(n, affinity, state_generator=default_initial_state, random_dist=False, initial_state=None,
-             all_states=None):
+###########################################################
+#                                                         #
+#                Generating the network                   #
+#                                                         #
+###########################################################
+
+def planted_affinity(q, avg_deg, fractions, ratio, n):
     """
-    Generates initial graph for simulations
+    Generates a matrix of connection probabilities between different
+    communities in the Stochastic Block Model model.
+    :param q: number of districts
+    :param avg_deg: average degree
+    :param fractions: fractions of each district (numpy array with shape = (q,))
+    :param ratio: ratio between density outside and inside of districts
+    :param n: network size
+    :return: list object with shape = (q, q).
+    """
+    p_in = avg_deg / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
+    p_out = ratio * p_in
+    p = p_out * np.ones(q) + (p_in - p_out) * np.eye(q)
+    return p.tolist()
+
+
+def init_sbm(n, block_sizes, avg_deg, ratio, state_generator=default_initial_state, random_dist=False,
+             initial_state=None, all_states=None):
+    """
+    Generates initial graph for simulations based on the Stochastic Block Model.
     :param n: network size (int)
-    :param affinity: affinity matrix for SBM model (list())
+    :param block_sizes: sizes of topological communities (list of ints)
+    :param avg_deg: the average degree in the network (float)
+    :param ratio: the ratio between density outside and inside of districts (float)
     :param state_generator: function that generates the states
     :param random_dist: whether districts should be random (otherwise the same as communities) (bool)
     :param initial_state: initial state for the nodes used in the consensus initialization
     :param all_states: possible states of nodes
     :return: network with states, zealots, districts etc. (ig.Graph())
     """
-    q = len(affinity)
-    block_sizes = np.repeat(n / q, q).tolist()
-    g = ig.Graph.SBM(n, affinity, block_sizes)
-    g.vs()["state"] = state_generator(n, all_states=all_states, state=initial_state)
+    q = len(block_sizes)
+    affinity = planted_affinity(q, avg_deg, np.array(block_sizes) / n, ratio, n)
 
+    g = ig.Graph.SBM(n, affinity, block_sizes)
+
+    g.vs()["state"] = state_generator(n, all_states=all_states, state=initial_state)
     g.vs()["zealot"] = np.zeros(n)  # you can add zealots as you wish
 
     group = np.zeros(n, dtype='int')
@@ -71,7 +90,13 @@ def init_sbm(n, affinity, state_generator=default_initial_state, random_dist=Fal
     return g
 
 
-def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state=1):
+###########################################################
+#                                                         #
+#                  Defining zealots                       #
+#                                                         #
+###########################################################
+
+def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state='a'):
     """
     Function creating zealots in the network.
     Overwrite as you wish.
@@ -105,9 +130,9 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
 
 
 if __name__ == '__main__':
-    p = [[0.2, 0.01], [0.01, 0.2]]
-    m = 100
-    test_graph = init_sbm(m, p)
+    # TODO move it to unit tests
+    nodes = 100
+    test_graph = init_sbm(nodes, [60, 40], 10, 0.05, all_states=['a', 'b'])
     colors = np.array(['blue', 'green'])
     test_graph.vs['color'] = colors[np.array(test_graph.vs['district']) - 1]
     ig.plot(test_graph)

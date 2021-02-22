@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
+"""
+A script running main.py many times with a given configuration
+and changing mass media influence, to then compute and plot
+mass media susceptibility and related quantities.
+"""
 import os
 import sys
 import json
 import numpy as np
 
-sys.path.insert(0, '..')
 from configuration.parser import get_arguments
-from tools import convert_to_distributions, split_suffix, plot_mean_std, plot_heatmap, plot_std, plot_mean_per, \
-    plot_mean_diff
+from tools import convert_to_distributions, split_suffix
+from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff
 
 # parameters of simulations not present in the config module
 media_influence = np.arange(0.0, 1.0, 0.1)  # range of considered media influence
-bins = 25  # how many bins in heat-map histogram
 
 
 def plot_media_susceptibility(config):
@@ -22,13 +25,11 @@ def plot_media_susceptibility(config):
     # create variables for data
     suffix = split_suffix(config.suffix, 'media')
     l_set = len(media_influence)
-    bins_hist = np.linspace(0, 1, num=bins + 1)
+    bins = config.q + 2
+    bins_hist = np.linspace(0, 1, num=bins+1)
     results = {}
 
-    if config.abc:
-        media_state = 'a'
-    else:
-        media_state = str(1)
+    media_state = config.zealot_state
 
     for system in config.voting_systems.keys():
         results[system] = {'mean_set': np.zeros(l_set),
@@ -43,7 +44,6 @@ def plot_media_susceptibility(config):
         influence_string = f'_media_{influence}'
         s = suffix.format(valuetoinsert=influence_string)
         loc = f'results/results{s}.json'
-        # print(loc)
         with open(loc) as json_file:
             data = json.load(json_file)
         for system in config.voting_systems.keys():
@@ -72,12 +72,6 @@ def plot_media_susceptibility(config):
         plot_mean_diff(x=media_influence, y=results[system]['mean_set'], quantity='media', election_system=system,
                        suffix=suffix, xlab='media influence', ylab=f'susceptibility derivative', ylim=(),
                        save_file=True)
-
-    #TODO: does this problem still happens sometimes? do we need this?
-    #if str(media_state) in convert_to_distributions(data['results']['population']):
-    #    population_1 = convert_to_distributions(data['results']['population'])[str(media_state)]
-    #else:
-    #    population_1 = 0.0
     
 
 if __name__ == '__main__':
@@ -89,9 +83,11 @@ if __name__ == '__main__':
     # this simulations, e.g. you might want to use multiprocessing to spawn jobs
     # on multiple cores, or just modify the command to use external parallelization,
     # remember if you want to overwrite default parameters for main.py you have to
-    # run this script with them and pass them into the main.py run below
+    # run this script with them and pass them into the main.py run below, a convenient
+    # way of doing it is by creating a configuration file and passing just the file
+    # for this script and here below, careful not to set -mm param in the file
     for media in media_influence:
-        os.system(f'python3 main.py -mm {media}')
+        os.system(f'python3 main.py -mm {media} --config_file {cfg.config_file}')
     ##################################################################################
 
     plot_media_susceptibility(cfg)
