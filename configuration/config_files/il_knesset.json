@@ -10,7 +10,7 @@
   "sample_size": 10000,
   "mc_steps": 40,
   "epsilon": 0.01,
-  "mass_media": 0.2,
-  "num_parties": 5,
+  "mass_media": 0.125,
+  "num_parties": 8,
   "therm_time": 1000000
 }
