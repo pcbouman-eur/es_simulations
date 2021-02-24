@@ -10,10 +10,10 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "ratio": 0.05,
-  "sample_size": 0,
-  "mc_steps": 40,
-  "epsilon": 0.000001,
+  "sample_size": 10000,
+  "mc_steps": 50,
+  "epsilon": 0.001,
   "mass_media": 0.2,
   "num_parties": 5,
-  "therm_time": 5000000
+  "therm_time": 100000000
 }
