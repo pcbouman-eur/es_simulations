@@ -5,7 +5,6 @@ and changing mass media influence, to then compute and plot
 mass media susceptibility and related quantities.
 """
 import os
-import sys
 import json
 import numpy as np
 

@@ -5,6 +5,8 @@ All the function necessary to generate networks for the simulation
 import igraph as ig
 import numpy as np
 
+from scipy.spatial.distance import squareform, pdist
+
 
 ###########################################################
 #                                                         #
@@ -45,11 +47,11 @@ def planted_affinity(q, avg_deg, fractions, ratio, n):
     """
     Generates a matrix of connection probabilities between different
     communities in the Stochastic Block Model model.
-    :param q: number of districts
-    :param avg_deg: average degree
+    :param q: number of districts (int)
+    :param avg_deg: average degree (float)
     :param fractions: fractions of each district (numpy array with shape = (q,))
-    :param ratio: ratio between density outside and inside of districts
-    :param n: network size
+    :param ratio: ratio between density outside and inside of districts (float)
+    :param n: network size (int)
     :return: list object with shape = (q, q).
     """
     p_in = avg_deg / (n * (ratio + (1.0 - ratio) * np.sum(fractions ** 2)))
@@ -58,14 +60,39 @@ def planted_affinity(q, avg_deg, fractions, ratio, n):
     return p.tolist()
 
 
-def init_sbm(n, block_sizes, avg_deg, ratio, state_generator=default_initial_state, random_dist=False,
-             initial_state=None, all_states=None):
+def planar_affinity(avg_deg, fractions, coordinates, p_norm, c, n):
+    """
+    Generates a matrix of connection probabilities between different
+    districts, based on their coordinates.
+    :param avg_deg: average degree (float)
+    :param fractions: fractions of each district (numpy array with shape = (q,))
+    :param coordinates: the coordinates of the districts (numpy array with shape = (q, 2))
+    :param p_norm: p-norm used for the distance metric in the planar network (float)
+    :param c: constant in the function describing link probability for planar graph generator (float)
+    :param n: network size (int)
+    :return: list object with shape = (q, q).
+    """
+    dist_array = pdist(coordinates, 'minkowski', p=p_norm)
+    dist_matrix = squareform(dist_array)
+
+    affinity_matrix = 1.0 / (dist_matrix + c)
+
+    norm_deg = n * affinity_matrix.dot(fractions).dot(fractions)
+    affinity_matrix *= avg_deg / norm_deg
+    return affinity_matrix
+
+
+def init_graph(n, block_sizes, block_coords, avg_deg, ratio, p_norm, planar_const,
+               state_generator=default_initial_state, random_dist=False, initial_state=None, all_states=None):
     """
     Generates initial graph for simulations based on the Stochastic Block Model.
     :param n: network size (int)
     :param block_sizes: sizes of topological communities (list of ints)
+    :param block_coords: the coordinates of the districts (list of lists)
     :param avg_deg: the average degree in the network (float)
     :param ratio: the ratio between density outside and inside of districts (float)
+    :param p_norm: p-norm used for the distance metric in the planar network (float)
+    :param planar_const: constant in the function describing link probability for planar graph generator (float)
     :param state_generator: function that generates the states
     :param random_dist: whether districts should be random (otherwise the same as communities) (bool)
     :param initial_state: initial state for the nodes used in the consensus initialization
@@ -73,7 +100,10 @@ def init_sbm(n, block_sizes, avg_deg, ratio, state_generator=default_initial_sta
     :return: network with states, zealots, districts etc. (ig.Graph())
     """
     q = len(block_sizes)
-    affinity = planted_affinity(q, avg_deg, np.array(block_sizes) / n, ratio, n)
+    if block_coords is not None:
+        affinity = planar_affinity(avg_deg, np.array(block_sizes) / n, np.array(block_coords), p_norm, planar_const, n)
+    else:
+        affinity = planted_affinity(q, avg_deg, np.array(block_sizes) / n, ratio, n)
 
     g = ig.Graph.SBM(n, affinity, block_sizes)
 
@@ -132,7 +162,7 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
 if __name__ == '__main__':
     # TODO move it to unit tests
     nodes = 100
-    test_graph = init_sbm(nodes, [60, 40], 10, 0.05, all_states=['a', 'b'])
+    test_graph = init_graph(nodes, [60, 40], None, 10, 0.05, 2.0, 100.0, all_states=['a', 'b'])
     colors = np.array(['blue', 'green'])
     test_graph.vs['color'] = colors[np.array(test_graph.vs['district']) - 1]
     ig.plot(test_graph)

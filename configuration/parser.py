@@ -32,6 +32,18 @@ parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=i
                          'of length q, i.e. specified for every district, and size of the network n will be ignored. '
                          'The network will be generated based on the sizes of districts.')
 
+parser.add_argument('-qc', '--district_coords', action='store', nargs='+', type=float, default=None,
+                    dest='district_coords',
+                    help='The coordinates of the districts. Order matters. If this argument is provided, it must be '
+                         'of length q, i.e. specified for every district. Otherwise a SBM network will be generated.')
+
+parser.add_argument('-gp', '--p_norm', action='store', default=2.0, type=float, dest='p_norm',
+                    help='The p-norm used for the distance metric in the planar version of the network.')
+
+parser.add_argument('-gc', '--planar_c', action='store', default=100.0, type=float, dest='planar_c',
+                    help='Constant in the function describing link probability for planar graph generator. It may be '
+                         'interpreted as the inverse of the link probability inside districts (before normalisation).')
+
 
 # Electoral system configuration
 parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, default=[1], dest='seats',

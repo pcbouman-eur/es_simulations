@@ -35,6 +35,9 @@ class Config:
     avg_deg = None
     ratio = None
     district_sizes = None
+    district_coords = None
+    p_norm = None
+    planar_c = None
 
     seats = None
     seat_rule = None
@@ -115,7 +118,7 @@ class Config:
         if self.district_sizes is not None:
             if len(self.district_sizes) != self.q:
                 raise ValueError(f"The list of district sizes (len={len(self.district_sizes)}) "
-                                 f"must have a length equal to the number of districts (q={self.q})!")
+                                 f"must have length equal to the number of districts (q={self.q})!")
             log.info('The network will be generated based on the district sizes')
             self.n = sum(self.district_sizes)
         else:
@@ -124,6 +127,15 @@ class Config:
                 raise ValueError('The number of nodes must be a multiplication of the number of districts!')
             one_district_size = self.n // self.q
             self.district_sizes = [one_district_size for _ in range(self.q)]
+        if self.district_coords is not None:
+            if len(self.district_coords) != self.q:
+                raise ValueError(f"The list of district coordinates (len={len(self.district_coords)}) "
+                                 f"must have length equal to the number of districts (q={self.q})!")
+            log.info('The network will be have a "planar" structure')
+            self.suffix += f"_graph_planar_gp_{self.p_norm}_gc_{self.planar_c}_c_{self.avg_deg}"
+        else:
+            log.info('The network will be have a simple planted block structure')
+            self.suffix += f"_graph_sbm_R_{self.ratio}_c_{self.avg_deg}"
 
         # Propagation mechanisms
         if self.propagation == 'majority':
@@ -135,8 +147,7 @@ class Config:
 
         # Filename suffix
         self.suffix = (f'_N_{self.n}_q_{self.q}_EPS_{self.epsilon}_S_{self.sample_size}_T_{self.therm_time}_'
-                       f'MC_{self.mc_steps}_R_{self.ratio}_c_{self.avg_deg}_p_{self.propagation}_'
-                       f'media_{self.mass_media}_zn_{self.n_zealots}')
+                       f'MC_{self.mc_steps}_p_{self.propagation}_media_{self.mass_media}_zn_{self.n_zealots}')
         self.suffix = self.suffix.replace('.', '')
 
         # Determine the number of states
