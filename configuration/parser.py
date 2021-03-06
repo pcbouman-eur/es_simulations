@@ -122,4 +122,3 @@ def get_arguments():
     """
     # necessary to pass this protected dict in order to trouble-check the redundant parameters
     return Config(parser.parse_args(), parser._option_string_actions)
-
