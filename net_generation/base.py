@@ -79,7 +79,7 @@ def planar_affinity(avg_deg, fractions, coordinates, p_norm, c, n):
 
     norm_deg = n * affinity_matrix.dot(fractions).dot(fractions)
     affinity_matrix *= avg_deg / norm_deg
-    return affinity_matrix
+    return affinity_matrix.tolist()
 
 
 def init_graph(n, block_sizes, block_coords, avg_deg, ratio, p_norm, planar_const,
@@ -157,12 +157,3 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
         g.vs[zealots]['zealot'] = 1
         g.vs[zealots]['state'] = zealot_state
     return g
-
-
-if __name__ == '__main__':
-    # TODO move it to unit tests
-    nodes = 100
-    test_graph = init_graph(nodes, [60, 40], None, 10, 0.05, 2.0, 100.0, all_states=['a', 'b'])
-    colors = np.array(['blue', 'green'])
-    test_graph.vs['color'] = colors[np.array(test_graph.vs['district']) - 1]
-    ig.plot(test_graph)

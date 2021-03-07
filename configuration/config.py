@@ -114,6 +114,11 @@ class Config:
         for key, value in self._cmd_args.items():
             self.__setattr__(key,  value)
 
+        # Filename suffix
+        self.suffix = (f'_N_{self.n}_q_{self.q}_EPS_{self.epsilon}_S_{self.sample_size}_T_{self.therm_time}_'
+                       f'MC_{self.mc_steps}_p_{self.propagation}_media_{self.mass_media}_zn_{self.n_zealots}')
+        self.suffix = self.suffix.replace('.', '')
+
         # Network structure
         if self.district_sizes is not None:
             if len(self.district_sizes) != self.q:
@@ -144,11 +149,6 @@ class Config:
             def f(n, g):
                 return sim.majority_propagation(n, g, True)
             self.propagate = f
-
-        # Filename suffix
-        self.suffix = (f'_N_{self.n}_q_{self.q}_EPS_{self.epsilon}_S_{self.sample_size}_T_{self.therm_time}_'
-                       f'MC_{self.mc_steps}_p_{self.propagation}_media_{self.mass_media}_zn_{self.n_zealots}')
-        self.suffix = self.suffix.replace('.', '')
 
         # Determine the number of states
         if self.num_parties < 2:
