@@ -123,7 +123,7 @@ class Config:
         if self.district_sizes is not None:
             if len(self.district_sizes) != self.q:
                 raise ValueError(f"The list of district sizes (len={len(self.district_sizes)}) "
-                                 f"must have length equal to the number of districts (q={self.q})!")
+                                 f"must have a length equal to the number of districts (q={self.q})!")
             log.info('The network will be generated based on the district sizes')
             self.n = sum(self.district_sizes)
         else:
@@ -135,11 +135,11 @@ class Config:
         if self.district_coords is not None:
             if len(self.district_coords) != self.q:
                 raise ValueError(f"The list of district coordinates (len={len(self.district_coords)}) "
-                                 f"must have length equal to the number of districts (q={self.q})!")
-            log.info('The network will be have a "planar" structure')
+                                 f"must have a length equal to the number of districts (q={self.q})!")
+            log.info('The network will have a "planar" structure')
             self.suffix += f"_graph_planar_gp_{self.p_norm}_gc_{self.planar_c}_c_{self.avg_deg}"
         else:
-            log.info('The network will be have a simple planted block structure')
+            log.info('The network will have a simple planted block structure')
             self.suffix += f"_graph_sbm_R_{self.ratio}_c_{self.avg_deg}"
 
         # Propagation mechanisms

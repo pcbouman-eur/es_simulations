@@ -35,7 +35,8 @@ parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=i
 parser.add_argument('-qc', '--district_coords', action='store', nargs='+', type=float, default=None,
                     dest='district_coords',
                     help='The coordinates of the districts. Order matters. If this argument is provided, it must be '
-                         'of length q, i.e. specified for every district. Otherwise a SBM network will be generated.')
+                         'of length q, i.e. specified for every district. If it is not provided a SBM network will '
+                         'be generated.')
 
 parser.add_argument('-gp', '--p_norm', action='store', default=2.0, type=float, dest='p_norm',
                     help='The p-norm used for the distance metric in the planar version of the network.')
