@@ -4,12 +4,12 @@ This file contains configuration for a command line parser based on Python's
 argparse module
 """
 import argparse
+import json
+
 from configuration.config import Config
 from electoral_sys.seat_assignment import seat_assignment_rules
 
-
 # In the following part, the different command line arguments are defined
-
 description = 'Simulation of voting process dynamics with different electoral rules'
 
 parser = argparse.ArgumentParser(description=description)
@@ -32,11 +32,12 @@ parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=i
                          'of length q, i.e. specified for every district, and size of the network n will be ignored. '
                          'The network will be generated based on the sizes of districts.')
 
-parser.add_argument('-qc', '--district_coords', action='store', nargs='+', type=float, default=None,
+parser.add_argument('-qc', '--district_coords', action='store', type=json.loads, default=None,
                     dest='district_coords',
                     help='The coordinates of the districts. Order matters. If this argument is provided, it must be '
                          'of length q, i.e. specified for every district. If it is not provided a SBM network will '
-                         'be generated.')
+                         'be generated. The coordinates should be provided as a string, e.g. '
+                         '-qc "[[0.0, 1.0], [1.0, 0.0]]"')
 
 parser.add_argument('-gp', '--p_norm', action='store', default=2.0, type=float, dest='p_norm',
                     help='The p-norm used for the distance metric in the planar version of the network.')
