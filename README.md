@@ -57,7 +57,7 @@ $ python3 main.py
 Running the simulation for a network with 10^4 nodes, average degree equal 20, ratio between probability of connections
 within and between the topological communities equal 0.01, one hundred districts (communities), and 5 seats per district:
 ```bash
-$ python3 main.py -n 10000 -aveg_deg 20 -ra 0.01 -q 100 -qs 5
+$ python3 main.py -n 10000 -avg_deg 20 -ra 0.01 -q 100 -qs 5
 ```
 Running the simulation using the majority rule for state propagation, the probability of random
 state update (mutation) equal 0.5, 30 zealots in the network, probability of choosing the zealot state

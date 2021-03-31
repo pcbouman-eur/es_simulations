@@ -137,10 +137,10 @@ class Config:
                 raise ValueError(f"The list of district coordinates (len={len(self.district_coords)}) "
                                  f"must have a length equal to the number of districts (q={self.q})!")
             log.info('The network will have a "planar" structure')
-            self.suffix += f"_graph_planar_gp_{self.p_norm}_gc_{self.planar_c}_c_{self.avg_deg}"
+            self.suffix += f"_gp_{self.p_norm}_gc_{self.planar_c}_c_{self.avg_deg}"
         else:
             log.info('The network will have a simple planted block structure')
-            self.suffix += f"_graph_sbm_R_{self.ratio}_c_{self.avg_deg}"
+            self.suffix += f"_R_{self.ratio}_c_{self.avg_deg}"
 
         # Propagation mechanisms
         if self.propagation == 'majority':
