@@ -7,6 +7,7 @@ to then compute and plot comparision between them.
 import numpy as np
 import json
 import os
+import sys
 from matplotlib import pyplot as plt
 
 from configuration.parser import get_arguments

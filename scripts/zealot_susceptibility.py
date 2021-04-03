@@ -5,6 +5,7 @@ and changing number of zealots, to then compute and plot
 zealot susceptibility and related quantities.
 """
 import os
+import sys
 import json
 import numpy as np
 
