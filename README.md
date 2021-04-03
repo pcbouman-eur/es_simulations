@@ -22,6 +22,7 @@ Fell free to use our code, and if you do so, please cite us!
 [![numpy](https://img.shields.io/badge/numpy-1.19.2-yellow)](https://numpy.org/devdocs/release/1.19.2-notes.html)
 [![matplotlib](https://img.shields.io/badge/matplotlib-3.2.0-orange)](https://matplotlib.org/3.2.0/contents.html)
 [![scipy](https://img.shields.io/badge/scipy-1.5.2-blue)](https://docs.scipy.org/doc/scipy/reference/release.1.5.2.html)
+[![geopy](https://img.shields.io/badge/geppy-2.1.0-red)](https://geopy.readthedocs.io/en/stable/changelog_2xx.html)
 
 ## Project structure
 

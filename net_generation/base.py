@@ -6,6 +6,7 @@ import igraph as ig
 import numpy as np
 
 from scipy.spatial.distance import squareform, pdist
+from geopy.distance import geodesic
 
 
 ###########################################################
@@ -60,19 +61,22 @@ def planted_affinity(q, avg_deg, fractions, ratio, n):
     return p.tolist()
 
 
-def planar_affinity(avg_deg, fractions, coordinates, p_norm, c, n):
+def planar_affinity(avg_deg, fractions, coordinates, c, n, euclidean=False):
     """
     Generates a matrix of connection probabilities between different
     districts, based on their coordinates.
     :param avg_deg: average degree (float)
     :param fractions: fractions of each district (numpy array with shape = (q,))
     :param coordinates: the coordinates of the districts (numpy array with shape = (q, 2))
-    :param p_norm: p-norm used for the distance metric in the planar network (float)
     :param c: constant in the function describing link probability for planar graph generator (float)
     :param n: network size (int)
+    :param euclidean: whether to use euclidean or geodesic distance (bool)
     :return: list object with shape = (q, q).
     """
-    dist_array = pdist(coordinates, 'minkowski', p=p_norm)
+    if euclidean:
+        dist_array = pdist(coordinates, 'euclidean')
+    else:
+        dist_array = geodesic(coordinates)
     dist_matrix = squareform(dist_array)
 
     affinity_matrix = 1.0 / (dist_matrix + c)
@@ -82,7 +86,7 @@ def planar_affinity(avg_deg, fractions, coordinates, p_norm, c, n):
     return affinity_matrix.tolist()
 
 
-def init_graph(n, block_sizes, block_coords, avg_deg, ratio, p_norm, planar_const,
+def init_graph(n, block_sizes, block_coords, avg_deg, ratio, planar_const, euclidean=False,
                state_generator=default_initial_state, random_dist=False, initial_state=None, all_states=None):
     """
     Generates initial graph for simulations based on the Stochastic Block Model.
@@ -91,8 +95,8 @@ def init_graph(n, block_sizes, block_coords, avg_deg, ratio, p_norm, planar_cons
     :param block_coords: the coordinates of the districts (list of lists)
     :param avg_deg: the average degree in the network (float)
     :param ratio: the ratio between density outside and inside of districts (float)
-    :param p_norm: p-norm used for the distance metric in the planar network (float)
     :param planar_const: constant in the function describing link probability for planar graph generator (float)
+    :param euclidean: whether to use euclidean or geodesic distance (bool)
     :param state_generator: function that generates the states
     :param random_dist: whether districts should be random (otherwise the same as communities) (bool)
     :param initial_state: initial state for the nodes used in the consensus initialization
@@ -101,7 +105,8 @@ def init_graph(n, block_sizes, block_coords, avg_deg, ratio, p_norm, planar_cons
     """
     q = len(block_sizes)
     if block_coords is not None:
-        affinity = planar_affinity(avg_deg, np.array(block_sizes) / n, np.array(block_coords), p_norm, planar_const, n)
+        affinity = planar_affinity(avg_deg, np.array(block_sizes) / n, np.array(block_coords),
+                                   planar_const, n, euclidean)
     else:
         affinity = planted_affinity(q, avg_deg, np.array(block_sizes) / n, ratio, n)
 

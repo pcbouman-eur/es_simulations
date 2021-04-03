@@ -39,12 +39,12 @@ parser.add_argument('-qc', '--district_coords', action='store', type=json.loads,
                          'be generated. The coordinates should be provided as a string, e.g. '
                          '-qc "[[0.0, 1.0], [1.0, 0.0]]"')
 
-parser.add_argument('-gp', '--p_norm', action='store', default=2.0, type=float, dest='p_norm',
-                    help='The p-norm used for the distance metric in the planar version of the network.')
-
 parser.add_argument('-gc', '--planar_c', action='store', default=100.0, type=float, dest='planar_c',
                     help='Constant in the function describing link probability for planar graph generator. It may be '
                          'interpreted as the inverse of the link probability inside districts (before normalisation).')
+
+parser.add_argument('-eu', '--euclidean', action='store', default=False, type=bool, dest='euclidean',
+                    help='Whether to use euclidean or geodesic distance.')
 
 
 # Electoral system configuration
