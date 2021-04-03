@@ -75,9 +75,12 @@ def planar_affinity(avg_deg, fractions, coordinates, c, n, euclidean=False):
     """
     if euclidean:
         dist_array = pdist(coordinates, 'euclidean')
+        dist_matrix = squareform(dist_array)
     else:
-        dist_array = geodesic(coordinates)
-    dist_matrix = squareform(dist_array)
+        dist_matrix = np.zeros((coordinates.shape[0], coordinates.shape[0]))
+        for i in range(coordinates.shape[0]):
+            for j in range(coordinates.shape[0]):
+                dist_matrix[i, j] = geodesic(coordinates[i], coordinates[j]).km
 
     affinity_matrix = 1.0 / (dist_matrix + c)
 
