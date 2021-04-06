@@ -4,12 +4,12 @@ This file contains configuration for a command line parser based on Python's
 argparse module
 """
 import argparse
+import json
+
 from configuration.config import Config
 from electoral_sys.seat_assignment import seat_assignment_rules
 
-
 # In the following part, the different command line arguments are defined
-
 description = 'Simulation of voting process dynamics with different electoral rules'
 
 parser = argparse.ArgumentParser(description=description)
@@ -31,6 +31,20 @@ parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=i
                     help='The number of voters in districts. Order matters. If this argument is provided, it must be '
                          'of length q, i.e. specified for every district, and size of the network n will be ignored. '
                          'The network will be generated based on the sizes of districts.')
+
+parser.add_argument('-qc', '--district_coords', action='store', type=json.loads, default=None,
+                    dest='district_coords',
+                    help='The coordinates of the districts. Order matters. If this argument is provided, it must be '
+                         'of length q, i.e. specified for every district. If it is not provided a SBM network will '
+                         'be generated. The coordinates should be provided as a string, e.g. '
+                         '-qc "[[0.0, 1.0], [1.0, 0.0]]"')
+
+parser.add_argument('-gc', '--planar_c', action='store', default=100.0, type=float, dest='planar_c',
+                    help='Constant in the function describing link probability for planar graph generator. It may be '
+                         'interpreted as the inverse of the link probability inside districts (before normalisation).')
+
+parser.add_argument('-eu', '--euclidean', action='store', default=False, type=bool, dest='euclidean',
+                    help='Whether to use euclidean or geodesic distance.')
 
 
 # Electoral system configuration
@@ -110,4 +124,3 @@ def get_arguments():
     """
     # necessary to pass this protected dict in order to trouble-check the redundant parameters
     return Config(parser.parse_args(), parser._option_string_actions)
-

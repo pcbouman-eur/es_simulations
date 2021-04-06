@@ -22,6 +22,7 @@ Fell free to use our code, and if you do so, please cite us!
 [![numpy](https://img.shields.io/badge/numpy-1.19.2-yellow)](https://numpy.org/devdocs/release/1.19.2-notes.html)
 [![matplotlib](https://img.shields.io/badge/matplotlib-3.2.0-orange)](https://matplotlib.org/3.2.0/contents.html)
 [![scipy](https://img.shields.io/badge/scipy-1.5.2-blue)](https://docs.scipy.org/doc/scipy/reference/release.1.5.2.html)
+[![geopy](https://img.shields.io/badge/geppy-2.1.0-red)](https://geopy.readthedocs.io/en/stable/changelog_2xx.html)
 
 ## Project structure
 
@@ -57,7 +58,7 @@ $ python3 main.py
 Running the simulation for a network with 10^4 nodes, average degree equal 20, ratio between probability of connections
 within and between the topological communities equal 0.01, one hundred districts (communities), and 5 seats per district:
 ```bash
-$ python3 main.py -n 10000 -aveg_deg 20 -ra 0.01 -q 100 -qs 5
+$ python3 main.py -n 10000 -avg_deg 20 -ra 0.01 -q 100 -qs 5
 ```
 Running the simulation using the majority rule for state propagation, the probability of random
 state update (mutation) equal 0.5, 30 zealots in the network, probability of choosing the zealot state

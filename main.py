@@ -6,7 +6,7 @@ from tools import convert_to_distributions, save_data, read_data, run_with_time,
 from plotting import plot_indexes, plot_hist, plot_traj
 from configuration.parser import get_arguments
 from configuration.logging import log
-from net_generation.base import init_sbm, add_zealots
+from net_generation.base import init_graph, add_zealots
 from simulation.base import run_simulation, run_thermalization, run_thermalization_simple
 
 
@@ -23,9 +23,10 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
     :param silent: whether to keep it silent and not print the sample number
     :return: None
     """
-    init_g = init_sbm(n, config.district_sizes, config.avg_deg, config.ratio,
-                      state_generator=config.initialize_states, random_dist=config.random_dist,
-                      initial_state=config.not_zealot_state, all_states=config.all_states)
+    init_g = init_graph(n, config.district_sizes, config.district_coords, config.avg_deg, config.ratio,
+                        config.planar_c, euclidean=config.euclidean, state_generator=config.initialize_states,
+                        random_dist=config.random_dist, initial_state=config.not_zealot_state,
+                        all_states=config.all_states)
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
     log.info(f"Running thermalization for {therm_time} time steps")

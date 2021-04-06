@@ -3,6 +3,7 @@ import numpy as np
 import scipy.stats as st
 import matplotlib.pyplot as plt
 import os
+import sys
 
 from configuration.parser import get_arguments
 from tools import read_data, convert_to_distributions
