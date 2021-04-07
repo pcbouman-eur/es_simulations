@@ -36,7 +36,6 @@ class Config:
     ratio = None
     district_sizes = None
     district_coords = None
-    p_norm = None
     planar_c = None
 
     seats = None
