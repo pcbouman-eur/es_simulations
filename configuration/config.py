@@ -37,6 +37,7 @@ class Config:
     district_sizes = None
     district_coords = None
     planar_c = None
+    euclidean = None
 
     seats = None
     seat_rule = None

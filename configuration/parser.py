@@ -22,7 +22,7 @@ parser.add_argument('-avg_deg', '--average_degree', action='store', default=5.0,
                     help='The average degree - defines network density.')
 
 parser.add_argument('-ra', '--ratio', action='store', default=0.1, type=float, dest='ratio',
-                    help='The ratio used to plant the affinities')
+                    help='The ratio used to plant the affinities, not used if coordinates are given.')
 
 parser.add_argument('-q', type=int, action='store', default=25, dest='q',
                     help='number of districts')
