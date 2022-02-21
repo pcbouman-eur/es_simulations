@@ -125,7 +125,9 @@ class Config:
                 raise ValueError(f"The list of district sizes (len={len(self.district_sizes)}) "
                                  f"must have a length equal to the number of districts (q={self.q})!")
             log.info('The network will be generated based on the district sizes')
-            self.n = sum(self.district_sizes)
+            if self.n != sum(self.district_sizes):
+                raise ValueError(f"The sum of district sizes (sum={sum(self.district_sizes)}) "
+                                 f"must be equal to the size of the network (n={self.n})!")
         else:
             log.info('The network will be generated based on the number of districts and network size')
             if self.n % self.q != 0:
