@@ -33,7 +33,7 @@
   "sample_size": 10000,
   "mc_steps": 10,
   "epsilon": 0.0001,
-  "mass_media": 0.125,
+  "mass_media": 0.111111111111111111,
   "num_parties": 9,
   "therm_time": 1000000,
   "district_coords": [
