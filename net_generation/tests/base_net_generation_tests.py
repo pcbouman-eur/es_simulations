@@ -39,15 +39,33 @@ class TestNetworkGeneration(unittest.TestCase):
     def test_sbm_avg_deg(self):
         n = 1000
         avg_deg = 10.0
-        graph = init_graph(n, [600, 400], None, avg_deg, 0.05, 100.0, all_states=['a', 'b'])
+        graph = init_graph(n, [600, 400], avg_deg, block_coords=None, ratio=0.05, planar_const=100.0,
+                           all_states=['a', 'b'])
         self.assertAlmostEqual(avg_deg, np.mean(graph.degree()), places=0)
+
+    def test_sbm_avg_deg_no_ratio(self):
+        n = 1000
+        avg_deg = 10.0
+
+        def test_func():
+            init_graph(n, [600, 400], avg_deg, block_coords=None, ratio=None, all_states=['a', 'b'])
+        self.assertRaises(TypeError, test_func)
 
     def test_planar_avg_deg(self):
         n = 1000
         avg_deg = 10.0
-        graph = init_graph(n, [300, 400, 300], [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], avg_deg, 0.05, 100.0,
-                           all_states=['a', 'b'])
+        graph = init_graph(n, [300, 400, 300], avg_deg, block_coords=[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], ratio=0.05,
+                           planar_const=100.0, all_states=['a', 'b'])
         self.assertAlmostEqual(avg_deg, np.mean(graph.degree()), places=0)
+
+    def test_planar_avg_deg_no_planar_c(self):
+        n = 1000
+        avg_deg = 10.0
+
+        def test_func():
+            init_graph(n, [300, 400, 300], avg_deg, block_coords=[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], ratio=0.05,
+                       all_states=['a', 'b'])
+        self.assertRaises(TypeError, test_func)
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@
   "threshold": 0.0325,
   "seat_rule": "jefferson",
   "avg_deg": 12,
-  "planar_c": 100,
+  "planar_c": 1.1,
   "sample_size": 10000,
   "mc_steps": 40,
   "epsilon": 0.01,

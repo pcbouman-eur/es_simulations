@@ -29,7 +29,7 @@ parser.add_argument('-q', type=int, action='store', default=25, dest='q',
 
 parser.add_argument('-qn', '--district_sizes', action='store', nargs='+', type=int, default=None, dest='district_sizes',
                     help='The number of voters in districts. Order matters. If this argument is provided, it must be '
-                         'of length q, i.e. specified for every district, and size of the network n will be ignored. '
+                         'of length q, i.e. specified for every district, and must sum up to the network size n. '
                          'The network will be generated based on the sizes of districts.')
 
 parser.add_argument('-qc', '--district_coords', action='store', type=json.loads, default=None,
@@ -39,7 +39,7 @@ parser.add_argument('-qc', '--district_coords', action='store', type=json.loads,
                          'be generated. The coordinates should be provided as a string, e.g. '
                          '-qc "[[0.0, 1.0], [1.0, 0.0]]"')
 
-parser.add_argument('-gc', '--planar_c', action='store', default=100.0, type=float, dest='planar_c',
+parser.add_argument('-gc', '--planar_c', action='store', default=None, type=float, dest='planar_c',
                     help='Constant in the function describing link probability for planar graph generator. It may be '
                          'interpreted as the inverse of the link probability inside districts (before normalisation).')
 
@@ -91,7 +91,7 @@ parser.add_argument('-zw', '--zealots_where', action='store', default='random',
 parser.add_argument('-zd', '--zealots_district', action='store', default=None, type=int, dest='zealots_district',
                     help='if zealots are in one district, which district')
 
-parser.add_argument('-mm', '--mass_media', type=float, action='store', default=0.5, dest='mass_media',
+parser.add_argument('-mm', '--mass_media', type=float, action='store', default=None, dest='mass_media',
                     help='independent flip probability to the zealot state - mass media effect')
 
 

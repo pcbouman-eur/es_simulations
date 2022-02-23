@@ -4,10 +4,15 @@ A collection of plotting functions used to generate figures
 """
 import os
 import numpy as np
+import igraph as ig
+from numpy.random import normal
 from matplotlib import pyplot as plt
 
 
-COLORS = ('tomato', 'mediumseagreen', 'cornflowerblue', 'mediumorchid', 'sandybrown', 'gold', 'deepskyblue')
+COLORS = (
+    'tomato', 'mediumseagreen', 'cornflowerblue', 'mediumorchid',
+    'sandybrown', 'gold', 'deepskyblue', 'orangered', 'goldenrod'
+)
 
 
 ###########################################################
@@ -246,3 +251,79 @@ def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='numbe
     else:
         plt.show()
     plt.close('all')
+
+
+def plot_network(graph, config, mode=None, layout=None, save_as=None, node_size=10, std=0.00015, ig_layout=None):
+    """
+    Plotting igraph.Graph() object in various ways, indicating with color districts or states of the dones.
+    :param graph: the network to plot, igraph.Graph() object
+    :param config: configuration of the simulation, config.Config() object
+    :param mode: either 'districts' to plot districts, or 'states' to plot states
+    :param layout: 'default', 'geo', or 'geo_strict', the mode of plotting the net, if None it'll be 'default'
+    :param save_as: destination file to save the plot, use .png or .pdf
+    :param node_size: the size of the node on the plot
+    :param std: this param defines the size of the area that nodes from one district will take on the plot,
+                if 0 all nodes from the same district will overlap on the plot
+    :param ig_layout: the layout as from ig.Graph.layout() to plot the nodes in a fixed position
+    :return: None
+    """
+    if mode == 'districts':
+        for v in graph.vs():
+            v['color'] = COLORS[v['district'] % len(COLORS)]
+    elif mode == 'states':
+        for v in graph.vs():
+            v['color'] = COLORS[config.all_states.index(v['state']) % len(COLORS)]
+    else:
+        raise ValueError(f"Mode '{mode}' not implemented!")
+
+    background = 'white'
+
+    if layout is not None and 'geo' in layout:
+
+        for v in graph.vs():
+            v['x'] = (config.district_coords[v['district']][1]) / 180
+            v['y'] = (-config.district_coords[v['district']][0]) / 90
+
+        x_min = min(graph.vs()['x'])
+        x_max = max(graph.vs()['x'])
+        y_min = min(graph.vs()['y'])
+        y_max = max(graph.vs()['y'])
+        x_diff = x_max - x_min
+        y_diff = y_max - y_min
+
+        if layout == 'geo':
+            if x_diff > y_diff:
+                x_scale = x_diff / y_diff
+                y_scale = 1
+            else:
+                x_scale = 1
+                y_scale = y_diff / x_diff
+        elif layout == 'geo_strict':
+            x_scale = 1
+            y_scale = 1
+        else:
+            raise ValueError(f"Layout '{layout}' not implemented!")
+
+        avg_size = np.mean(config.district_sizes)
+        for v in graph.vs():
+            v['x'] = v['x'] + normal(0.0, x_scale * std * config.district_sizes[v['district']] / avg_size)
+            v['y'] = v['y'] + normal(0.0, y_scale * std * config.district_sizes[v['district']] / avg_size)
+
+        if layout == 'geo_strict':
+            diff = max(x_diff, y_diff) / 2
+            x_middle = (x_min + x_max) / 2
+            y_middle = (y_min + y_max) / 2
+
+            graph.add_vertex(x=x_middle + diff, y=y_middle + diff, color='black')
+            graph.add_vertex(x=x_middle - diff, y=y_middle + diff, color='black')
+            graph.add_vertex(x=x_middle + diff, y=y_middle - diff, color='black')
+            graph.add_vertex(x=x_middle - diff, y=y_middle - diff, color='black')
+
+            background = None
+
+    graph.vs()['size'] = node_size
+
+    if save_as is not None:
+        ig.plot(graph, layout=ig_layout, background=background, target=save_as)
+    else:
+        ig.plot(graph, layout=ig_layout, background=background)

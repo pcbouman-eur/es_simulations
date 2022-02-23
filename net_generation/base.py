@@ -89,14 +89,14 @@ def planar_affinity(avg_deg, fractions, coordinates, c, n, euclidean=False):
     return affinity_matrix.tolist()
 
 
-def init_graph(n, block_sizes, block_coords, avg_deg, ratio, planar_const, euclidean=False,
+def init_graph(n, block_sizes, avg_deg, block_coords=None, ratio=None, planar_const=None, euclidean=False,
                state_generator=default_initial_state, random_dist=False, initial_state=None, all_states=None):
     """
     Generates initial graph for simulations based on the Stochastic Block Model.
     :param n: network size (int)
     :param block_sizes: sizes of topological communities (list of ints)
-    :param block_coords: the coordinates of the districts (list of lists)
     :param avg_deg: the average degree in the network (float)
+    :param block_coords: the coordinates of the districts (list of lists)
     :param ratio: the ratio between density outside and inside of districts (float)
     :param planar_const: constant in the function describing link probability for planar graph generator (float)
     :param euclidean: whether to use euclidean or geodesic distance (bool)

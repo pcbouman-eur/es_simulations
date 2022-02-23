@@ -2,7 +2,7 @@
 import numpy as np
 import sys
 
-from tools import convert_to_distributions, save_data, read_data, run_with_time, calculate_indexes
+from tools import convert_to_distributions, save_data, read_data, run_with_time, calculate_indexes, compute_edge_ratio
 from plotting import plot_indexes, plot_hist, plot_traj
 from configuration.parser import get_arguments
 from configuration.logging import log
@@ -23,11 +23,16 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
     :param silent: whether to keep it silent and not print the sample number
     :return: None
     """
-    init_g = init_graph(n, config.district_sizes, config.district_coords, config.avg_deg, config.ratio,
-                        config.planar_c, euclidean=config.euclidean, state_generator=config.initialize_states,
-                        random_dist=config.random_dist, initial_state=config.not_zealot_state,
-                        all_states=config.all_states)
+    init_g = init_graph(n, config.district_sizes, config.avg_deg, block_coords=config.district_coords,
+                        ratio=config.ratio, planar_const=config.planar_c, euclidean=config.euclidean,
+                        state_generator=config.initialize_states, random_dist=config.random_dist,
+                        initial_state=config.not_zealot_state, all_states=config.all_states)
     init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+
+    if not silent:
+        link_fraction, link_ratio = compute_edge_ratio(init_g)
+        log.info('There is ' + str(round(100.0 * link_fraction, 1)) + '% of inter-district connections')
+        log.info('Ratio of inter- to intra-district links is equal ' + str(round(link_ratio, 3)))
 
     log.info(f"Running thermalization for {therm_time} time steps")
     if not silent:

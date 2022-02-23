@@ -107,6 +107,24 @@ def calculate_indexes(voting_distribution, distribution, sample_size):
             'Eff. No of Parties': effective_number_of_parties}
 
 
+def compute_edge_ratio(graph):
+    """
+    Computes the fraction of inter-district connections among all connections
+    and the ratio of inter-district connections to intra-district connections.
+    :param graph: ig.Graph object
+    :return: (fraction of inter-district connections, ratio of inter- connections to intra- connections)
+    """
+    between_dist = 0  # links between two different district
+    within_dist = 0  # links inside the same district
+    for edge in graph.get_edgelist():
+        if graph.vs(edge[0])['district'][0] != graph.vs(edge[1])['district'][0]:
+            between_dist += 1
+        else:
+            within_dist += 1
+
+    return between_dist / (between_dist + within_dist), between_dist / within_dist
+
+
 ###########################################################
 #                                                         #
 #               Other helpful functions                   #

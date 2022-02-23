@@ -134,15 +134,20 @@ class Config:
                 raise ValueError('The number of nodes must be a multiplication of the number of districts!')
             one_district_size = self.n // self.q
             self.district_sizes = [one_district_size for _ in range(self.q)]
+
         if self.district_coords is not None:
             if len(self.district_coords) != self.q:
                 raise ValueError(f"The list of district coordinates (len={len(self.district_coords)}) "
                                  f"must have a length equal to the number of districts (q={self.q})!")
-            log.info('The network will have a "planar" structure')
+            log.info('The network will have a "planar" structure based on district_coords and planar_c values')
             self.suffix += f"_gc_{self.planar_c}_c_{self.avg_deg}"
+            if self.ratio is not None:
+                log.warning('"ratio" parameter was provided, but will be ignored in the planar network')
         else:
             log.info('The network will have a simple planted block structure')
             self.suffix += f"_R_{self.ratio}_c_{self.avg_deg}"
+            if self.planar_c is not None:
+                log.warning('"planar_c" parameter was provided, but will be ignored in the simple planted network')
 
         # Propagation mechanisms
         if self.propagation == 'majority':
@@ -159,6 +164,9 @@ class Config:
             self.all_states = generate_state_labels(self.num_parties)
             self.not_zealot_state = self.all_states[-1]
             self.suffix = ''.join(['_parties_', str(self.num_parties), self.suffix])
+
+        if self.mass_media is None:
+            self.mass_media = 1.0 / self.num_parties  # the symmetric case with no propaganda
 
         # Initialization in the consensus state
         if self.consensus:

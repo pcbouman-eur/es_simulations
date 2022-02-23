@@ -26,9 +26,10 @@ Fell free to use our code, and if you do so, please cite us!
 
 ## Project structure
 
-* `configuration/` contains configuration parser, default parameters values, configuration file, and logging configuration
+* `configuration/` contains configuration parser, default parameters values, configuration files, and logging configuration
+  * `confi_files/` contains configuration files
+      * `config_example.json` an exemplary configuration file, remember that in the file you must use the parameter's stored name, i.e. what is provided as `dest` argument in `parser.add_argument` in `parser.py`
   * `config.py` defines the `Config` class which contains all the simulation parameters and their derivatives and is passed throughout the simulation
-  * `config_example.json` an exemplary configuration file, remember that in the file you must use the parameter's stored name, i.e. what is provided as `dest` argument in `parser.add_argument` in `parser.py`
   * `logging.py` logging configuration with usage examples
   * `parser.py` the file with a simulation arguments parser, defines every parameter of the simulation, it's default value, type, possible choices etc. Comments here create the best documentation of the simulation parameters
 * `electoral_sys/` all logic behind electoral systems, i.e. how to translate votes into seats and winners
@@ -45,7 +46,7 @@ Fell free to use our code, and if you do so, please cite us!
   * `zealot_susceptibility.py` this script runs `main.py` for a range of different numbers of zealots and plots zealot susceptibility and other measures
 * `simulation/` everything to run the dynamical process taking place on the network
   * `base.py` contains functions with the main algorithm of the opinion formation, opinion propagation (social influence), opinion mutation (random noise), and thermalization
-* `main.py` the main script for running the whole simulation for a given set of parameters; first thermalizes the system and then runs the process of opinion dynamics performing elections after every given number of steps; saves the results in a `.json` file and plots them (there is an argument `silent` to skip plotting when using scripts e.g. from `scripts/`)
+* `main.py` the main script for running the whole simulation for a given set of parameters; first thermalizes the system and then runs the process of opinion dynamics performing elections after every given number of steps; saves the results in a `.json` file and plots them (there is an argument `silent` to skip plotting and log less information when using scripts e.g. from `scripts/`)
 * `plotting.py` all plotting function
 * `tools.py` different useful functions used in various parts of the program
 

@@ -10,7 +10,7 @@
   "threshold": 0.0,
   "seat_rule": "default",
   "avg_deg": 12,
-  "planar_c": 100,
+  "planar_c": 10,
   "sample_size": 10000,
   "mc_steps": 50,
   "epsilon": 0.0005,
