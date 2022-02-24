@@ -27,7 +27,7 @@ Fell free to use our code, and if you do so, please cite us!
 ## Project structure
 
 * `configuration/` contains configuration parser, default parameters values, configuration files, and logging configuration
-  * `confi_files/` contains configuration files
+  * `config_files/` contains configuration files
       * `config_example.json` an exemplary configuration file, remember that in the file you must use the parameter's stored name, i.e. what is provided as `dest` argument in `parser.add_argument` in `parser.py`
   * `config.py` defines the `Config` class which contains all the simulation parameters and their derivatives and is passed throughout the simulation
   * `logging.py` logging configuration with usage examples
