@@ -4,6 +4,13 @@ import scipy.stats as st
 import matplotlib.pyplot as plt
 import os
 import sys
+import inspect
+
+# path hack for imports to work when running this script from any location,
+# without the hack one has to manually edit PYTHONPATH every time
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import read_data, convert_to_distributions
@@ -112,7 +119,7 @@ def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=(
 
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(parentdir)
     cfg = get_arguments()  # reading arguments
     if cfg.num_parties > 2:
         raise ValueError("More than 2 parties are not supported for binomial approximation.")

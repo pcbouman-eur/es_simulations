@@ -7,7 +7,14 @@ mass media susceptibility and related quantities.
 import os
 import sys
 import json
+import inspect
 import numpy as np
+
+# path hack for imports to work when running this script from any location,
+# without the hack one has to manually edit PYTHONPATH every time
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix
@@ -75,7 +82,7 @@ def plot_media_susceptibility(config):
     
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(parentdir)
     cfg = get_arguments()
 
     ##################################################################################

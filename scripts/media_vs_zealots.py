@@ -8,7 +8,14 @@ import numpy as np
 import json
 import os
 import sys
+import inspect
 from matplotlib import pyplot as plt
+
+# path hack for imports to work when running this script from any location,
+# without the hack one has to manually edit PYTHONPATH every time
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions
@@ -106,7 +113,7 @@ def run_sim(cfg, media, zealots):
 
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(parentdir)
     cfg = get_arguments()
 
     ##################################################################################

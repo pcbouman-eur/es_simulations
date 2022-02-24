@@ -7,7 +7,14 @@ zealot susceptibility and related quantities.
 import os
 import sys
 import json
+import inspect
 import numpy as np
+
+# path hack for imports to work when running this script from any location,
+# without the hack one has to manually edit PYTHONPATH every time
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix
@@ -29,12 +36,12 @@ def plot_zealot_susceptibility(config):
     bins = config.q + 2
     bins_hist = np.linspace(0, 1, num=bins + 1)
     results = {}
-    
+
     for system in config.voting_systems.keys():
         results[system] = {'mean_set': np.zeros(l_set),
                            'std_set': np.zeros(l_set),
                            'hist_set': np.zeros((l_set, bins))}
-    
+
     # load data
     ylim_mean = [np.inf, -np.inf]
     ylim_std = [0, -np.inf]
@@ -56,11 +63,11 @@ def plot_zealot_susceptibility(config):
 
     # plot figures
     for system in config.voting_systems.keys():
-        plot_mean_std(x=zn_set, y=results[system]['mean_set'], std=results[system]['std_set'], 
+        plot_mean_std(x=zn_set, y=results[system]['mean_set'], std=results[system]['std_set'],
                       quantity='zealots', election_system=system, suffix=suffix, xlab='number of zealots',
                       ylab=f'election result of {config.zealot_state}', ylim=ylim_mean, save_file=True)
-        plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots', 
-                     election_system=system, suffix=suffix, xlab='number of zealots', 
+        plot_heatmap(heatmap=results[system]['hist_set'], l_bins=bins, quantity='zealots',
+                     election_system=system, suffix=suffix, xlab='number of zealots',
                      ylab=f'distribution of {config.zealot_state}', save_file=True, colormap='jet')
         plot_std(x=zn_set, std=results[system]['std_set'], quantity='zealots', election_system=system, suffix=suffix,
                  xlab='number of zealots', ylab=f'std of election result of {config.zealot_state}', ylim=ylim_std,
@@ -73,7 +80,7 @@ def plot_zealot_susceptibility(config):
 
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(parentdir)
     cfg = get_arguments()
 
     ##################################################################################
