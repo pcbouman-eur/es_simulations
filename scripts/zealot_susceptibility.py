@@ -23,7 +23,7 @@ from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_
 mpl.use('agg')
 
 # parameters of simulations not present in the config module
-zn_set = range(101)  # range of considered number of zealots
+zn_set = range(301)  # range of considered number of zealots
 
 
 def plot_zealot_susceptibility(config):
@@ -94,12 +94,13 @@ if __name__ == '__main__':
     # way of doing it is by creating a configuration file and passing just the file
     # for this script and here below, careful not to set -zn param in the file
     for zealots in zn_set:
-        file_name = 'script_zealots_{}.sh'.format(zealots)
-        out_file = f'log/out_z{zealots}.txt'
-        er_file = f'log/error_z{zealots}.txt'
+        print(f'Submitting simulation for {zealots} zealots')
+        file_name = f'script_zealots_q{cfg.q}_z{zealots}.sh'
+        out_file = f'log/out_q{cfg.q}_z{zealots}.txt'
+        er_file = f'log/error_q{cfg.q}_z{zealots}.txt'
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
                         f'-zn {zealots} --config_file {cfg.config_file}')
-        os.system(f'run -t 01:00 -o {out_file} -e {er_file} bash {file_name}')
+        os.system(f'run -t 07:00 -o {out_file} -e {er_file} bash {file_name}')
     ##################################################################################
     # plot_zealot_susceptibility(cfg)
