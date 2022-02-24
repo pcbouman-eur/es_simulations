@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import matplotlib as mpl
 import numpy as np
 import sys
 
@@ -8,6 +9,8 @@ from configuration.parser import get_arguments
 from configuration.logging import log
 from net_generation.base import init_graph, add_zealots
 from simulation.base import run_simulation, run_thermalization, run_thermalization_simple
+
+mpl.use('agg')
 
 
 def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_zealots=None, config=None, silent=True):
@@ -66,7 +69,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
 
 @run_with_time
-def main(silent=False):
+def main(silent=True):
     """
     Uses the command line parser from the config.parse module to obtain
     the relevant arguments to run the experiments. These are passed to the

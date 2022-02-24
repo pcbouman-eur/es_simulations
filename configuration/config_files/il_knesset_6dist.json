@@ -7,12 +7,12 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 1.1,
-  "sample_size": 10000,
+  "sample_size": 10,
   "mc_steps": 40,
-  "epsilon": 0.01,
+  "epsilon": 0.006,
   "mass_media": 0.125,
   "num_parties": 8,
-  "therm_time": 1000000,
+  "therm_time": 3000000,
   "district_coords": [
     [
       31.79592425,
