@@ -4,18 +4,23 @@ A script running main.py many times with a given configuration
 and changing number of zealots, to then compute and plot
 zealot susceptibility and related quantities.
 """
-import matplotlib as mpl
 import os
 import sys
 import json
+import inspect
 import numpy as np
+import matplotlib as mpl
+
+# path hack
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix
 from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff
 
 mpl.use('agg')
-sys.path.insert(0, '..')
 
 # parameters of simulations not present in the config module
 zn_set = range(101)  # range of considered number of zealots
@@ -77,7 +82,7 @@ def plot_zealot_susceptibility(config):
 
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(parentdir)
     cfg = get_arguments()
 
     ##################################################################################
