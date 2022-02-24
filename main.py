@@ -46,6 +46,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
     results = {system: [] for system in config.voting_systems.keys()}
 
+    log.info(f"Thermalization has finished, starting to collect samples")
     for i in range(sample_size):
         if not silent:
             log.info(f"Computing sample no. {i}")
