@@ -23,7 +23,7 @@ from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_
 mpl.use('agg')
 
 # parameters of simulations not present in the config module
-zn_set = range(301)  # range of considered number of zealots
+zn_set = range(0, 1001, 10)  # range of considered number of zealots
 
 
 def plot_zealot_susceptibility(config):
@@ -101,6 +101,6 @@ if __name__ == '__main__':
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
                         f'-zn {zealots} --config_file {cfg.config_file}')
-        os.system(f'run -t 22:30 -o {out_file} -e {er_file} bash {file_name}')
+        os.system(f'run -t 15:00 -o {out_file} -e {er_file} bash {file_name}')
     ##################################################################################
     # plot_zealot_susceptibility(cfg)
