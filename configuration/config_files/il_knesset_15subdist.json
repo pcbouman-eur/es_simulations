@@ -7,7 +7,7 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 1.1,
-  "sample_size": 1000,
+  "sample_size": 4000,
   "mc_steps": 40,
   "epsilon": 0.006,
   "mass_media": 0.125,

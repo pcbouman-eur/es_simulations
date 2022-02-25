@@ -101,6 +101,6 @@ if __name__ == '__main__':
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
                         f'-zn {zealots} --config_file {cfg.config_file}')
-        os.system(f'run -t 07:00 -o {out_file} -e {er_file} bash {file_name}')
+        os.system(f'run -t 22:30 -o {out_file} -e {er_file} bash {file_name}')
     ##################################################################################
     # plot_zealot_susceptibility(cfg)
