@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# import matplotlib.pyplot as plt
 import os
 import sys
 import inspect
 import numpy as np
+import matplotlib.pyplot as plt
 
 from scipy.optimize import minimize
 
@@ -24,7 +24,8 @@ def affinity_integral(x, c):
     :param c: constant in the function describing link probability for planar graph generator (float)
     :return: antiderivative of the affinity matrix probabilities (float)
     """
-    return -c**2.0 / (x + c)**2.0 
+    return -c**2.0 / (x + c)**2.0
+    # return np.log(x + c)
 
 
 def objective_function(c, data):
@@ -49,7 +50,7 @@ if __name__ == '__main__':
         ...
     elif country == "Poland":
         ...
-    else:
+    else:  # exampla data
         data = np.array([[0, 5, 10, 20, 30, 40, np.inf],
                          [0.0, 0.4, 0.2, 0.1, 0.1, 0.1, 0.1]])
 
@@ -60,5 +61,19 @@ if __name__ == '__main__':
     print(objective_function(res.x, data))
     print(res.x[0])
 
+    # Plotting original data and fit
+    plt.plot(data[0, :-1], data[1, 1:], "ro", label="data")
+    plt.plot(data[0, :-1], affinity_integral(data[0, 1:], res.x[0]) -
+             affinity_integral(data[0, :-1], res.x[0]), "bx", label="fit")
+    plt.legend()
+    plt.show()
+
+    # x = np.linspace(0.0, data[0, -2], 300)
+    # plt.step(data[0, :-2], data[1, 1:-1] * (data[0, 1:-1]-data[0, :-2]), label="data", where="post")
+    # plt.plot(x, 2.0 * res.x[0]**2.0 / (x + res.x[0]))
+    # plt.legend()
+    # plt.show()
+
 # TODO:
-# - plot (as a test of fit goodness)
+# - correct antiderivative is a log function
+# - there is a problem of infinite integral of 1/x (!!!)
