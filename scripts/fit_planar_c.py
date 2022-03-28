@@ -60,23 +60,25 @@ if __name__ == '__main__':
     limits = ([0.0, None], )
     res = minimize(objective_function, x0=c0, args=(data, ), bounds=limits)
 
-    print(objective_function(res.x, data))
+    print(objective_function(res.x[0], data))
     print(res.x[0])
 
     # Plotting original data and fit
-    plt.plot(data[0, :-1], data[1, 1:], "ro", label="data")
-    plt.plot(data[0, :-1], affinity_integral(data[0, 1:], res.x[0]) -
-             affinity_integral(data[0, :-1], res.x[0]), "bx", label="fit")
+    x = data[0, :-1]
+    heights = data[1, 1:] / data[1, 1:].sum()
+    widths = data[0, 1:-1] - data[0, :-2]
+    widths = np.append(widths, widths[-1])
+
+    heights_approx = affinity_integral(data[0, 1:], res.x[0]) - affinity_integral(data[0, :-1], res.x[0])
+
+    z = np.linspace(x_m, data[0, -2] + widths[-1], 300)
+    y = res.x[0] * x_m**res.x[0] / z**(res.x[0]+1)
+    
+    plt.bar(x, height=heights, width=widths, align="edge", alpha=0.5)
+    plt.bar(x, height=heights_approx, width=widths, align="edge", alpha=0.5)
+    plt.plot(z, y, "r--")
+
+    plt.xlim(0.0, data[0, -2] + widths[-1])
     plt.axhline(0.0, ls="--", lw=1, c="gray")
-    plt.legend()
+
     plt.show()
-
-    # x = np.linspace(0.0, data[0, -2], 300)
-    # plt.step(data[0, :-2], data[1, 1:-1] * (data[0, 1:-1]-data[0, :-2]), label="data", where="post")
-    # plt.plot(x, 2.0 * res.x[0]**2.0 / (x + res.x[0]))
-    # plt.legend()
-    # plt.show()
-
-# TODO:
-# - correct antiderivative is a log function
-# - there is a problem of infinite integral of 1/x (!!!)
