@@ -16,6 +16,8 @@ sys.path.insert(0, parentdir)
 # country for which the optimisation should be made
 country = "Israel"  # "Israel", "India", "Poland"
 
+x_m = 1.0
+
 
 def affinity_integral(x, c):
     """
@@ -24,8 +26,8 @@ def affinity_integral(x, c):
     :param c: constant in the function describing link probability for planar graph generator (float)
     :return: antiderivative of the affinity matrix probabilities (float)
     """
-    return -c**2.0 / (x + c)**2.0
-    # return np.log(x + c)
+    # return -c**2.0 / (x + c)**2.0
+    return -x_m**c / x**c
 
 
 def objective_function(c, data):
@@ -44,17 +46,17 @@ if __name__ == '__main__':
     print("work in progress...")
 
     if country == "Israel":
-        data = np.array([[0, 5, 10, 20, 40, np.inf],
+        data = np.array([[x_m, 5, 10, 20, 40, np.inf],
                          [0.0, 0.505, 0.143, 0.165, 0.121, 0.066]])
     elif country == "India":
         ...
     elif country == "Poland":
         ...
     else:  # exampla data
-        data = np.array([[0, 5, 10, 20, 30, 40, np.inf],
+        data = np.array([[x_m, 5, 10, 20, 30, 40, np.inf],
                          [0.0, 0.4, 0.2, 0.1, 0.1, 0.1, 0.1]])
 
-    c0 = 0.01
+    c0 = 0.1
     limits = ([0.0, None], )
     res = minimize(objective_function, x0=c0, args=(data, ), bounds=limits)
 
@@ -65,6 +67,7 @@ if __name__ == '__main__':
     plt.plot(data[0, :-1], data[1, 1:], "ro", label="data")
     plt.plot(data[0, :-1], affinity_integral(data[0, 1:], res.x[0]) -
              affinity_integral(data[0, :-1], res.x[0]), "bx", label="fit")
+    plt.axhline(0.0, ls="--", lw=1, c="gray")
     plt.legend()
     plt.show()
 
