@@ -43,8 +43,6 @@ def objective_function(c, data):
 
 
 if __name__ == '__main__':
-    print("work in progress...")
-
     if country == "Israel":
         data = np.array([[x_m, 5, 10, 20, 40, np.inf],
                          [0.0, 0.505, 0.143, 0.165, 0.121, 0.066]])
@@ -60,8 +58,8 @@ if __name__ == '__main__':
     limits = ([0.0, None], )
     res = minimize(objective_function, x0=c0, args=(data, ), bounds=limits)
 
-    print(objective_function(res.x[0], data))
-    print(res.x[0])
+    print("Objective:         ", np.round(objective_function(res.x[0], data), 4))
+    print("Optimal parameter: ", np.round(res.x[0], 4))
 
     # Plotting original data and fit
     x = data[0, :-1]
@@ -74,11 +72,14 @@ if __name__ == '__main__':
     z = np.linspace(x_m, data[0, -2] + widths[-1], 300)
     y = res.x[0] * x_m**res.x[0] / z**(res.x[0]+1)
     
-    plt.bar(x, height=heights, width=widths, align="edge", alpha=0.5)
-    plt.bar(x, height=heights_approx, width=widths, align="edge", alpha=0.5)
-    plt.plot(z, y, "r--")
+    plt.bar(x, height=heights, width=widths, align="edge", alpha=0.5, label="data")
+    plt.bar(x, height=heights_approx, width=widths, align="edge", alpha=0.5, label="optimal probabilities")
+    plt.plot(z, y, "r--", label="optimal affinity function")
 
+    plt.ylabel("Probability")
+    plt.ylabel("Distance (km)")
     plt.xlim(0.0, data[0, -2] + widths[-1])
     plt.axhline(0.0, ls="--", lw=1, c="gray")
+    plt.legend()
 
     plt.show()
