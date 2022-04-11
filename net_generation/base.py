@@ -82,7 +82,7 @@ def planar_affinity(avg_deg, fractions, coordinates, c, n, euclidean=False):
             for j in range(coordinates.shape[0]):
                 dist_matrix[i, j] = geodesic(coordinates[i], coordinates[j]).km
 
-    affinity_matrix = 1.0 / (dist_matrix + c)
+    affinity_matrix = 1.0 / (dist_matrix + c)**2.0
 
     norm_deg = n * affinity_matrix.dot(fractions).dot(fractions)
     affinity_matrix *= avg_deg / norm_deg
