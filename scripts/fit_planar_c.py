@@ -49,17 +49,16 @@ if __name__ == '__main__':
 
     heights = data[1, 1:] / data[1, 1:].sum()
     heights_approx = affinity_integral(data[0, 1:], res.x[0]) - affinity_integral(data[0, :-1], res.x[0])
-    r_sqr = np.sum((heights - np.mean(heights)) ** 2.0) / np.sum((heights_approx - np.mean(heights)) ** 2.0)
+    r_sqr = 1.0 - (np.sum((heights - heights_approx) ** 2.0) / np.sum((heights - np.mean(heights)) ** 2.0))
 
-    print("Avg. square diff:  ", np.round(objective_function(res.x[0], data), 4))
-    print("R^2:               ", np.round(r_sqr, 4))
-    print("Optimal parameter: ", np.round(res.x[0], 4))
+    print("Mean squared error: ", np.round(objective_function(res.x[0], data), 4))
+    print("Pseudo R^2:         ", np.round(r_sqr, 4))
+    print("Optimal parameter:  ", np.round(res.x[0], 4))
 
     # Plotting original data and fit
     x = data[0, :-1]
     widths = data[0, 1:-1] - data[0, :-2]
     widths = np.append(widths, widths[-1])
-    widths = widths - (data[0, -2] + widths[-1]) / 200
 
     z = np.linspace(0.0, data[0, -2] + widths[-1], 300)
     y = res.x[0] / (z + res.x[0])**2.0
@@ -67,6 +66,9 @@ if __name__ == '__main__':
     plt.bar(x, height=heights, width=widths, align="edge", alpha=0.5, label="data")
     plt.bar(x, height=heights_approx, width=widths, align="edge", alpha=0.5, label="optimal probabilities")
     plt.plot(z, y, "r--", label="optimal affinity function")
+
+    for _x in x[1:]:
+        plt.axvline(_x, color='white', linewidth=1.4)
 
     plt.ylabel("Probability")
     plt.ylabel("Distance (km)")
