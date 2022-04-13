@@ -117,7 +117,6 @@ class Config:
         # Filename suffix
         self.suffix = (f'_N_{self.n}_q_{self.q}_EPS_{self.epsilon}_S_{self.sample_size}_T_{self.therm_time}_'
                        f'MC_{self.mc_steps}_p_{self.propagation}_media_{self.mass_media}_zn_{self.n_zealots}')
-        self.suffix = self.suffix.replace('.', '')
 
         # Network structure
         if self.district_sizes is not None:
@@ -205,6 +204,9 @@ class Config:
         self.seats_per_district = [self.seats[i % len(self.seats)] for i in range(self.q)]
         self.total_seats = sum(self.seats_per_district)
         self.seat_alloc_function = seat_assignment_rules[self.seat_rule]
+
+        # at the end remove dots from the suffix so latex doesn't have issues with the filenames
+        self.suffix = self.suffix.replace('.', '')
 
 
 def num_to_chars(n):

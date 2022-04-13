@@ -46,7 +46,7 @@ def create_heatmap(data, system, suffix, name='mean', save=True):
     plt.xticks(np.linspace(0, media_influence.shape[0], 5) - 0.5, np.linspace(0, 1, 5))
     plt.tight_layout()
     if save:
-        plt.savefig(f'plots/media_vs_zealots_{system}{suffix}_{name}.pdf')
+        plt.savefig(f'plots/media_vs_zealots_{system}{suffix}_{name}.png')
     else:
         plt.show()
 

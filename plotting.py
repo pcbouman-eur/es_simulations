@@ -36,7 +36,7 @@ def plot_traj(traj, suffix, output_dir='plots/', colors=COLORS):
     plt.title('Trajectory during thermalization')
 
     plt.tight_layout()
-    plt.savefig('{}/trajectory{}.pdf'.format(output_dir, suffix))
+    plt.savefig('{}/trajectory{}.png'.format(output_dir, suffix))
     plt.close('all')
 
 
@@ -61,7 +61,7 @@ def plot_hist(distribution, name, suffix, bins_num=21, output_dir='plots/', colo
         plt.ylabel('probability')
 
         plt.tight_layout()
-        plt.savefig(output_dir + name + '_' + str(key) + suffix + '.pdf')
+        plt.savefig(output_dir + name + '_' + str(key) + suffix + '.png')
         plt.close('all')
 
 
@@ -84,7 +84,7 @@ def plot_indexes(indexes, name, suffix, output_dir='plots/'):
         plt.ylabel('probability')
 
         plt.tight_layout()
-        plt.savefig(output_dir + name + '_' + index + suffix + '.pdf')
+        plt.savefig(output_dir + name + '_' + index + suffix + '.png')
         plt.close('all')
 
 
@@ -117,7 +117,7 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.pdf')
+        plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.png')
     else:
         plt.show()
     plt.close('all')
@@ -149,7 +149,7 @@ def plot_std(x, std, quantity, election_system, suffix, xlab,
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        plt.savefig(f'plots/{quantity}_std_{election_system}{s}.pdf')
+        plt.savefig(f'plots/{quantity}_std_{election_system}{s}.png')
     else:
         plt.show()
     plt.close('all')
@@ -181,7 +181,7 @@ def plot_mean_diff(x, y, quantity, election_system, suffix, xlab,
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        plt.savefig(f'plots/{quantity}_derivative_{election_system}{s}.pdf')
+        plt.savefig(f'plots/{quantity}_derivative_{election_system}{s}.png')
     else:
         plt.show()
     plt.close('all')
@@ -213,7 +213,7 @@ def plot_mean_per(x, y, quantity, election_system, suffix, xlab,
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        plt.savefig(f'plots/{quantity}_susceptibilityPer_{election_system}{s}.pdf')
+        plt.savefig(f'plots/{quantity}_susceptibilityPer_{election_system}{s}.png')
     else:
         plt.show()
     plt.close('all')
@@ -247,7 +247,7 @@ def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='numbe
     plt.tight_layout()
     if save_file:
         s = suffix.format(valuetoinsert='')
-        plt.savefig(f'plots/heatmap_{quantity}_susceptibility_{election_system}{s}.pdf')
+        plt.savefig(f'plots/heatmap_{quantity}_susceptibility_{election_system}{s}.png')
     else:
         plt.show()
     plt.close('all')

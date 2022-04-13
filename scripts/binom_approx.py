@@ -115,7 +115,7 @@ def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=(
         plt.ylabel('probability')
 
         plt.tight_layout()
-        plt.savefig(f'plots/{name}.pdf')
+        plt.savefig(f'plots/{name}.png')
 
 
 if __name__ == '__main__':
