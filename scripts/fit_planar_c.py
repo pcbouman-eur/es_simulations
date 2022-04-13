@@ -65,10 +65,10 @@ if __name__ == '__main__':
     
     plt.bar(x, height=heights, width=widths, align="edge", alpha=0.5, label="data")
     plt.bar(x, height=heights_approx, width=widths, align="edge", alpha=0.5, label="optimal probabilities")
-    plt.plot(z, y, "r--", label="optimal affinity function")
 
     for _x in x[1:]:
         plt.axvline(_x, color='white', linewidth=1.4)
+    plt.plot(z, y, "r--", label="optimal affinity function")
 
     plt.ylabel("Probability")
     plt.ylabel("Distance (km)")
