@@ -31,9 +31,9 @@ class TestNetworkGeneration(unittest.TestCase):
         c = 0.1
 
         affinity = planar_affinity(avg, fractions, coordinates, c, n, euclidean=True)
-        almost_correct_affinity = np.array([[0.25378, 0.02307, 0.02307],
-                                            [0.02307, 0.25378, 0.01676],
-                                            [0.02307, 0.01676, 0.25378]])
+        almost_correct_affinity = np.array([[0.29026, 0.0024, 0.0024],
+                                            [0.0024, 0.29026, 0.00127],
+                                            [0.0024, 0.00127, 0.29026]])
         np.testing.assert_array_almost_equal(affinity, almost_correct_affinity, decimal=5)
 
     def test_sbm_avg_deg(self):
