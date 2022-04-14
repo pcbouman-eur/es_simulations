@@ -40,7 +40,9 @@ Fell free to use our code, and if you do so, please cite us!
 * `plots/` this directory doesn't exist in the repository, but after running the simulation (or a plotting function) it will be created and plots will be generated and saved here by default
 * `results/` this directory doesn't exist in the repository, but after running the simulation it will be created and results will be saved here by default
 * `scripts/` different scripts for custom tasks, mainly for running `main.py` many times with different parameters
+  * `animation.py` a script for making animations of the network showing how states/votes are changing
   * `binom_approx.py` this script requires to run `main.py` manually with the same parameters first, then on top of the results of the simulation plots a binomial approximation, where voters basically flip a coin to chose their state/vote
+  * `fit_planar_c.py` a script fitting the `planar_c` parameter value to the commuting data
   * `media_susceptibility.py` this script runs `main.py` for a range of different mass media influence and plots media susceptibility and other measures
   * `media_vs_zealots.py` this script runs `main.py` for a range of different numbers of zealots and different mass media influence and plots the results for cross-influenced system
   * `zealot_susceptibility.py` this script runs `main.py` for a range of different numbers of zealots and plots zealot susceptibility and other measures
