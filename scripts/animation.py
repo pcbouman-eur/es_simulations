@@ -34,9 +34,9 @@ def make_animation(config):
 
     # initialize the graph
     graph = init_graph(config.n, config.district_sizes, config.avg_deg, block_coords=config.district_coords,
-                        ratio=config.ratio, planar_const=config.planar_c, euclidean=config.euclidean,
-                        state_generator=config.initialize_states, random_dist=config.random_dist,
-                        initial_state=config.not_zealot_state, all_states=config.all_states)
+                       ratio=config.ratio, planar_const=config.planar_c, euclidean=config.euclidean,
+                       state_generator=config.initialize_states, random_dist=config.random_dist,
+                       initial_state=config.not_zealot_state, all_states=config.all_states)
     graph = add_zealots(graph, config.n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
 
     link_fraction, link_ratio = compute_edge_ratio(graph)
