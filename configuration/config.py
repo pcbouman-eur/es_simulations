@@ -17,7 +17,7 @@ class Config:
     Holds the configuration of a simulation.
 
     :_cmd_args: a dict with command line arguments
-    :voting_system: a voting system function used to determine a winner
+    :voting_system: a voting system function used to determine the results of elections
     :initialize_states: a function that generates a vector of initial states
     :propagate: a function that propagates states from neighbours to a node
     :mutate: a function that changes the state of a node at random
@@ -159,7 +159,7 @@ class Config:
         # Determine the number of states
         if self.num_parties < 2:
             raise ValueError('The simulation needs at least two states')
-        if self.num_parties > 2:
+        if self.num_parties >= 2:
             self.all_states = generate_state_labels(self.num_parties)
             self.zealot_state = self.all_states[0]
             self.not_zealot_state = self.all_states[-1]
