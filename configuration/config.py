@@ -73,9 +73,9 @@ class Config:
         'mixed': es.system_mixed,  # a dummy mixed system mixing seats from two others in equal proportions
     }
 
-    zealot_state = 'a'
-    not_zealot_state = 'b'
-    all_states = ('a', 'b')  # the order matters in the mutation function! zealot first
+    zealot_state = None
+    not_zealot_state = None
+    all_states = None  # the order matters in the mutation function! zealot first
 
     def __init__(self, cmd_args, arg_dict):
         """
@@ -161,6 +161,7 @@ class Config:
             raise ValueError('The simulation needs at least two states')
         if self.num_parties > 2:
             self.all_states = generate_state_labels(self.num_parties)
+            self.zealot_state = self.all_states[0]
             self.not_zealot_state = self.all_states[-1]
             self.suffix = ''.join(['_parties_', str(self.num_parties), self.suffix])
 
