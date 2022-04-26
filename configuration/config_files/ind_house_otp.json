@@ -27,7 +27,7 @@
     156, 166, 35, 71, 29, 16, 172, 252, 224, 178, 261, 260, 227, 15, 107],
   "seats": [1],
   "threshold": 0.0,
-  "seat_rule": "fptp",
+  "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 3.6068,
   "sample_size": 10000,

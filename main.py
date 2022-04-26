@@ -42,6 +42,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
         g = run_thermalization_simple(config, init_g, epsilon, therm_time, n=n)
 
     results = {system: [] for system in config.voting_systems.keys()}
+    results['vote_fractions'] = []
 
     log.info(f"Thermalization has finished, starting to collect samples")
     for i in range(sample_size):
@@ -61,7 +62,9 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
             outcome = _function(g.vs, states=config.all_states, total_seats=config.total_seats,
                                 seats_per_district=config.seats_per_district, threshold=config.threshold,
                                 assignment_func=config.seat_alloc_function)
-            results[system].append(outcome['fractions'])
+            results[system].append(outcome['seat_fractions'])
+
+        results['vote_fractions'].append(outcome['vote_fractions'])
 
     save_data(config, results, config.suffix)
 
@@ -85,7 +88,7 @@ def main(silent=False):
     # plot the results
     if not silent:  # to avoid plotting huge number of plots when using scripts
         res, _ = read_data(cfg.suffix)
-        voting_distribution = convert_to_distributions(res['population'])
+        voting_distribution = convert_to_distributions(res['vote_fractions'])
         for system in cfg.voting_systems.keys():
             distribution = convert_to_distributions(res[system])
             plot_hist(distribution, system, cfg.suffix, bins_num=cfg.q+2)

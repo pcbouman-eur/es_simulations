@@ -38,5 +38,24 @@
       31.2457442,
       34.7925181
     ]
+  ],
+  "alternative_systems": [
+    {
+      "name": "3-district system",
+      "type": "merge",
+      "seats": ["add option to merge seats of old districts"],
+      "seat_rule": "jefferson",
+      "threshold": 0.05,
+      "new_districts": [1, 1, 1, 2, 2, 3]
+    },
+    {
+      "name": "5-district system",
+      "type": "merge",
+      "seats": [],
+      "an option for FPTP": [],
+      "seat_rule": "jefferson",
+      "threshold": 0.05,
+      "new_districts": [1, 2, 2, 3, 4, 5]
+    }
   ]
 }

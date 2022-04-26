@@ -66,16 +66,33 @@ class Config:
     propagate = staticmethod(sim.default_propagation)
     mutate = staticmethod(sim.default_mutation)
 
+    # main electoral systems which are computed in every simulation,
+    # you can compute more by adding them in a configuration file under 'alternative_systems' parameter
     voting_systems = {
-        'population': es.system_population_majority,  # the idealised proportional representation, ignores districts
-        'district': es.system_district_majority,  # a system with districts, either PR or first-past-the-post
-                                                  # depends on the seat assignment method
-        'mixed': es.system_mixed,  # a dummy mixed system mixing seats from two others in equal proportions
+        # usually a proportional representation system which ignores districts
+        # and assigns all seats based on the results in the whole country;
+        # it can be, however, a first-past-the-post system with one district,
+        # or majoritarian voting, if a proper seat allocation rule is provided
+        'country-wide_system': es.single_district_voting,
+
+        # a system with electoral districts as specified by 'district_sizes', either PR or first-past-the-post
+        # what depends on the seat assignment method and number of seats per district,
+        # it has the main parameters the same as the country-wide system (threshold, seat rule etc.)
+        'main_district_system': es.multi_district_voting,
     }
 
     zealot_state = None
     not_zealot_state = None
     all_states = None  # the order matters in the mutation function! zealot first
+
+    # alternative electoral systems can be passed only in the configuration file
+    alternative_systems = None
+
+    @staticmethod
+    def wrap_configuration(voting_function, **kwargs):
+        def inner(voters):
+            return voting_function(voters, **kwargs)
+        return inner
 
     def __init__(self, cmd_args, arg_dict):
         """
@@ -205,6 +222,26 @@ class Config:
         self.seats_per_district = [self.seats[i % len(self.seats)] for i in range(self.q)]
         self.total_seats = sum(self.seats_per_district)
         self.seat_alloc_function = seat_assignment_rules[self.seat_rule]
+
+        # add the general configuration to the main electoral systems
+        for system in self.voting_systems.keys():
+            self.voting_systems[system] = self.wrap_configuration(self.voting_systems[system], states=self.all_states,
+                                                                  total_seats=self.total_seats,
+                                                                  seats_per_district=self.seats_per_district,
+                                                                  threshold=self.threshold,
+                                                                  assignment_func=self.seat_alloc_function)
+
+        # append the alternative systems
+        if self.alternative_systems is not None:
+            for alt in self.alternative_systems:
+                if alt['type'] == 'merge':
+                    self.voting_systems[alt['name']] = self.wrap_configuration(  # TODO add validation of oall params
+                        es.merged_districts_voting, states=self.all_states, total_seats=self.total_seats,
+                        seats_per_district=self.seats_per_district, threshold=alt['threshold'],
+                        assignment_func=seat_assignment_rules[alt['seat_rule']], new_districts=alt['new_districts'])
+                else:
+                    raise NotImplementedError(f"Type '{alt['type']}' is not implemented, but was provided in the "
+                                              f"configuration file for the alternative system '{alt['name']}'")
 
         # at the end remove dots from the suffix so latex doesn't have issues with the filenames
         self.suffix = self.suffix.replace('.', '')
