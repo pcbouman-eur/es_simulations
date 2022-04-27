@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+A script fitting the planar_c parameter of the main simulation to commuting data.
+The data must be provided as in the examples below in an array, where the first row
+contains commuting distances in km, and the second row provides a fraction of people
+commuting up to the distance given on the same position in the first row, but more
+than the previous distance. The second row must add up to 1.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
