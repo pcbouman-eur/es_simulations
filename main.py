@@ -58,13 +58,11 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
         g = run_simulation(config, g, epsilon, n * config.mc_steps, n=n)
 
-        for system, _function in config.voting_systems.items():
-            outcome = _function(g.vs, states=config.all_states, total_seats=config.total_seats,
-                                seats_per_district=config.seats_per_district, threshold=config.threshold,
-                                assignment_func=config.seat_alloc_function)
+        for system, voting_function in config.voting_systems.items():
+            outcome = voting_function(g.vs)
             results[system].append(outcome['seat_fractions'])
 
-        results['vote_fractions'].append(outcome['vote_fractions'])
+        results['vote_fractions'].append(outcome['vote_fractions'])  # TODO check if all vote_fractions are the same
 
     save_data(config, results, config.suffix)
 

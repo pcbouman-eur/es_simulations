@@ -47,7 +47,7 @@ def simple_rule(total_seats, vote_fractions=None, **kwargs):
     return assignment
 
 
-def first_past_the_post(total_seats, fractions):
+def first_past_the_post(total_seats, vote_fractions=None, **kwargs):
     """
     This function assigns all seats to the party with the highest fraction of votes,
     as in the First Past The Post elections. Usually the total number of seats is 1
@@ -55,11 +55,11 @@ def first_past_the_post(total_seats, fractions):
     in the US presidential election. If there is a draw, a random winner is chosen
     from among the best scores.
     :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    :param vote_fractions: fractions of votes gained in the district
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party, fraction in fractions.items()}
-    winners = [party for party, fraction in fractions.items() if fraction == max(fractions.values())]
+    assignment = {party: 0 for party, fraction in vote_fractions.items()}
+    winners = [party for party, fraction in vote_fractions.items() if fraction == max(vote_fractions.values())]
     winner = np.random.choice(winners, 1)[0]
     assignment[winner] = total_seats
     return assignment

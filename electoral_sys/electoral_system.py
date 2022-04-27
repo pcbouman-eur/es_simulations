@@ -32,7 +32,7 @@ def apply_threshold(system_func):
         :return: the original electoral system function
         """
         if threshold != 0.0:
-            res_no_threshold = single_district_voting(voters, *args, **kwargs)['vote_fractions']
+            res_no_threshold = single_district_voting(voters, *args, **kwargs)
 
             # get the parties below threshold, which should be fewer than above
             excluded_parties = [party for party, vote_share in res_no_threshold['vote_fractions'].items()

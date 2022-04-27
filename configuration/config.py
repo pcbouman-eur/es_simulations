@@ -5,6 +5,8 @@ configuration of the simulation
 """
 import sys
 import json
+import copy
+
 import electoral_sys.electoral_system as es
 from electoral_sys.seat_assignment import seat_assignment_rules
 import net_generation.base as ng
@@ -90,9 +92,45 @@ class Config:
 
     @staticmethod
     def wrap_configuration(voting_function, **kwargs):
+        """
+        A helper method to automatically provide configuration arguments to voting functions.
+        :param voting_function: one of the voting functions from the electoral_system module
+        :param kwargs: keyword arguments to be passed to the voting_function
+        :return: a wrapped voting_function that now only needs voters (igraph.VertexSeq) as an argument
+        """
         def inner(voters):
             return voting_function(voters, **kwargs)
         return inner
+
+    @staticmethod
+    def validate_threshold(threshold, param_path):
+        if threshold < 0 or threshold > 1:
+            raise ValueError(f'The threshold should be in the range [0,1], '
+                             f'threshold provided in {param_path} = {threshold}.')
+        return threshold
+
+    @staticmethod
+    def validate_seats(seats, districts_num, param_path):
+        if len(seats) == 0:
+            raise ValueError(f"No seats were provided in {param_path}.")
+        elif len(seats) < districts_num:
+            log.warning(f"There is fewer seat numbers specified than districts in {param_path}. "
+                        "The seat numbers will be repeated.")
+        elif len(seats) > districts_num:
+            log.warning(f"There is more seat numbers specified than districts in {param_path}. "
+                        "Not all seat numbers will be used.")
+        seats_per_district = [seats[i % len(seats)] for i in range(districts_num)]
+        total_seats = sum(seats_per_district)
+        return seats_per_district, total_seats
+
+    @staticmethod
+    def validate_seat_rule(seat_rule, param_path):
+        try:
+            seat_alloc_function = seat_assignment_rules[seat_rule]
+        except KeyError:
+            raise ValueError(f"The seat rule '{seat_rule}' provided in {param_path} does not exist, "
+                             f"possible seat rules are: {[r for r in seat_assignment_rules.keys()]}")
+        return seat_alloc_function
 
     def __init__(self, cmd_args, arg_dict):
         """
@@ -102,6 +140,10 @@ class Config:
         """
         # Read in the configuration file
         if cmd_args.config_file is not None:
+            # types of values provided in the configuration file are not directly validated
+            # (as the command line arguments are by the parser). Providing a wrong type, however, would for most cases
+            # raise an error in the validation and parameter manipulation below. If this is not enough
+            # one might think of using a data validation module like voluptuous in the future.
             config_file = json.load(cmd_args.config_file)
             log.info(f'Taking configuration from {cmd_args.config_file.name} file')
 
@@ -112,16 +154,17 @@ class Config:
                 try:
                     store_name = arg_dict[argument].dest
                 except Exception:
-                    raise Exception("This shouldn't happen...")
+                    raise Exception("This shouldn't happen, probably a command line argument was provided in "
+                                    "a different way than '--argument value', for example '--argument=value' "
+                                    "will not work.")
                 if store_name in config_file:
                     raise ValueError(f"Argument '{argument}' can not be provided in the command line and in the "
                                      f"configuration file ('{store_name}') simultaneously!")
 
-            # Command line arguments
-            self._cmd_args = dict(vars(cmd_args), config_file=cmd_args.config_file.name,
-                                  **config_file)  # config file has the priority
+            # Save the parameters, config file has the priority over command line arguments
+            self._cmd_args = dict(vars(cmd_args), config_file=cmd_args.config_file.name, **config_file)
         else:
-            # Command line arguments
+            # Save the parameters from the command line
             self._cmd_args = vars(cmd_args)  # config file has the priority
 
         cmd_args = None  # just to be sure that nobody will take any value from here
@@ -129,7 +172,7 @@ class Config:
         # self._cmd_args is just to know what arguments the program was ran with
         # parameters should be taken directly from class Config attributes, because they are manipulated below
         for key, value in self._cmd_args.items():
-            self.__setattr__(key,  value)
+            self.__setattr__(key, copy.deepcopy(value))
 
         # Filename suffix
         self.suffix = (f'_N_{self.n}_q_{self.q}_EPS_{self.epsilon}_S_{self.sample_size}_T_{self.therm_time}_'
@@ -204,26 +247,15 @@ class Config:
                                    'district': None}
         
         # Electoral threshold
-        if self.threshold < 0 or self.threshold > 1:
-            raise ValueError(f'The threshold should be in the range [0,1], '
-                             f'current threshold = {self.threshold}.')
-        elif self.threshold == 0:
-            pass  # for threshold == 0 we do not consider thresholding
-        else:
+        self.threshold = self.validate_threshold(self.threshold, 'the main configuration')
+        if self.threshold != 0:
             self.suffix += f"_tr_{self.threshold}"
 
         # Seat allocation rules
-        if len(self.seats) < self.q:
-            log.warning("There is fewer seat numbers specified than districts in the network. "
-                        "The seat numbers will be repeated.")
-        elif len(self.seats) > self.q:
-            log.warning("There is more seat numbers specified than districts in the network. "
-                        "Not all seat numbers will be used.")
-        self.seats_per_district = [self.seats[i % len(self.seats)] for i in range(self.q)]
-        self.total_seats = sum(self.seats_per_district)
-        self.seat_alloc_function = seat_assignment_rules[self.seat_rule]
+        self.seats_per_district, self.total_seats = self.validate_seats(self.seats, self.q, 'the main configuration')
+        self.seat_alloc_function = self.validate_seat_rule(self.seat_rule, 'the main configuration')
 
-        # add the general configuration to the main electoral systems
+        # add the general configuration to the main pre-defined electoral systems
         for system in self.voting_systems.keys():
             self.voting_systems[system] = self.wrap_configuration(self.voting_systems[system], states=self.all_states,
                                                                   total_seats=self.total_seats,
@@ -234,14 +266,46 @@ class Config:
         # append the alternative systems
         if self.alternative_systems is not None:
             for alt in self.alternative_systems:
-                if alt['type'] == 'merge':
-                    self.voting_systems[alt['name']] = self.wrap_configuration(  # TODO add validation of oall params
+                # name and type are the very minimum that must be provided for each alternative system,
+                # but with no more parameters specified it will be effectively the same as the 'main_district_system'
+                if 'name' not in alt:
+                    raise KeyError("One of the alternative systems is missing the 'name' value.")
+                if 'type' not in alt:
+                    raise KeyError(f"The alternative system '{alt['name']}' is missing the 'type' value.")
+
+                # copy the basic parameters from the main configuration, if not provided
+                alt['threshold'] = self.validate_threshold(alt.get('threshold', self.threshold),
+                                                           f"alternative_systems/{alt['name']}")
+                alt['seat_rule'] = alt.get('seat_rule', self.seat_rule)
+                alt['seat_alloc_function'] = self.validate_seat_rule(alt['seat_rule'],
+                                                                     f"alternative_systems/{alt['name']}")
+
+                if alt['type'] == 'basic':
+                    # in this type it is possible to change the seat_rule, seats, and threshold parameters,
+                    # but the number of districts and their sizes etc. stay the same as in the main configuration
+                    alt['seats'] = alt.get('seats', self.seats)
+                    alt['seats_per_district'], alt['total_seats'] = self.validate_seats(
+                        alt['seats'], self.q, f"alternative_systems/{alt['name']}")
+
+                    self.voting_systems[alt['name']] = self.wrap_configuration(
+                        es.multi_district_voting, states=self.all_states, total_seats=alt['total_seats'],
+                        seats_per_district=alt['seats_per_district'], threshold=alt['threshold'],
+                        assignment_func=alt['seat_alloc_function'])
+                elif alt['type'] == 'merge':
+                    # in this system it is possible to change basic parameters plus to merge electoral districts
+                    if 'merging' not in alt or not isinstance(alt['merging'], list) or len(alt['merging']) == 0:
+                        raise KeyError(f"Alternative system '{alt['name']}': 'merging' parameter must be provided for "
+                                       f"a system of the type 'merge' and it must be a list indexes.")
+
+                    alt['q'] = len(set(alt['merging'])) # TODO add proper validation and use merged_districts_voting if there is multiple districts
+
+                    self.voting_systems[alt['name']] = self.wrap_configuration(
                         es.merged_districts_voting, states=self.all_states, total_seats=self.total_seats,
                         seats_per_district=self.seats_per_district, threshold=alt['threshold'],
-                        assignment_func=seat_assignment_rules[alt['seat_rule']], new_districts=alt['new_districts'])
+                        assignment_func=alt['seat_alloc_function'], new_districts=alt['new_districts'])
                 else:
                     raise NotImplementedError(f"Type '{alt['type']}' is not implemented, but was provided in the "
-                                              f"configuration file for the alternative system '{alt['name']}'")
+                                              f"configuration file for the alternative system '{alt['name']}'.")
 
         # at the end remove dots from the suffix so latex doesn't have issues with the filenames
         self.suffix = self.suffix.replace('.', '')
