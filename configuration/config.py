@@ -280,9 +280,9 @@ class Config:
                 alt['seat_alloc_function'] = self.validate_seat_rule(alt['seat_rule'],
                                                                      f"alternative_systems/{alt['name']}")
 
+                # in this type it is possible to change the seat_rule, seats, and threshold parameters,
+                # but the number of districts and their sizes etc. stay the same as in the main configuration
                 if alt['type'] == 'basic':
-                    # in this type it is possible to change the seat_rule, seats, and threshold parameters,
-                    # but the number of districts and their sizes etc. stay the same as in the main configuration
                     alt['seats'] = alt.get('seats', self.seats)
                     alt['seats_per_district'], alt['total_seats'] = self.validate_seats(
                         alt['seats'], self.q, f"alternative_systems/{alt['name']}")
@@ -291,21 +291,57 @@ class Config:
                         es.multi_district_voting, states=self.all_states, total_seats=alt['total_seats'],
                         seats_per_district=alt['seats_per_district'], threshold=alt['threshold'],
                         assignment_func=alt['seat_alloc_function'])
+
+                # in this system it is possible to change basic parameters plus to merge electoral districts
                 elif alt['type'] == 'merge':
-                    # in this system it is possible to change basic parameters plus to merge electoral districts
-                    if 'merging' not in alt or not isinstance(alt['merging'], list) or len(alt['merging']) == 0:
-                        raise KeyError(f"Alternative system '{alt['name']}': 'merging' parameter must be provided for "
-                                       f"a system of the type 'merge' and it must be a list indexes.")
+                    if 'dist_merging' not in alt or not isinstance(alt['dist_merging'], list) or len(
+                            alt['dist_merging']) == 0:
+                        raise KeyError(f"Alternative system '{alt['name']}': 'dist_merging' parameter must be provided "
+                                       f"for a system of the type 'merge' and it must be a list indexes.")
 
-                    alt['q'] = len(set(alt['merging'])) # TODO add proper validation and use merged_districts_voting if there is multiple districts
+                    # values in the list 'dist_merging' in configuration work as ids of new districts,
+                    # i.e. districts with the same values will be merged
+                    alt['q'] = len(set(alt['dist_merging']))
 
-                    self.voting_systems[alt['name']] = self.wrap_configuration(
-                        es.merged_districts_voting, states=self.all_states, total_seats=self.total_seats,
-                        seats_per_district=self.seats_per_district, threshold=alt['threshold'],
-                        assignment_func=alt['seat_alloc_function'], new_districts=alt['new_districts'])
+                    # this case serves for easy merging of all districts to have another country-wide system
+                    if alt['q'] == 1:
+                        if 'seats' in alt:
+                            if len(alt['seats']) != 1:
+                                raise ValueError(f"In the alternative system '{alt['name']}' len('seats')="
+                                                 f"{len(alt['seats'])}, but there is only one district specified!")
+                            alt['total_seats'] = alt['seats'][0]
+                        else:
+                            alt['total_seats'] = self.total_seats
+
+                        self.voting_systems[alt['name']] = self.wrap_configuration(
+                            es.single_district_voting, states=self.all_states, total_seats=alt['total_seats'],
+                            threshold=alt['threshold'], assignment_func=alt['seat_alloc_function'])
+
+                    # if alt['q']>1 then 'dist_merging' must provide a new id for each of the main districts
+                    else:
+                        if len(alt['dist_merging']) != self.q:
+                            raise ValueError(f"In the alternative system '{alt['name']}' len('dist_merging')="
+                                             f"{len(alt['dist_merging'])}, but there is {self.q} districts! The length "
+                                             "of 'dist_merging' list must be equal to 1 or to the number of districts.")
+                        if 'seats' not in alt:
+                            self.voting_systems[alt['name']] = self.wrap_configuration(
+                                es.merged_districts_voting, states=self.all_states, total_seats=self.total_seats,
+                                threshold=alt['threshold'], dist_merging=alt['dist_merging'], merge_seats=True,
+                                assignment_func=alt['seat_alloc_function'], seats_per_district=self.seats_per_district)
+                        else:
+                            alt['seats_per_district'], alt['total_seats'] = self.validate_seats(
+                                alt['seats'], alt['q'], f"alternative_systems/{alt['name']}")
+                            self.voting_systems[alt['name']] = self.wrap_configuration(
+                                es.merged_districts_voting, states=self.all_states, total_seats=alt['total_seats'],
+                                threshold=alt['threshold'], dist_merging=alt['dist_merging'], merge_seats=False,
+                                assignment_func=alt['seat_alloc_function'], seats_per_district=alt['seats_per_district'])
                 else:
                     raise NotImplementedError(f"Type '{alt['type']}' is not implemented, but was provided in the "
                                               f"configuration file for the alternative system '{alt['name']}'.")
+
+        # short suffix in case of using a configuration file
+        if self.config_file is not None:
+            self.suffix = f'_{self.config_file[:-5]}_p_{self.propagation}_media_{self.mass_media}_zn_{self.n_zealots}'
 
         # at the end remove dots from the suffix so latex doesn't have issues with the filenames
         self.suffix = self.suffix.replace('.', '')

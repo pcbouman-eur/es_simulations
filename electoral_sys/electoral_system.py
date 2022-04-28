@@ -61,13 +61,13 @@ def apply_threshold(system_func):
 
 ###########################################################
 #                                                         #
-#                 Electoral systems                       #
+#               Vote-counting functions                   #
 #                                                         #
 ###########################################################
 
 
 @apply_threshold
-def single_district_voting(voters, states=None, total_seats=None, assignment_func=None, **kwargs):
+def single_district_voting(voters, states=None, total_seats=None, assignment_func=None, **kw):
     """
     Counts the votes casted for each party and then computes the fraction of votes obtained
     and the number and fraction of seats obtained in the considered district.
@@ -97,7 +97,7 @@ def single_district_voting(voters, states=None, total_seats=None, assignment_fun
 
 
 @apply_threshold
-def multi_district_voting(voters, states=None, total_seats=None, assignment_func=None, seats_per_district=None):
+def multi_district_voting(voters, states=None, total_seats=None, assignment_func=None, seats_per_district=None, **kw):
     """
     Counts the votes casted for each party and the number of seats obtained in each district separately.
     Then computes the fraction of votes obtained and the fraction of seats won globally,
@@ -141,7 +141,8 @@ def multi_district_voting(voters, states=None, total_seats=None, assignment_func
 
 
 @apply_threshold
-def merged_districts_voting(voters, states=None, total_seats=None, assignment_func=None, seats_per_district=None):
+def merged_districts_voting(voters, states=None, total_seats=None, assignment_func=None, dist_merging=None,
+                            seats_per_district=None, merge_seats=None, **kw):
     """
     Counts the votes casted for each party and the number of seats obtained in each district separately.
     Then computes the fraction of votes obtained and the fraction of seats won globally,
@@ -185,7 +186,7 @@ def merged_districts_voting(voters, states=None, total_seats=None, assignment_fu
 
 
 @apply_threshold
-def mixed_voting(voters, states=None, total_seats=None, assignment_func=None, seats_per_district=None):
+def mixed_voting(voters, states=None, total_seats=None, assignment_func=None, seats_per_district=None, **kw):
     """
     ------------ DEPRECATED ------------
     This function is currently not used, if you want to use it make necessary changes so it covers a desired case
