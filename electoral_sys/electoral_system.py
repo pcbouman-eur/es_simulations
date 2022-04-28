@@ -2,9 +2,7 @@
 """
 Functions used to model different election systems and apply them to the distributions of voters
 """
-import numpy as np
 from decimal import Decimal
-from itertools import groupby
 from collections import Counter
 
 from configuration.logging import log
@@ -110,16 +108,12 @@ def multi_district_voting(voters, states=None, total_seats=None, assignment_func
     index of the list entry corresponds to the number of the district
     :return: the number and the fraction of votes obtained, and the number and the fraction of seats obtained, per party
     """
-    # get the results for every district separately,
-    # in normal circumstances voters are already sorted according to their district,
-    # but not always, e.g. not for parameter --random_districts, and then sorting is necessary
-    voters_by_district = groupby(sorted(range(len(voters)), key=lambda v_id: voters.select(v_id)['district'][0]),
-                                 key=lambda v_id: voters.select(v_id)['district'][0])
     seat_assignment = Counter()
     votes = Counter()
 
-    for district, dist_voters in voters_by_district:
-        district_res = single_district_voting(voters.select(dist_voters), states=states,
+    # get the results for every district separately
+    for district in range(len(seats_per_district)):
+        district_res = single_district_voting(voters.select(district_eq=district), states=states,
                                               total_seats=seats_per_district[district], assignment_func=assignment_func)
         seat_assignment += district_res['seats']
         votes += district_res['votes']
@@ -141,33 +135,34 @@ def multi_district_voting(voters, states=None, total_seats=None, assignment_func
 
 
 @apply_threshold
-def merged_districts_voting(voters, states=None, total_seats=None, assignment_func=None, dist_merging=None,
-                            seats_per_district=None, merge_seats=None, **kw):
+def merged_districts_voting(voters, states=None, total_seats=None, assignment_func=None, seats_per_district=None,
+                            dist_merging=None, **kw):
     """
-    Counts the votes casted for each party and the number of seats obtained in each district separately.
-    Then computes the fraction of votes obtained and the fraction of seats won globally,
-    and returns aggregated results.
+    Works like multi_district_voting(), but the electoral districts are made of groups of main districts,
+    where the main districts are indicated by the 'district' attribute of the voters, as always.
+    Merging is performed based on the dist_merging parameter.
     :param voters: igraph.VertexSeq object, collection of voters  in the considered district with a 'state' parameter
     :param states: all possible states of voters (votes), should be provided in order to get the losers in the results
     :param total_seats: the total number of seats available in the district
     :param assignment_func: the function to use for assigning seats for parties
     :param seats_per_district: a list with the number of seats per district,
     index of the list entry corresponds to the number of the district
+    :param dist_merging: a list of values, each unique value is a new district
+    and the main districts having the same value will be merged
     :return: the number and the fraction of votes obtained, and the number and the fraction of seats obtained, per party
     """
-    # get the results for every district separately,
-    # in normal circumstances voters are already sorted according to their district,
-    # but not always, e.g. not for parameter --random_districts, and then sorting is necessary
-    voters_by_district = groupby(sorted(range(len(voters)), key=lambda v_id: voters.select(v_id)['district'][0]),
-                                 key=lambda v_id: voters.select(v_id)['district'][0])
     seat_assignment = Counter()
     votes = Counter()
 
-    for district, dist_voters in voters_by_district:
-        district_res = single_district_voting(voters.select(dist_voters), states=states,
-                                              total_seats=seats_per_district[district], assignment_func=assignment_func)
-        seat_assignment += district_res['seats']
-        votes += district_res['votes']
+    # get the results for every district separately
+    for new_dist in set(dist_merging):
+        districts_to_merge = [dist for dist in range(len(dist_merging)) if dist_merging[dist] == new_dist]
+        dist_seats = sum([seats_per_district[dist] for dist in districts_to_merge])
+
+        new_dist_res = single_district_voting(voters.select(district_in=districts_to_merge), states=states,
+                                              total_seats=dist_seats, assignment_func=assignment_func)
+        seat_assignment += new_dist_res['seats']
+        votes += new_dist_res['votes']
 
     # summation of counters above deletes the counts with value 0 from the result
     if states is not None:

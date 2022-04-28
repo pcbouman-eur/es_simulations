@@ -265,6 +265,7 @@ class Config:
 
         # append the alternative systems
         if self.alternative_systems is not None:
+            alt_names = []
             for alt in self.alternative_systems:
                 # name and type are the very minimum that must be provided for each alternative system,
                 # but with no more parameters specified it will be effectively the same as the 'main_district_system'
@@ -272,6 +273,10 @@ class Config:
                     raise KeyError("One of the alternative systems is missing the 'name' value.")
                 if 'type' not in alt:
                     raise KeyError(f"The alternative system '{alt['name']}' is missing the 'type' value.")
+
+                if alt['name'] in alt_names:
+                    raise ValueError(f"Alternative systems' names must be unique, '{alt['name']}' is repeated.")
+                alt_names.append(alt['name'])
 
                 # copy the basic parameters from the main configuration, if not provided
                 alt['threshold'] = self.validate_threshold(alt.get('threshold', self.threshold),
@@ -323,18 +328,16 @@ class Config:
                             raise ValueError(f"In the alternative system '{alt['name']}' len('dist_merging')="
                                              f"{len(alt['dist_merging'])}, but there is {self.q} districts! The length "
                                              "of 'dist_merging' list must be equal to 1 or to the number of districts.")
-                        if 'seats' not in alt:
-                            self.voting_systems[alt['name']] = self.wrap_configuration(
-                                es.merged_districts_voting, states=self.all_states, total_seats=self.total_seats,
-                                threshold=alt['threshold'], dist_merging=alt['dist_merging'], merge_seats=True,
-                                assignment_func=alt['seat_alloc_function'], seats_per_district=self.seats_per_district)
-                        else:
-                            alt['seats_per_district'], alt['total_seats'] = self.validate_seats(
-                                alt['seats'], alt['q'], f"alternative_systems/{alt['name']}")
-                            self.voting_systems[alt['name']] = self.wrap_configuration(
-                                es.merged_districts_voting, states=self.all_states, total_seats=alt['total_seats'],
-                                threshold=alt['threshold'], dist_merging=alt['dist_merging'], merge_seats=False,
-                                assignment_func=alt['seat_alloc_function'], seats_per_district=alt['seats_per_district'])
+
+                        alt['seats'] = alt.get('seats', self.seats)
+                        # new seats must be provided for main districts and then they will be merged as well
+                        alt['seats_per_district'], alt['total_seats'] = self.validate_seats(
+                            alt['seats'], self.q, f"alternative_systems/{alt['name']}")
+
+                        self.voting_systems[alt['name']] = self.wrap_configuration(
+                            es.merged_districts_voting, states=self.all_states, total_seats=alt['total_seats'],
+                            assignment_func=alt['seat_alloc_function'], seats_per_district=alt['seats_per_district'],
+                            threshold=alt['threshold'], dist_merging=alt['dist_merging'])
                 else:
                     raise NotImplementedError(f"Type '{alt['type']}' is not implemented, but was provided in the "
                                               f"configuration file for the alternative system '{alt['name']}'.")
