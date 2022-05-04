@@ -17,11 +17,11 @@ from configuration.logging import log
 ###########################################################
 
 
-def simple_rule(total_seats, vote_fractions=None, **kwargs):
+def hamilton_method(total_seats, vote_fractions=None, **kwargs):
     """
     This function starts with a floored assignment and keeps assigning seats to the
     party which has a fraction of seats with the greatest difference to their
-    obtained fraction of votes.
+    obtained fraction of votes, as in the Hamilton method.
     :param total_seats: total number of seats available in the district
     :param vote_fractions: fractions of votes gained in the district
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
@@ -72,18 +72,17 @@ def first_past_the_post(total_seats, vote_fractions=None, **kwargs):
 ###########################################################
 
 
-def jefferson_method(total_seats, fractions):
+# TODO make a general Highest-averages methods function not to repeat stuff
+def jefferson_method(total_seats, votes=None, **kwargs):
     """
-    This function uses the Jefferson method for seat assignment
-    (also known as the D’Hondt method or Hagenbach-Bischoff method).
-    Originally it is defined for the numbers of votes, not fractions of votes,
-    but using fractions doesn't change the result, just normalizes the calculations.
-    :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    This function uses the Jefferson method for seat assignment,
+    also known as the D’Hondt method or Hagenbach-Bischoff method.
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party, fraction in fractions.items()}
-    quotients = {party: fraction / (assignment[party] + 1) for party, fraction in fractions.items()}
+    assignment = {party: 0 for party in votes.keys()}
+    quotients = {party: Decimal(v) / (assignment[party] + 1) for party, v in votes.items()}
 
     while sum(assignment.values()) < total_seats:
         # find the party with the biggest quotient
@@ -96,19 +95,92 @@ def jefferson_method(total_seats, fractions):
 
         # increase the number of seats for that party by 1 and update the quotients
         assignment[round_winner] += 1
-        quotients[round_winner] = fractions[round_winner] / (assignment[round_winner] + 1)
+        quotients[round_winner] = votes[round_winner] / (assignment[round_winner] + 1)
 
     return assignment
 
 
-def webster_method(total_seats, fractions):
+# TODO tests
+def webster_method(total_seats, votes=None, **kwargs):
     """
-    Webster/Sainte-Laguë TODO add most popular Highest-average methods and tests
-    :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    This function uses the Webster method for seat assignment,
+    also known as the Sainte-Laguë method, sometimes Schepers method.
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party, fraction in fractions.items()}
+    assignment = {party: 0 for party in votes.keys()}
+    quotients = {party: Decimal(v) / (2 * assignment[party] + 1) for party, v in votes.items()}
+
+    while sum(assignment.values()) < total_seats:
+        # find the party with the biggest quotient
+        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
+        _max = quotients[round_winner]
+
+        # if there is a draw, select a random single party (otherwise would be order-depending)
+        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
+        round_winner = np.random.choice(round_winners, 1)[0]
+
+        # increase the number of seats for that party by 1 and update the quotients
+        assignment[round_winner] += 1
+        quotients[round_winner] = votes[round_winner] / (2 * assignment[round_winner] + 1)
+
+    return assignment
+
+
+# TODO tests
+def modified_webster_method(total_seats, votes=None, **kwargs):
+    """
+    This function uses the modified Webster method for seat assignment,
+    which starts with a divisor 1.4 instead of 1.
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :return: seat assignment, a dict of a form {party_code: number_of_seats}
+    """
+    assignment = {party: 0 for party in votes.keys()}
+    quotients = {party: Decimal(v) / (2 * assignment[party] + Decimal('1.4')) for party, v in votes.items()}
+
+    while sum(assignment.values()) < total_seats:
+        # find the party with the biggest quotient
+        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
+        _max = quotients[round_winner]
+
+        # if there is a draw, select a random single party (otherwise would be order-depending)
+        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
+        round_winner = np.random.choice(round_winners, 1)[0]
+
+        # increase the number of seats for that party by 1 and update the quotients
+        assignment[round_winner] += 1
+        quotients[round_winner] = votes[round_winner] / (2 * assignment[round_winner] + 1)
+
+    return assignment
+
+
+# TODO tests
+def imperiali_method(total_seats, votes=None, **kwargs):
+    """
+    This function uses the Imperiali highest-averages method for seat assignment
+    (it's not the Imperiali quota which is a largest reminder method)
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :return: seat assignment, a dict of a form {party_code: number_of_seats}
+    """
+    assignment = {party: 0 for party in votes.keys()}
+    quotients = {party: Decimal(v) / (assignment[party] + 2) for party, v in votes.items()}
+
+    while sum(assignment.values()) < total_seats:
+        # find the party with the biggest quotient
+        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
+        _max = quotients[round_winner]
+
+        # if there is a draw, select a random single party (otherwise would be order-depending)
+        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
+        round_winner = np.random.choice(round_winners, 1)[0]
+
+        # increase the number of seats for that party by 1 and update the quotients
+        assignment[round_winner] += 1
+        quotients[round_winner] = votes[round_winner] / (assignment[round_winner] + 2)
+
     return assignment
 
 
@@ -119,19 +191,17 @@ def webster_method(total_seats, fractions):
 ###########################################################
 
 
-def largest_reminder_formula(quota, total_seats, fractions):
+def largest_reminder_formula(quota, total_seats, votes):
     """
     General formula for the largest reminder seat assigning methods.
     After providing the proper quota it can compute the seat assigment
     under the methods like Hare quota, Droop quota, Imperiali quota etc.
-    Originally they are defined for the absolute numbers of votes, not fractions of votes,
-    but using fractions doesn't change the result, just normalizes the calculations.
-    :param quota: the quota value corresponding to a given formula (must be <1, i.e. normalized by the number of votes).
-    :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    :param quota: the quota value corresponding to a given formula (Decimal)
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    quotas = {party: fraction / quota for party, fraction in fractions.items()}
+    quotas = {party: v / quota for party, v in votes.items()}
     assignment = {party: floor(q) for party, q in quotas.items()}
     remainders = {party: q % 1 for party, q in quotas.items()}
 
@@ -149,61 +219,75 @@ def largest_reminder_formula(quota, total_seats, fractions):
     return assignment
 
 
-def hare_quota(total_seats, fractions):
+def hare_quota(total_seats, votes=None, total_votes=None, **kwargs):
     """
     The Hare quota seat assigment method.
-    The quota is normalized by the number of votes to stay consistent in the use of fractions of votes.
-    :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :param total_votes: total number of votes casted (int)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    quota = Decimal('1') / total_seats
-    return largest_reminder_formula(quota, total_seats, fractions)
+    quota = Decimal(total_votes) / total_seats
+    return largest_reminder_formula(quota, total_seats, votes)
 
 
-def exact_droop_quota(total_seats, fractions):
+def droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
+    """
+    The (original) Droop quota seat assigment method, also called rounded Droop quota.
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :param total_votes: total number of votes casted (int)
+    :return: seat assignment, a dict of a form {party_code: number_of_seats}
+    """
+    quota = Decimal(1 + floor(total_votes / (total_seats + 1)))
+    return largest_reminder_formula(quota, total_seats, votes)
+
+
+def exact_droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
     """
     The exact Droop quota seat assigment method, also known as Hagenbach-Bischoff quota.
-    In the rare case of assigning more seats than available it will use the (not-exact) Droop quota.
-    The quota is normalized by the number of votes to stay consistent in the use of fractions of votes.
-    :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    In the rare case of assigning more seats than available it will use the (original) Droop quota.
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :param total_votes: total number of votes casted (int)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    quota = Decimal('1') / (total_seats + 1)
-    assignment = largest_reminder_formula(quota, total_seats, fractions)
+    quota = Decimal(total_votes) / (total_seats + 1)
+    assignment = largest_reminder_formula(quota, total_seats, votes)
     if sum(assignment.values()) > total_seats:
         log.warning('The exact Droop quota assigned more seats than available! Increasing the quota to avoid it.')
-        quota = Decimal('1.00000001') / (total_seats + 1)
-        return largest_reminder_formula(quota, total_seats, fractions)
+        return droop_quota(total_seats, votes=votes, total_votes=total_votes)
     else:
         return assignment
 
 
-def imperiali_quota(total_seats, fractions):
+def imperiali_quota(total_seats, votes=None, total_votes=None, **kwargs):
     """
     The Imperiali quota seat assigment method.
-    In the case of assigning more seats than available it will use the Droop quota instead.
-    The quota is normalized by the number of votes to stay consistent in the use of fractions of votes.
-    :param total_seats: total number of seats available in the district
-    :param fractions: fractions of votes gained in the district
+    In the case of assigning more seats than available it will use the exact Droop quota instead.
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :param total_votes: total number of votes casted (int)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    quota = Decimal('1') / (total_seats + 2)
-    assignment = largest_reminder_formula(quota, total_seats, fractions)
+    quota = Decimal(total_votes) / (total_seats + 2)
+    assignment = largest_reminder_formula(quota, total_seats, votes)
     if sum(assignment.values()) > total_seats:
         log.warning('The Imperiali quota assigned more seats than available! Using the Droop quota.')
-        return exact_droop_quota(total_seats, fractions)
+        return exact_droop_quota(total_seats, votes=votes, total_votes=total_votes)
     else:
         return assignment
 
 
 # collection of seat-assigning functions that can be used in configuration (--seat_rule argument)
 seat_assignment_rules = {
-    'default': simple_rule,
+    'hamilton': hamilton_method,
     'jefferson': jefferson_method,
-    'dhondt': jefferson_method,
+    'webster': webster_method,
+    'modified_webster': modified_webster_method,
+    'imperiali_average': imperiali_method,
     'hare': hare_quota,
+    'droop': droop_quota,
     'exact_droop': exact_droop_quota,
     'imperiali_quota': imperiali_quota,
     'fptp': first_past_the_post,
