@@ -104,6 +104,12 @@ class Config:
 
     @staticmethod
     def validate_threshold(threshold, param_path):
+        """
+        A function to validate the electoral threshold value provided in the configuration.
+        :param threshold: (float) the threshold
+        :param param_path: (string) from which part of the configuration is the threshold (for error message)
+        :return: the threshold (float)
+        """
         if threshold < 0 or threshold > 1:
             raise ValueError(f'The threshold should be in the range [0,1], '
                              f'threshold provided in {param_path} = {threshold}.')
@@ -111,6 +117,14 @@ class Config:
 
     @staticmethod
     def validate_seats(seats, districts_num, param_path):
+        """
+        A function to validate seat numbers provided in the configuration
+        and compute seats_per_district and total_seats.
+        :param seats: (list of ints) the seats parameter provided in the configuration
+        :param districts_num: (int) the number of electoral districts
+        :param param_path: (string) from which part of the configuration is the parameter (for error message)
+        :return: seats_per_district (list of ints with a length of districts_num), total_seats (int)
+        """
         if len(seats) == 0:
             raise ValueError(f"No seats were provided in {param_path}.")
         elif len(seats) < districts_num:
@@ -125,6 +139,13 @@ class Config:
 
     @staticmethod
     def validate_seat_rule(seat_rule, param_path):
+        """
+        A function to validate the seat_rule value provided in the configuration
+        and find the corresponding seat assignment method.
+        :param seat_rule: (string) the seat_rule parameter, it should be one of seat_assignment_rules.keys()
+        :param param_path: (string) from which part of the configuration is the parameter (for error message)
+        :return: seat allocation method (function)
+        """
         try:
             seat_alloc_function = seat_assignment_rules[seat_rule]
         except KeyError:
@@ -154,9 +175,9 @@ class Config:
                 try:
                     store_name = arg_dict[argument].dest
                 except Exception:
-                    raise Exception("This shouldn't happen, probably a command line argument was provided in "
-                                    "a different way than '--argument value', for example '--argument=value' "
-                                    "will not work.")
+                    raise Exception(f"Wrong command line argument '{argument}', this argument either does not exist, "
+                                    "or it was provided in a different way than '--argument value' or '-a value', "
+                                    "for example '--argument=value' will not work.")
                 if store_name in config_file:
                     raise ValueError(f"Argument '{argument}' can not be provided in the command line and in the "
                                      f"configuration file ('{store_name}') simultaneously!")

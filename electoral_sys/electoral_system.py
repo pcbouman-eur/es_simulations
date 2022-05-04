@@ -6,7 +6,6 @@ from decimal import Decimal
 from collections import Counter
 
 from configuration.logging import log
-from electoral_sys.seat_assignment import simple_rule as default_assignment
 
 
 ###########################################################
@@ -215,14 +214,3 @@ def mixed_voting(voters, states=None, total_seats=None, assignment_func=None, se
 
     return {'seat_fractions': seat_fractions, 'seats': seat_assignment, 'vote_fractions': pop['vote_fractions'],
             'votes': pop['votes']}
-
-
-if __name__ == '__main__':
-    # TODO move it to unit tests
-    lst = [('a', 0), ('b', 0), ('b', 0), ('a', 0), ('a', 0), ('a', 1), ('a', 1),
-           ('a', 1), ('c', 1), ('c', 1), ('b', 2), ('b', 2), ('b', 2), ('a', 2), ('c', 2), ('c', 2)]
-    test_voters = [{'state': a, 'district': b} for a, b in lst]
-    print(single_district_voting(test_voters, states=('a', 'b', 'c'), total_seats=3))
-    print(multi_district_voting(test_voters, states=('a', 'b', 'c'), total_seats=3, seats_per_district=[1, 1, 1]))
-    print(mixed_voting(test_voters, states=('a', 'b', 'c'), total_seats=3, seats_per_district=[1, 1, 1],
-                       assignment_func=default_assignment))
