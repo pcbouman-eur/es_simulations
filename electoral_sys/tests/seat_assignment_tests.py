@@ -2,14 +2,15 @@
 import unittest
 from decimal import Decimal
 
-from electoral_sys.seat_assignment import jefferson_method, hamilton_method, first_past_the_post
+from electoral_sys.seat_assignment import simple_rule, first_past_the_post, jefferson_method
+from electoral_sys.seat_assignment import webster_method, modified_webster_method, imperiali_method
 from electoral_sys.seat_assignment import hare_quota, droop_quota, exact_droop_quota, imperiali_quota
 
 
 class ElectionResultsOne:
 
     def __init__(self):
-        self.votes = {'a': 100000, 'b': 80000, 'c': 30000, 'd': 20000}
+        self.votes = {'a': 100001, 'b': 80000, 'c': 30000, 'd': 20000}
         self.all_votes = sum(self.votes.values())
         self.fractions = {party: Decimal(vote_num) / self.all_votes for party, vote_num in self.votes.items()}
         self.all_seats = 8
@@ -33,7 +34,7 @@ class ElectionResultsThree:
         self.all_seats = 8
 
 
-class ElectionOneSeat:  # todo check it for all methods passing all arguments
+class ElectionSingleSeat:
 
     def __init__(self):
         self.votes = {'a': 213512, 'b': 113512, 'c': 393545, 'd': 0, 'e': 124}
@@ -44,14 +45,55 @@ class ElectionOneSeat:  # todo check it for all methods passing all arguments
 
 class TestSeatAssignment(unittest.TestCase):
 
+    def test_simple_rule_one(self):
+        election = ElectionResultsOne()
+        allocation = simple_rule(election.all_seats, vote_fractions=election.fractions)
+        self.assertDictEqual(allocation, {'a': 3, 'b': 3, 'c': 1, 'd': 1})
+
+    def test_simple_rule_two(self):
+        election = ElectionResultsTwo()
+        allocation = simple_rule(election.all_seats, vote_fractions=election.fractions)
+        self.assertDictEqual(allocation, {'a': 3, 'b': 2, 'c': 1, 'd': 1})
+
+    def test_simple_rule_three(self):
+        election = ElectionResultsThree()
+        allocation = simple_rule(election.all_seats, vote_fractions=election.fractions)
+        self.assertDictEqual(allocation, {'a': 3, 'b': 2, 'c': 2, 'd': 1, 'e': 0})
+
+    def test_simple_rule_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = simple_rule(election.all_seats, vote_fractions=election.fractions)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
+
+    def test_fptp_rule_one(self):
+        election = ElectionResultsOne()
+        allocation = first_past_the_post(election.all_seats, vote_fractions=election.fractions)
+        self.assertDictEqual(allocation, {'a': election.all_seats, 'b': 0, 'c': 0, 'd': 0})
+
+    def test_fptp_rule_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = first_past_the_post(election.all_seats, vote_fractions=election.fractions)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    def test_fptp_rule_random(self):
+        # the winner is random because of the draw
+        allocation = first_past_the_post(1, vote_fractions={'a': Decimal('0.4'), 'b': Decimal('0.4'),
+                                                            'c': Decimal('0.2')})
+        self.assertEqual(allocation['a'] + allocation['b'], 1)
+        self.assertEqual(allocation['c'], 0)
+
+    #############################################################################################################
+
     def test_jefferson_one(self):
         election = ElectionResultsOne()
-        allocation = jefferson_method(election.all_seats, election.fractions)
+        allocation = jefferson_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
         self.assertDictEqual(allocation, {'a': 4, 'b': 3, 'c': 1, 'd': 0})
 
     def test_jefferson_two(self):
         election = ElectionResultsTwo()
-        allocation = jefferson_method(election.all_seats, election.fractions)
+        allocation = jefferson_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
         self.assertEqual(allocation['a'], 3)
         self.assertEqual(allocation['b'], 3)
         # last seat will be assigned at random due to the draw
@@ -59,38 +101,106 @@ class TestSeatAssignment(unittest.TestCase):
 
     def test_jefferson_three(self):
         election = ElectionResultsThree()
-        allocation = jefferson_method(election.all_seats, election.fractions)
+        allocation = jefferson_method(election.all_seats, votes=election.votes)
         self.assertDictEqual(allocation, {'a': 4, 'b': 2, 'c': 1, 'd': 1, 'e': 0})
 
-    def test_hamilton_method_one(self):
+    def test_jefferson_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = jefferson_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
+
+    def test_webster_method_one(self):
         election = ElectionResultsOne()
-        allocation = hamilton_method(election.all_seats, vote_fractions=election.fractions)
+        allocation = webster_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
         self.assertDictEqual(allocation, {'a': 3, 'b': 3, 'c': 1, 'd': 1})
 
-    def test_hamilton_method_two(self):
+    def test_webster_method_two(self):
         election = ElectionResultsTwo()
-        allocation = hamilton_method(election.all_seats, vote_fractions=election.fractions)
-        self.assertEqual(allocation['a'], 3)
-        self.assertEqual(allocation['b'], 2)
-        self.assertEqual(allocation['c'], 1)
-        self.assertEqual(allocation['d'], 1)
+        allocation = webster_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 3, 'b': 2, 'c': 1, 'd': 1})
 
-    def test_fptp_rule_one(self):
+    def test_webster_method_three(self):
+        election = ElectionResultsThree()
+        allocation = webster_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 4, 'b': 2, 'c': 1, 'd': 1, 'e': 0})
+
+    def test_webster_method_random(self):
+        allocation = webster_method(9, votes={'a': 12345, 'b': 12345, 'c': 0}, total_votes=12345+12345)
+        self.assertGreaterEqual(allocation['a'], 4)
+        self.assertGreaterEqual(allocation['b'], 4)
+        # last seat will be assigned at random due to the draw
+        self.assertEqual(allocation['a'] + allocation['b'], 9)
+        self.assertEqual(allocation['c'], 0)
+
+    def test_webster_method_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = webster_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
+
+    def test_modified_webster_method_one(self):
+        # this result is different than in the normal Webster method due to the first divisor being 1.4
         election = ElectionResultsOne()
-        allocation = first_past_the_post(election.all_seats, vote_fractions=election.fractions)
-        self.assertDictEqual(allocation, {'a': election.all_seats, 'b': 0, 'c': 0, 'd': 0})
+        allocation = modified_webster_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 4, 'b': 3, 'c': 1, 'd': 0})
 
-    def test_fptp_rule_one_seat(self):
-        allocation = first_past_the_post(1, vote_fractions={'a': Decimal('0.13'), 'b': Decimal('0.26'),
-                                                            'c': Decimal('0.31'), 'd': Decimal('0.09'),
-                                                            'f': Decimal('0.29')})
-        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'f': 0})
+    def test_modified_webster_method_two(self):
+        election = ElectionResultsTwo()
+        allocation = modified_webster_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 3, 'b': 2, 'c': 1, 'd': 1})
 
-    def test_fptp_rule_random(self):
-        # the winner is random because of the draw
-        allocation = first_past_the_post(1, vote_fractions={'a': Decimal('0.4'), 'b': Decimal('0.4'),
-                                                            'c': Decimal('0.2')})
-        self.assertEqual(allocation['a'] + allocation['b'], 1)
+    def test_modified_webster_method_three(self):
+        election = ElectionResultsThree()
+        allocation = modified_webster_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 4, 'b': 2, 'c': 1, 'd': 1, 'e': 0})
+
+    def test_modified_webster_method_random(self):
+        allocation = modified_webster_method(9, votes={'a': 12345, 'b': 12345, 'c': 0}, total_votes=12345+12345)
+        self.assertGreaterEqual(allocation['a'], 4)
+        self.assertGreaterEqual(allocation['b'], 4)
+        # last seat will be assigned at random due to the draw
+        self.assertEqual(allocation['a'] + allocation['b'], 9)
+        self.assertEqual(allocation['c'], 0)
+
+    def test_modified_webster_method_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = modified_webster_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
+
+    def test_imperiali_method_one(self):
+        election = ElectionResultsOne()
+        allocation = imperiali_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 5, 'b': 3, 'c': 0, 'd': 0})
+
+    def test_imperiali_method_two(self):
+        election = ElectionResultsTwo()
+        allocation = imperiali_method(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 4, 'b': 3, 'c': 0, 'd': 0})
+
+    def test_imperiali_method_three(self):
+        election = ElectionResultsThree()
+        allocation = imperiali_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 4, 'b': 3, 'c': 1, 'd': 0, 'e': 0})
+
+    def test_imperiali_method_random(self):
+        allocation = imperiali_method(9, votes={'a': 12345, 'b': 12345, 'c': 0}, total_votes=12345+12345)
+        self.assertGreaterEqual(allocation['a'], 4)
+        self.assertGreaterEqual(allocation['b'], 4)
+        # last seat will be assigned at random due to the draw
+        self.assertEqual(allocation['a'] + allocation['b'], 9)
+        self.assertEqual(allocation['c'], 0)
+
+    def test_imperiali_method_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = imperiali_method(election.all_seats, votes=election.votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
 
     def test_hare_quota_one(self):
         election = ElectionResultsOne()
@@ -116,6 +226,13 @@ class TestSeatAssignment(unittest.TestCase):
         self.assertEqual(allocation['a'] + allocation['b'], 9)
         self.assertEqual(allocation['c'], 0)
 
+    def test_hare_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = hare_quota(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
+
     def test_droop_quota_one(self):
         election = ElectionResultsOne()
         allocation = droop_quota(election.all_seats, votes=election.votes, total_votes=election.all_votes)
@@ -139,6 +256,13 @@ class TestSeatAssignment(unittest.TestCase):
         self.assertEqual(allocation['a'], 2)
         # last seat will be assigned at random due to the draw
         self.assertEqual(allocation['b'] + allocation['c'], 1)
+
+    def test_droop_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = droop_quota(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
 
     def test_exact_droop_quota_one(self):
         election = ElectionResultsOne()
@@ -167,6 +291,13 @@ class TestSeatAssignment(unittest.TestCase):
     def test_exact_droop_quota_too_many_seats(self):
         allocation = exact_droop_quota(3, votes={'a': 634626, 'b': 0, 'c': 0}, total_votes=634626)
         self.assertDictEqual(allocation, {'a': 3, 'b': 0, 'c': 0})
+
+    def test_exact_droop_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = exact_droop_quota(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
+
+    #############################################################################################################
 
     def test_imperiali_quota_one(self):
         election = ElectionResultsOne()
@@ -199,6 +330,11 @@ class TestSeatAssignment(unittest.TestCase):
         # too many seats will be assigned, the exact droop quota will be used, which will then also increase the quota
         allocation = imperiali_quota(3, votes={'a': 96436994576, 'b': 0, 'c': 0}, total_votes=96436994576)
         self.assertDictEqual(allocation, {'a': 3, 'b': 0, 'c': 0})
+
+    def test_imperiali_single_seat(self):
+        election = ElectionSingleSeat()
+        allocation = imperiali_quota(election.all_seats, votes=election.votes, total_votes=election.all_votes)
+        self.assertDictEqual(allocation, {'a': 0, 'b': 0, 'c': 1, 'd': 0, 'e': 0})
 
 
 if __name__ == '__main__':

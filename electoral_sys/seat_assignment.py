@@ -17,7 +17,7 @@ from configuration.logging import log
 ###########################################################
 
 
-def hamilton_method(total_seats, vote_fractions=None, **kwargs):
+def simple_rule(total_seats, vote_fractions=None, **kwargs):
     """
     This function starts with a floored assignment and keeps assigning seats to the
     party which has a fraction of seats with the greatest difference to their
@@ -72,7 +72,36 @@ def first_past_the_post(total_seats, vote_fractions=None, **kwargs):
 ###########################################################
 
 
-# TODO make a general Highest-averages methods function not to repeat stuff
+def highest_averages_formula(quotients, divisor_func, total_seats, votes):
+    """
+    General formula for the highest-averages seat assigning methods, aka divisor method.
+    After providing the initial quotients and the divisor function it can compute the seat assigment
+    under the methods like Jefferson method, Webster method, Imperiali method etc.
+    :param quotients: initial quotients for each party,
+    i.e. the number of votes obtained divided by the first divisor in the series (dict)
+    :param divisor_func: divisor function taking as an argument the number of seats assigned so far (function)
+    :param total_seats: total number of seats available in the district (int)
+    :param votes: number of votes gained in the district by each party (dict)
+    :return: seat assignment, a dict of a form {party_code: number_of_seats}
+    """
+    assignment = {party: 0 for party in votes.keys()}
+
+    while sum(assignment.values()) < total_seats:
+        # find the party with the biggest quotient
+        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
+        _max = quotients[round_winner]
+
+        # if there is a draw, select a random single party (otherwise would be order-depending)
+        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
+        round_winner = np.random.choice(round_winners, 1)[0]
+
+        # increase the number of seats for that party by 1 and update the quotients
+        assignment[round_winner] += 1
+        quotients[round_winner] = Decimal(votes[round_winner]) / divisor_func(assignment[round_winner])
+
+    return assignment
+
+
 def jefferson_method(total_seats, votes=None, **kwargs):
     """
     This function uses the Jefferson method for seat assignment,
@@ -81,26 +110,10 @@ def jefferson_method(total_seats, votes=None, **kwargs):
     :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party in votes.keys()}
-    quotients = {party: Decimal(v) / (assignment[party] + 1) for party, v in votes.items()}
-
-    while sum(assignment.values()) < total_seats:
-        # find the party with the biggest quotient
-        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
-        _max = quotients[round_winner]
-
-        # if there is a draw, select a random single party (otherwise would be order-depending)
-        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
-        round_winner = np.random.choice(round_winners, 1)[0]
-
-        # increase the number of seats for that party by 1 and update the quotients
-        assignment[round_winner] += 1
-        quotients[round_winner] = votes[round_winner] / (assignment[round_winner] + 1)
-
-    return assignment
+    initial_quotients = {party: Decimal(v) for party, v in votes.items()}
+    return highest_averages_formula(initial_quotients, lambda x: x + 1, total_seats, votes)
 
 
-# TODO tests
 def webster_method(total_seats, votes=None, **kwargs):
     """
     This function uses the Webster method for seat assignment,
@@ -109,26 +122,10 @@ def webster_method(total_seats, votes=None, **kwargs):
     :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party in votes.keys()}
-    quotients = {party: Decimal(v) / (2 * assignment[party] + 1) for party, v in votes.items()}
-
-    while sum(assignment.values()) < total_seats:
-        # find the party with the biggest quotient
-        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
-        _max = quotients[round_winner]
-
-        # if there is a draw, select a random single party (otherwise would be order-depending)
-        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
-        round_winner = np.random.choice(round_winners, 1)[0]
-
-        # increase the number of seats for that party by 1 and update the quotients
-        assignment[round_winner] += 1
-        quotients[round_winner] = votes[round_winner] / (2 * assignment[round_winner] + 1)
-
-    return assignment
+    initial_quotients = {party: Decimal(v) for party, v in votes.items()}
+    return highest_averages_formula(initial_quotients, lambda x: 2 * x + 1, total_seats, votes)
 
 
-# TODO tests
 def modified_webster_method(total_seats, votes=None, **kwargs):
     """
     This function uses the modified Webster method for seat assignment,
@@ -137,26 +134,10 @@ def modified_webster_method(total_seats, votes=None, **kwargs):
     :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party in votes.keys()}
-    quotients = {party: Decimal(v) / (2 * assignment[party] + Decimal('1.4')) for party, v in votes.items()}
-
-    while sum(assignment.values()) < total_seats:
-        # find the party with the biggest quotient
-        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
-        _max = quotients[round_winner]
-
-        # if there is a draw, select a random single party (otherwise would be order-depending)
-        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
-        round_winner = np.random.choice(round_winners, 1)[0]
-
-        # increase the number of seats for that party by 1 and update the quotients
-        assignment[round_winner] += 1
-        quotients[round_winner] = votes[round_winner] / (2 * assignment[round_winner] + 1)
-
-    return assignment
+    initial_quotients = {party: Decimal(v) / Decimal('1.4') for party, v in votes.items()}
+    return highest_averages_formula(initial_quotients, lambda x: 2 * x + 1, total_seats, votes)
 
 
-# TODO tests
 def imperiali_method(total_seats, votes=None, **kwargs):
     """
     This function uses the Imperiali highest-averages method for seat assignment
@@ -165,23 +146,8 @@ def imperiali_method(total_seats, votes=None, **kwargs):
     :param votes: number of votes gained in the district by each party (dict)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    assignment = {party: 0 for party in votes.keys()}
-    quotients = {party: Decimal(v) / (assignment[party] + 2) for party, v in votes.items()}
-
-    while sum(assignment.values()) < total_seats:
-        # find the party with the biggest quotient
-        round_winner = max(quotients.keys(), key=lambda k: quotients[k])
-        _max = quotients[round_winner]
-
-        # if there is a draw, select a random single party (otherwise would be order-depending)
-        round_winners = [key for key, quotient in quotients.items() if quotient == _max]
-        round_winner = np.random.choice(round_winners, 1)[0]
-
-        # increase the number of seats for that party by 1 and update the quotients
-        assignment[round_winner] += 1
-        quotients[round_winner] = votes[round_winner] / (assignment[round_winner] + 2)
-
-    return assignment
+    initial_quotients = {party: Decimal(v) / 2 for party, v in votes.items()}
+    return highest_averages_formula(initial_quotients, lambda x: x + 2, total_seats, votes)
 
 
 ###########################################################
@@ -239,7 +205,7 @@ def droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
     :param total_votes: total number of votes casted (int)
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
-    quota = Decimal(1 + floor(total_votes / (total_seats + 1)))
+    quota = Decimal(1 + floor(Decimal(total_votes) / (total_seats + 1)))
     return largest_reminder_formula(quota, total_seats, votes)
 
 
@@ -281,7 +247,7 @@ def imperiali_quota(total_seats, votes=None, total_votes=None, **kwargs):
 
 # collection of seat-assigning functions that can be used in configuration (--seat_rule argument)
 seat_assignment_rules = {
-    'hamilton': hamilton_method,
+    'simple': simple_rule,
     'jefferson': jefferson_method,
     'webster': webster_method,
     'modified_webster': modified_webster_method,

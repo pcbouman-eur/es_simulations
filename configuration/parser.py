@@ -68,7 +68,7 @@ parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, defau
                          'If there are fewer seats than districts, the list is repeated')
 
 parser.add_argument('-qr', '--seat_rule', action='store', choices=seat_assignment_rules.keys(), dest='seat_rule',
-                    default='hare',
+                    default='simple',
                     help='The rule used to assign seats within a district. Must be a key from seat_assignment_rules')
 
 parser.add_argument('-tr', '--threshold', action='store', default=0.0, type=float, dest='threshold',
