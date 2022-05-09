@@ -52,6 +52,8 @@ Fell free to use our code, and if you do so, please cite us!
 
 ## Examples
 
+### Running a single simulation
+
 Running the simulation with default values:
 ```bash
 $ python3 main.py
@@ -69,10 +71,14 @@ with results sampled over 10^3 elections:
 $ python3 main.py -p majority -e 0.5 -zn 30 -mm 0.7 -t 0 -s 1000
 ```
 Running the simulation for three districts (communities) of sizes 1000, 700, and 550 nodes, each district with
-8, 5, and 4 seats respectively, with an entry threshold equal 5% and 6 political parties (6 possible states):
+8, 5, and 4 seats respectively, with an entry threshold equal 5% and 6 political parties (6 possible states),
+using Jefferson-D'Hondt seat assignment method:
 ```bash
-$ python3 main.py -q 3 -qn 1000 700 550 -qs 8 5 4 -tr 0.05 -np 6
+$ python3 main.py -q 3 -qn 1000 700 550 -qs 8 5 4 -tr 0.05 -np 6 -qr jefferson
 ```
+
+### Using a configuration file
+
 To run the last example using a configuration file, a `config.json` file
 must be created, containing:
 ```json
@@ -81,7 +87,8 @@ must be created, containing:
     "district_sizes": [1000, 700, 550],
     "seats": [8, 5, 4],
     "threshold": 0.05,
-    "num_parties": 6
+    "num_parties": 6,
+    "seat_rule": "jefferson"
 }
 ```
 The names of the parameters must correspond to what is provided as `dest` argument in `parser.add_argument`
@@ -89,6 +96,64 @@ in `parser.py`. Then the main script must be executed providing a path to the co
 ```bash
 $ python3 main.py --config_file <path_to_the_file>/config.json
 ```
+Normally, the simulation will compute results under two electoral systems - one with a single country-wide district
+and the other with `q` electoral districts. Both electoral systems will use the same parameters specified in the
+basic configuration, i.e. they will have the same `threshold`, `seats`, and `seat_rule` values. It is possible,
+however, to test many electoral systems with different details in one simulation run.
+An additional parameter `alternative_systems` can be provided (only in a configuration file). It must be a list
+of dictionaries, each containing a basic configuration for an alternative electoral system. Then, for each sample
+results for two basic and all alternative electoral systems will be computed. Each alternative ES must contain
+a `name` and a `type` parameters. The `type` parameter can have two values: `basic` or `merge`. Both types
+can specify theirs own `threshold`, `seats`, and `seat_rule` values that will be used instead of those from the
+general configuration. The `basic` alternative ES will then use the same districts as specified by `q` (and other
+parameters from the basic configuration). The `merge` alternative ES has an additional argument `dist_merging`
+which indicates how to merge the basic `q` electoral districts into new (bigger) ones. `dist_merging` must be a list
+of a length `q` with ids of new districts - any districts having the same id will be merged into a new one. The list
+can also contain just one element - in that case all districts will be merged and a single country-wide district
+will be used (with new parameters if specified). An example extending the above configuration file could look like this:
+```json
+{
+    "q": 3,
+    "district_sizes": [1000, 700, 550],
+    "seats": [8, 5, 4],
+    "threshold": 0.05,
+    "num_parties": 6,
+    "seat_rule": "jefferson",
+    "alternative_systems": [
+      {
+        "name": "basic_dist_system",
+        "type": "basic",
+        "seat_rule": "hare",
+        "seats": [10, 5, 4],
+        "threshold": 0.1
+      },
+      {
+        "name": "merge_all",
+        "type": "merge",
+        "seat_rule": "hare",
+        "seats": [10, 5, 4],
+        "threshold": 0.1,
+        "dist_merging": [0]
+      },
+      {
+        "name": "merge_two",
+        "type": "merge",
+        "seats": [10, 5, 4],
+        "dist_merging": [0, 1, 1]
+      }
+    ]
+}
+```
+Here the `basic_dist_system` would use the same districts as in the main configuration,
+with Hare quota seat assignment instead of Jefferson-D'Hondt method, with increased
+threshold of 10%, and 2 more seats in the first district. The `merge_all` system would use exactly the same values,
+but applied to a single country-wide district (with 2 more seats overall). Using these two alternative systems we
+can obtain results that would otherwise require running the simulation twice with different parameters.
+Finally, the `merge_two` system will use the basic configuration, but with the first district having 2 more seats,
+and the second and third district merged into one (therefore having 9 seats as a new district).
+
+### Running many simulations with scripts
+
 The best way to run the scripts from the `scripts/` directory with a particular configuration is also
 by providing a configuration file, which will be then passed to the `main.py` script when it's executed.
 This way we can be sure that each simulation uses the same parameters without changing the scripts.

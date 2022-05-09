@@ -62,7 +62,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
             outcome = voting_function(g.vs)
             results[system].append(outcome['seat_fractions'])
 
-        results['vote_fractions'].append(outcome['vote_fractions'])  # TODO check if all vote_fractions are the same
+        results['vote_fractions'].append(outcome['vote_fractions'])
 
     save_data(config, results, config.suffix)
 
