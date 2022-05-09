@@ -7,7 +7,7 @@ states of the nodes etc.
 import random
 import numpy as np
 from collections import Counter
-from electoral_sys.electoral_system import system_population_majority
+from electoral_sys.electoral_system import single_district_voting
 
 
 ###########################################################
@@ -117,7 +117,7 @@ def run_simulation(config, g, noise_rate, steps, n=None):
 #                                                         #
 ###########################################################
 
-def run_thermalization(config, g, noise_rate, therm_time, each=10000, n=None):
+def run_thermalization(config, g, noise_rate, therm_time, each=1000, n=None):
     """
     A function running the simulation for a given number of steps
     and computing the trajectory.
@@ -130,14 +130,14 @@ def run_thermalization(config, g, noise_rate, therm_time, each=10000, n=None):
     :return: the graph object after changes, the trajectory
     """
     trajectory = {k: [v] for k, v in
-                  system_population_majority(g.vs, states=config.all_states, total_seats=config.total_seats,
-                                             assignment_func=config.seat_alloc_function)['fractions'].items()}
+                  single_district_voting(g.vs, states=config.all_states, total_seats=config.total_seats,
+                                         assignment_func=config.seat_alloc_function)['vote_fractions'].items()}
     big_steps = round(therm_time / each)
 
     for t in range(big_steps):
         g = run_simulation(config, g, noise_rate, each, n=n)
-        for key, value in system_population_majority(g.vs, states=config.all_states, total_seats=config.total_seats,
-                                                     assignment_func=config.seat_alloc_function)['fractions'].items():
+        for key, value in single_district_voting(g.vs, states=config.all_states, total_seats=config.total_seats,
+                                                 assignment_func=config.seat_alloc_function)['vote_fractions'].items():
             trajectory[key].append(value)
 
     return g, trajectory

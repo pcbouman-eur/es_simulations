@@ -9,6 +9,21 @@ import json
 from configuration.config import Config
 from electoral_sys.seat_assignment import seat_assignment_rules
 
+
+def raise_error(msg):
+    """
+    A helper function to be provided in the 'type' argument of the ArgumentParser.add_argument function below
+    in order to raise a ValueError instead of parsing the argument. This is used in arguments that are
+    added in this file for documentation purposes, but can not be passed in the command line
+    and are meant to be defined in a configuration file.
+    :param msg: An error message to be displayed
+    :return: a callable accepting any arguments and raising an error
+    """
+    def inner(*args):
+        raise NotImplementedError(msg)
+    return inner
+
+
 # In the following part, the different command line arguments are defined
 description = 'Simulation of voting process dynamics with different electoral rules'
 
@@ -53,11 +68,17 @@ parser.add_argument('-qs', '--seats', action='store', nargs='+', type=int, defau
                          'If there are fewer seats than districts, the list is repeated')
 
 parser.add_argument('-qr', '--seat_rule', action='store', choices=seat_assignment_rules.keys(), dest='seat_rule',
-                    default='default',
+                    default='simple',
                     help='The rule used to assign seats within a district. Must be a key from seat_assignment_rules')
 
 parser.add_argument('-tr', '--threshold', action='store', default=0.0, type=float, dest='threshold',
                     help='The electoral threshold (minimal share of votes to be considered)')
+
+parser.add_argument('--alternative_systems', action='store', default=None, dest='alternative_systems',
+                    type=raise_error("'alternative_systems' argument can not be provided in the command line. If used, "
+                                     "it must be specified in the configuration file."),
+                    help='Configuration of alternative electoral systems. Can be provided only in the configuration '
+                         'file. Check config.py and exemplary configuration files to see how it works.')
 
 
 # Simulation details
