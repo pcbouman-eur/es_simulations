@@ -240,7 +240,7 @@ class Config:
         # Determine the number of states
         if self.num_parties < 2:
             raise ValueError('The simulation needs at least two states')
-        if self.num_parties >= 2:
+        else:
             self.all_states = generate_state_labels(self.num_parties)
             self.zealot_state = self.all_states[0]
             self.not_zealot_state = self.all_states[-1]
