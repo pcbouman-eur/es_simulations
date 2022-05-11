@@ -10,7 +10,8 @@ from net_generation.base import init_graph, add_zealots
 from simulation.base import run_simulation, run_thermalization, run_thermalization_simple
 
 
-def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_zealots=None, config=None, silent=True):
+def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_zealots=None, config=None, silent=False,
+                   make_plots=True):
     """
     The main function for running the whole simulation - it generates the network,
     runs the voting process, and performs the elections. At the end results are saved in a json file.
@@ -20,7 +21,8 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
     :param therm_time: the thermalization time
     :param n_zealots: the number of zealots
     :param config: the configuration class
-    :param silent: whether to keep it silent and not print the sample number
+    :param silent: whether to keep it silent and not print the sample number and additional info
+    :param make_plots: whether to make plots
     :return: None
     """
     init_g = init_graph(n, config.district_sizes, config.avg_deg, block_coords=config.district_coords,
@@ -35,7 +37,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
         log.info('Ratio of inter- to intra-district links is equal ' + str(round(link_ratio, 3)))
 
     log.info(f"Running thermalization for {therm_time} time steps")
-    if not silent:
+    if make_plots:
         g, trajectory = run_thermalization(config, init_g, epsilon, therm_time, n=n)
         plot_traj(trajectory, config.suffix)
     else:
@@ -68,7 +70,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
 
 @run_with_time
-def main(silent=False):
+def main(silent=False, make_plots=True):
     """
     Uses the command line parser from the config.parse module to obtain
     the relevant arguments to run the experiments. These are passed to the
@@ -81,10 +83,10 @@ def main(silent=False):
     log.info(f"See other configuration options by running: python {sys.argv[0].split('/')[-1]} --help")
 
     run_experiment(n=cfg.n, epsilon=cfg.epsilon, sample_size=cfg.sample_size, therm_time=cfg.therm_time,
-                   n_zealots=cfg.n_zealots, config=cfg, silent=silent)
+                   n_zealots=cfg.n_zealots, config=cfg, silent=silent, make_plots=make_plots)
 
     # plot the results
-    if not silent:  # to avoid plotting huge number of plots when using scripts
+    if make_plots:  # to avoid plotting huge number of plots when using scripts
         res, _ = read_data(cfg.suffix)
         voting_distribution = convert_to_distributions(res['vote_fractions'])
         for system in cfg.voting_systems.keys():
