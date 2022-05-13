@@ -29,7 +29,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
                         ratio=config.ratio, planar_const=config.planar_c, euclidean=config.euclidean,
                         state_generator=config.initialize_states, random_dist=config.random_dist,
                         initial_state=config.not_zealot_state, all_states=config.all_states)
-    init_g = add_zealots(init_g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+    init_g = add_zealots(init_g, n_zealots, config.zealot_state, **config.zealots_config)
 
     if not silent:
         link_fraction, link_ratio = compute_edge_ratio(init_g)
@@ -55,7 +55,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
             g.vs()["state"] = config.initialize_states(n, all_states=config.all_states, state=config.not_zealot_state)
             # we have to reset zealots, otherwise they would have states different than 'zealot_state'
             g.vs()["zealot"] = np.zeros(n)
-            g = add_zealots(g, n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+            g = add_zealots(g, n_zealots, config.zealot_state, **config.zealots_config)
             g = run_thermalization_simple(config, g, epsilon, therm_time, n=n)
 
         g = run_simulation(config, g, epsilon, n * config.mc_steps, n=n)

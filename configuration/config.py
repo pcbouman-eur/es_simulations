@@ -32,6 +32,7 @@ class Config:
     The rest of attributes are simply arguments defined in parser.py and described there
     """
     # parsed arguments that have default value defined in parser.py
+    # each one should be defined here (as None), so the IDE knows the class has these attributes
     n = None
     q = None
     avg_deg = None
@@ -62,6 +63,8 @@ class Config:
     num_parties = None
 
     config_file = None
+    # alternative electoral systems can be passed only in the configuration file
+    alternative_systems = None
 
     # derivatives of parsed arguments and others
     initialize_states = staticmethod(ng.default_initial_state)
@@ -86,9 +89,6 @@ class Config:
     zealot_state = None
     not_zealot_state = None
     all_states = None  # the order matters in the mutation function! zealot first
-
-    # alternative electoral systems can be passed only in the configuration file
-    alternative_systems = None
 
     @staticmethod
     def wrap_configuration(voting_function, **kwargs):
@@ -248,6 +248,9 @@ class Config:
 
         if self.mass_media is None:
             self.mass_media = 1.0 / self.num_parties  # the symmetric case with no propaganda
+        elif self.mass_media < 0 or self.mass_media > 1:
+            raise ValueError(f'The mass_media parameter should be in the range [0,1], '
+                             f'mass_media={self.mass_media} was provided.')
 
         # Initialization in the consensus state
         if self.consensus:
@@ -338,6 +341,7 @@ class Config:
                             alt['total_seats'] = alt['seats'][0]
                         else:
                             alt['total_seats'] = self.total_seats
+                            alt['seats'] = None
 
                         self.voting_systems[alt['name']] = self.wrap_configuration(
                             es.single_district_voting, states=self.all_states, total_seats=alt['total_seats'],

@@ -22,7 +22,7 @@ def default_mutation(node, all_states, p):
     noise is applied.
     :param node: the node for which a new state is generated because of noise
     :param all_states: possible states of nodes
-    :param p: probability of switching to state 'a' - mass media effect
+    :param p: probability of switching to state 'a' (i.e. to the first state in 'all_states') - mass media effect
     :result: the new mutated state for the node
     """
     k = len(all_states) - 1
@@ -63,7 +63,7 @@ def majority_propagation(node, g, inverse=False):
     """
     neighbours = g.neighbors(node)
     if neighbours:
-        c = Counter([g.vs[n]["state"] for n in neighbours])
+        c = Counter(g.vs[neighbours]["state"])
         counts = c.most_common()
         if inverse:
             max_count = counts[-1][1]
