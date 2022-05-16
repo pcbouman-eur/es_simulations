@@ -1,3 +1,5 @@
+[![Python tests](https://github.com/pcbouman-eur/wwcs2020-votingmodel/actions/workflows/run_tests.yml/badge.svg)](https://github.com/pcbouman-eur/wwcs2020-votingmodel/actions/workflows/run_tests.yml)
+
 # Electoral Systems project
 
 This is a program for running a simulation of voting processes and comparing different electoral systems on top of that.
@@ -21,8 +23,8 @@ Fell free to use our code, and if you do so, please cite us!
 [![python-igraph](https://img.shields.io/badge/python--igraph-0.8-yellowgreen)](https://igraph.org/2020/02/14/igraph-0.8.0-python.html)
 [![numpy](https://img.shields.io/badge/numpy-1.19.2-yellow)](https://numpy.org/devdocs/release/1.19.2-notes.html)
 [![matplotlib](https://img.shields.io/badge/matplotlib-3.2.0-orange)](https://matplotlib.org/3.2.0/contents.html)
-[![scipy](https://img.shields.io/badge/scipy-1.5.2-blue)](https://docs.scipy.org/doc/scipy/reference/release.1.5.2.html)
-[![geopy](https://img.shields.io/badge/geppy-2.1.0-red)](https://geopy.readthedocs.io/en/stable/changelog_2xx.html)
+[![scipy](https://img.shields.io/badge/scipy-1.5.2-blue)](https://docs.scipy.org/doc/scipy/release.1.5.2.html)
+[![geopy](https://img.shields.io/badge/geopy-2.1.0-red)](https://geopy.readthedocs.io/en/stable/changelog_2xx.html)
 
 ## Project structure
 
