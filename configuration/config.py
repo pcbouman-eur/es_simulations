@@ -288,7 +288,7 @@ class Config:
 
         # append the alternative systems
         if self.alternative_systems is not None:
-            alt_names = []
+            alt_names = set()
             for alt in self.alternative_systems:
                 # name and type are the very minimum that must be provided for each alternative system,
                 # but with no more parameters specified it will be effectively the same as the 'main_district_system'
@@ -299,7 +299,7 @@ class Config:
 
                 if alt['name'] in alt_names:
                     raise ValueError(f"Alternative systems' names must be unique, '{alt['name']}' is repeated.")
-                alt_names.append(alt['name'])
+                alt_names.add(alt['name'])
 
                 # copy the basic parameters from the main configuration, if not provided
                 alt['threshold'] = self.validate_threshold(alt.get('threshold', self.threshold),
