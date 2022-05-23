@@ -2,20 +2,26 @@
 
 # Electoral Systems project
 
-This is a program for running a simulation of voting processes and comparing different electoral systems on top of that.
-It achieves a couple of things, which are separated in different parts of the repository. Firstly,
-it generates a network using the Stochastic Block Model, establishes the initial state of the nodes (voters)
-and defines zealots (voters who never change their mind). Secondly, it runs a dynamical process of opinion
-formation on top of the created network. In the course of this process, voters can change their opinions
-(and therefore votes) due to social interactions (propagation), or independent choices (mutation, or noise).
-In the program you can choose to use the noisy voter model or the majority rule to simulate the opinion
-dynamics (there is also minority rule, but this one is not supported empirically). Finally, the program
-performs elections after every given number of steps, collecting the statistics of the election's result
-and computing several indexes, to later save it and plot it. The key part of the program is the ability
-to define an arbitrary type of electoral system to be used and analyzed. Due to high flexibility
-and wide parametrization many real-world electoral systems can be simulated and studied. Using special
-scripts also new measures, like zealot- or media-susceptibility, of the system's stability can be computed.
-Fell free to use our code, and if you do so, please cite us!
+This is a software for running a simulation of voting processes and on top of that comparing different electoral systems.
+It achieves number of things, which are separated in different parts of the repository.
+First, it generates a network using either a Stochastic Block Model or an original distance based network model, establishes the initial state of the nodes (voters) and defines zealots (voters who never change their mind).
+Second, it runs a dynamical process of opinion formation on top of the created network.
+In the course of this process, voters can change their opinions (and therefore votes) due to social interactions (propagation), or independent choices (mutation, or noise).
+In the program you can choose to use the noisy voter model or the majority rule to simulate the opinion dynamics (there is also minority rule, but this one is not supported empirically).
+Finally, the software performs elections after every given number of steps, collecting the statistics of the election's result and computing several indexes, to later save it and plot it.
+The key part of the program is the ability to define an arbitrary type of electoral system to be used and analyzed.
+Due to high flexibility and wide parametrization many real-world electoral systems can be simulated and studied.
+Using special scripts and new measures of the system's stability, like zealot- or media-susceptibility, can be computed.
+Fell free to use our code, and if you do so, we kindly ask to cite us:
+
+```
+@article{wilinski2022vulnerability,
+  title={Vulnerability of electoral systems: how to improve the core of democracy},
+  author={Wilinski, Mateusz and Klamut, Jaroslaw and Cremades, Roger and Bouman, Paul and Raducha, Tomasz},
+  journal={...},
+  year={2022}
+}
+```
 
 ## Requirements
 
