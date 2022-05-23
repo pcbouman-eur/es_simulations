@@ -37,7 +37,7 @@ def make_animation(config):
                        ratio=config.ratio, planar_const=config.planar_c, euclidean=config.euclidean,
                        state_generator=config.initialize_states, random_dist=config.random_dist,
                        initial_state=config.not_zealot_state, all_states=config.all_states)
-    graph = add_zealots(graph, config.n_zealots, zealot_state=config.zealot_state, **config.zealots_config)
+    graph = add_zealots(graph, config.n_zealots, config.zealot_state, **config.zealots_config)
 
     link_fraction, link_ratio = compute_edge_ratio(graph)
     log.info(f'There is {str(round(100.0 * link_fraction, 1))}% of inter-district connections')

@@ -134,16 +134,16 @@ def init_graph(n, block_sizes, avg_deg, block_coords=None, ratio=None, planar_co
 #                                                         #
 ###########################################################
 
-def add_zealots(g, m, one_district=False, district=None, degree_driven=False, zealot_state='a'):
+def add_zealots(g, m, zealot_state, one_district=False, district=None, degree_driven=False):
     """
     Function creating zealots in the network.
     Overwrite as you wish.
     :param g: ig.Graph() object
     :param m: number of zealots
+    :param zealot_state: state to assign for zealots
     :param one_district: boolean, whether to add them to one district or randomly
     :param district: if one_district==True, which district to choose? If 'None', district is chosen randomly
     :param degree_driven: if True choose nodes proportionally to the degree
-    :param zealot_state: state to assign for zealots
     :return: ig.Graph() object
     """
     if one_district:
@@ -156,6 +156,7 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
         ids = np.random.choice(g.vcount(), size=m, replace=False, p=deg_prob)
     else:
         ids = np.random.choice(g.vcount(), size=m, replace=False)
+
     if len(ids):
         # apparently igraph can understand only python integers as node ids,
         # list comprehension below is not the most optimal way to obtain a list of python integers,
@@ -164,4 +165,5 @@ def add_zealots(g, m, one_district=False, district=None, degree_driven=False, ze
         zealots = [int(_id) for _id in ids]
         g.vs[zealots]['zealot'] = 1
         g.vs[zealots]['state'] = zealot_state
+
     return g
