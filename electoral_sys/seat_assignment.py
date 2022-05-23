@@ -157,7 +157,7 @@ def imperiali_method(total_seats, votes=None, **kwargs):
 ###########################################################
 
 
-def largest_reminder_formula(quota, total_seats, votes):
+def largest_remainder_formula(quota, total_seats, votes):
     """
     General formula for the largest reminder seat assigning methods.
     After providing the proper quota it can compute the seat assigment
@@ -194,7 +194,7 @@ def hare_quota(total_seats, votes=None, total_votes=None, **kwargs):
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
     quota = Decimal(total_votes) / total_seats
-    return largest_reminder_formula(quota, total_seats, votes)
+    return largest_remainder_formula(quota, total_seats, votes)
 
 
 def droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
@@ -206,7 +206,7 @@ def droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
     quota = Decimal(1 + floor(Decimal(total_votes) / (total_seats + 1)))
-    return largest_reminder_formula(quota, total_seats, votes)
+    return largest_remainder_formula(quota, total_seats, votes)
 
 
 def exact_droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
@@ -219,7 +219,7 @@ def exact_droop_quota(total_seats, votes=None, total_votes=None, **kwargs):
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
     quota = Decimal(total_votes) / (total_seats + 1)
-    assignment = largest_reminder_formula(quota, total_seats, votes)
+    assignment = largest_remainder_formula(quota, total_seats, votes)
     if sum(assignment.values()) > total_seats:
         log.warning('The exact Droop quota assigned more seats than available! Increasing the quota to avoid it.')
         return droop_quota(total_seats, votes=votes, total_votes=total_votes)
@@ -237,7 +237,7 @@ def imperiali_quota(total_seats, votes=None, total_votes=None, **kwargs):
     :return: seat assignment, a dict of a form {party_code: number_of_seats}
     """
     quota = Decimal(total_votes) / (total_seats + 2)
-    assignment = largest_reminder_formula(quota, total_seats, votes)
+    assignment = largest_remainder_formula(quota, total_seats, votes)
     if sum(assignment.values()) > total_seats:
         log.warning('The Imperiali quota assigned more seats than available! Using the Droop quota.')
         return exact_droop_quota(total_seats, votes=votes, total_votes=total_votes)

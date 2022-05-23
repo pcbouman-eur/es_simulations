@@ -51,7 +51,7 @@ def get_binom_hist(config_args, m, system):
     @return: histogram bar sizes for a given setting in a binomial approximation. (numpy.array)
     """
     p = 0.5 * (1.0 - config_args.epsilon) + config_args.epsilon * config_args.mass_media  # effective state 'a' probability
-    if system == 'country-wide_system':
+    if system == 'countrywide_system':
         eff_N = config_args.n - config_args.n_zealots  # number of non-zealot voters
         sub_density = st.binom(eff_N, p).pmf(np.arange(eff_N + 1))  # density for single voters
         density = np.zeros(config_args.n + 1)  # density including zealots
@@ -61,7 +61,7 @@ def get_binom_hist(config_args, m, system):
         n_d = config_args.n / config_args.q  # number of voters per district
         n_z = config_args.n_zealots / config_args.q  # average number of zealots per district
 
-        # In contrast to the 'country-wide_system' case, here we only approximate the effect of zealots.
+        # In contrast to the 'countrywide_system' case, here we only approximate the effect of zealots.
         # Otherwise, we would need to sum over all possible combinations.
         if n_d % 2:
             p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z)  # probability of winning in a district
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     except (OSError, IOError) as e:
         raise IOError("Data for the given configuration was not found, "
                       "run main.py with the same configuration first.")
-    for system in ['country-wide_system', 'main_district_system']:
+    for system in ['countrywide_system', 'main_district_system']:
         distribution = convert_to_distributions(res[system])
         hist, density = get_binom_hist(cfg, m, system)
 

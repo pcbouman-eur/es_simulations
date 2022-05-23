@@ -78,7 +78,7 @@ class Config:
         # and assigns all seats based on the results in the whole country;
         # it can be, however, a first-past-the-post system with one district,
         # or majoritarian voting, if a proper seat allocation rule is provided
-        'country-wide_system': es.single_district_voting,
+        'countrywide_system': es.single_district_voting,
 
         # a system with electoral districts as specified by 'district_sizes', either PR or first-past-the-post
         # what depends on the seat assignment method and number of seats per district,
@@ -240,11 +240,10 @@ class Config:
         # Determine the number of states
         if self.num_parties < 2:
             raise ValueError('The simulation needs at least two states')
-        else:
-            self.all_states = generate_state_labels(self.num_parties)
-            self.zealot_state = self.all_states[0]
-            self.not_zealot_state = self.all_states[-1]
-            self.suffix = ''.join(['_parties_', str(self.num_parties), self.suffix])
+        self.all_states = generate_state_labels(self.num_parties)
+        self.zealot_state = self.all_states[0]
+        self.not_zealot_state = self.all_states[-1]
+        self.suffix = ''.join(['_parties_', str(self.num_parties), self.suffix])
 
         if self.mass_media is None:
             self.mass_media = 1.0 / self.num_parties  # the symmetric case with no propaganda

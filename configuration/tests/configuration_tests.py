@@ -109,7 +109,7 @@ class TestConfiguration(unittest.TestCase):
         # might be silly to test whether some attributes exist, but it might help to think through future changes
         # and all the parser actions should be defined as class attributes of Config, so instances know they have them
         self.maxDiff = None
-        self.assertIn('country-wide_system', Config.voting_systems.keys())
+        self.assertIn('countrywide_system', Config.voting_systems.keys())
         self.assertIn('main_district_system', Config.voting_systems.keys())
         for action in parser._actions:
             if action.dest != 'help':
@@ -153,7 +153,7 @@ class TestConfiguration(unittest.TestCase):
         config = Config(input_parser, ArgumentDict())
 
         self.assertListEqual(list(config.voting_systems.keys()),
-                             ['country-wide_system', 'main_district_system', 'one', 'two', 'three'])
+                             ['countrywide_system', 'main_district_system', 'one', 'two', 'three'])
         self.assertDictEqual(config.alternative_systems[0],
                              {'name': 'one', 'type': 'basic', 'seat_rule': 'hare', 'threshold': 0.2,
                               'seat_alloc_function': seat_assignment_rules['hare'], 'seats': [2],
