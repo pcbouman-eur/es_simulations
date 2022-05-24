@@ -1,4 +1,5 @@
 {
+  "_comment_": "Configuration file with parameters to simulate the lower house of Poland's Parliament - the Sejm. It will also compute 4 alternatives: FPTP with original 41 districts, PR with 16 districts (Poland's Voivodeships), FPTP with 16 districts, and PR with one countrywide district.",
   "q": 41,
   "n": 41000,
   "district_sizes": [1026, 694, 1355, 1059, 1101, 1275, 1015, 1056, 830, 771, 1042,
@@ -10,12 +11,34 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 1.7237,
-  "sample_size": 10000,
+  "sample_size": 1000,
   "mc_steps": 50,
   "epsilon": 0.001,
   "mass_media": 0.2,
   "num_parties": 5,
   "therm_time": 100000000,
+  "alternative_systems": [
+    {
+      "name": "41 districts FPTP",
+      "type": "basic",
+      "seat_rule": "fptp",
+      "threshold": 0.0
+    },
+    {
+      "name": "16 districts",
+      "type": "merge",
+      "dist_merging": [1, 1, 1, 2, 2, 3, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8,
+        9, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12, 13, 14, 14, 15, 15, 15, 15, 16, 16]
+    },
+    {
+      "name": "16 districts FPTP",
+      "type": "merge",
+      "seat_rule": "fptp",
+      "threshold": 0.0,
+      "dist_merging": [1, 1, 1, 2, 2, 3, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8,
+        9, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12, 13, 14, 14, 15, 15, 15, 15, 16, 16]
+    }
+  ],
   "district_coords": [
     [
       51.2047689,

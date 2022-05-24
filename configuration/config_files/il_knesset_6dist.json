@@ -1,4 +1,5 @@
 {
+  "_comment_": "Configuration file with parameters to simulate the Israel's Parliament - the Knesset.",
   "q": 6,
   "n": 9000,
   "district_sizes": [1205, 1517, 1092, 2310, 1493, 1383],

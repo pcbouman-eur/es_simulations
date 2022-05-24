@@ -1,4 +1,5 @@
 {
+  "_comment_": "Configuration file with parameters to simulate the Israel's Parliament - the Knesset. It will also compute 4 alternatives: FPTP with 15 districts (Israel's administrative sub-districts), PR with 15 districts, PR with 6 districts (Israel's administrative districts), and FPTP with 6 districts.",
   "q": 15,
   "n": 9000,
   "district_sizes": [1205, 126, 118, 547, 673, 53, 605, 487, 501, 799, 371, 639, 1493, 581, 802],
@@ -13,6 +14,26 @@
   "mass_media": 0.125,
   "num_parties": 8,
   "therm_time": 3000000,
+  "alternative_systems": [
+    {
+      "name": "15 districts FPTP",
+      "type": "basic",
+      "seat_rule": "fptp",
+      "threshold": 0.0
+    },
+    {
+      "name": "6 districts",
+      "type": "merge",
+      "dist_merging": [1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 6, 6]
+    },
+    {
+      "name": "6 districts FPTP",
+      "type": "merge",
+      "seat_rule": "fptp",
+      "threshold": 0.0,
+      "dist_merging": [1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 6, 6]
+    }
+  ],
   "district_coords": [
     [
       31.79592425,

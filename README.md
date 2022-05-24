@@ -11,7 +11,7 @@ In the program you can choose to use the noisy voter model or the majority rule 
 Finally, the software performs elections after every given number of steps, collecting the statistics of the election's result and computing several indexes, to later save it and plot it.
 The key part of the program is the ability to define an arbitrary type of electoral system to be used and analyzed.
 Due to high flexibility and wide parametrization many real-world electoral systems can be simulated and studied.
-Using special scripts and new measures of the system's stability, like zealot- or media-susceptibility, can be computed.
+New measures of the system's stability, like zealot- or media-susceptibility, can be computed using special scripts.
 Fell free to use our code, and if you do so, we kindly ask to cite us:
 
 ```
@@ -93,6 +93,7 @@ To run the last example using a configuration file, a `config.json` file
 must be created, containing:
 ```json
 {
+    "_comment_": "exemplary configuration",
     "q": 3,
     "district_sizes": [1000, 700, 550],
     "seats": [8, 5, 4],
@@ -102,7 +103,8 @@ must be created, containing:
 }
 ```
 The names of the parameters must correspond to what is provided as `dest` argument in `parser.add_argument`
-in `parser.py`. Then the main script must be executed providing a path to the configuration file:
+in `parser.py`. Other parameters (keys) will be ignored, so you can use a key like `"_comment_"` to add some description of the configuration file.
+Then the main script must be executed providing a path to the configuration file:
 ```bash
 $ python3 main.py --config_file <path_to_the_file>/config.json
 ```
@@ -123,6 +125,7 @@ can also contain just one element - in that case all districts will be merged an
 will be used (with new parameters if specified). An example extending the above configuration file could look like this:
 ```json
 {
+    "_comment_": "exemplary configuration",
     "q": 3,
     "district_sizes": [1000, 700, 550],
     "seats": [8, 5, 4],
