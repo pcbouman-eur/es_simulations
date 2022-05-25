@@ -89,7 +89,7 @@ def plot_indexes(indexes, name, suffix, output_dir='plots/'):
 
 
 def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
-                  ylab='election result of 1', ylim=(), save_file=True):
+                  ylab='election result of a', ylim=(), save_file=True):
     """
     Plots mean +/- std of given variable vs quantity (eg number of zealots)
     :param x: array with considered quantitity (zealots / media influence)
@@ -118,6 +118,48 @@ def plot_mean_std(x, y, std, quantity, election_system, suffix, xlab,
     if save_file:
         s = suffix.format(valuetoinsert='')
         plt.savefig(f'plots/{quantity}_susceptibility_{election_system}{s}.png')
+    else:
+        plt.show()
+    plt.close('all')
+
+
+def plot_mean_std_two_systems(x, y1, std1, y1_name, y2, std2, y2_name, quantity, suffix, xlab,
+                              ylab='election result of a', ylim=(), save_file=True):
+    """
+    Plots mean +/- std of 2 variables vs quantity (eg number of zealots)
+    :param x: array with considered quantity (zealots / media influence)
+    :param y1: variable 1
+    :param std1: standard deviation of y1
+    :param y1_name: name of y1 in the legend
+    :param y2: variable 2
+    :param std2: standard deviation of y2
+    :param y2_name: name of y2 in the legend
+    :param quantity: we calculate susceptibility over that quantity
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param ylim: y-axis limits as [ymin, ymax]
+    :param save_file: bool if save plot to file
+    """
+    plt.figure(figsize=(4, 3))
+
+    plt.plot(x, y1, color='cornflowerblue', linestyle='-', label=y1_name)
+    plt.plot(x, y2, color='tomato', linestyle='-', label=y2_name)
+
+    plt.fill_between(x, y1 - std1, y1 + std1, color='cornflowerblue', linewidth=0, alpha=0.5)
+    plt.fill_between(x, y2 - std2, y2 + std2, color='tomato', linewidth=0, alpha=0.5)
+
+    if ylim:
+        plt.ylim(ylim)
+
+    plt.title(f'{quantity} susceptibility')
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.legend()
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        plt.savefig(f'plots/{quantity}_sus_comparison{s}.png')
     else:
         plt.show()
     plt.close('all')
