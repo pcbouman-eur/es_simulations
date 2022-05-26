@@ -56,7 +56,6 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
             # we have to reset zealots, otherwise they would have states different than 'zealot_state'
             g.vs()["zealot"] = np.zeros(n)
             g = add_zealots(g, n_zealots, config.zealot_state, **config.zealots_config)
-            g = run_thermalization_simple(config, g, epsilon, therm_time, n=n)
 
         g = run_simulation(config, g, epsilon, n * config.mc_steps, n=n)
 
