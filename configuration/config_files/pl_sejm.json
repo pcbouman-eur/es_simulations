@@ -17,6 +17,7 @@
   "mass_media": 0.2,
   "num_parties": 5,
   "therm_time": 1,
+  "reset": true,
   "alternative_systems": [
     {
       "name": "41 districts FPTP",

@@ -18,6 +18,7 @@
   "mass_media": 0.333333333333333333333,
   "num_parties": 3,
   "therm_time": 1,
+  "reset": true,
   "alternative_systems": [
     {
       "name": "40 old districts",

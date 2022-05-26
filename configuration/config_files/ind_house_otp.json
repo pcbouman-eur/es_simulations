@@ -37,6 +37,7 @@
   "mass_media": 0.111111111111111111,
   "num_parties": 9,
   "therm_time": 1,
+  "reset": true,
   "alternative_systems": [
     {
       "name": "36 districts",
