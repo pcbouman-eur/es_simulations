@@ -4,6 +4,8 @@ A script running main.py many times with a given configuration
 and changing number of zealots, to then compute and plot
 zealot susceptibility and related quantities.
 """
+import matplotlib as mpl
+mpl.use('agg')
 import os
 import sys
 import json
@@ -21,7 +23,7 @@ from tools import convert_to_distributions, split_suffix
 from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff, plot_mean_std_two_systems
 
 # parameters of simulations not present in the config module
-zn_set = range(31)  # range of considered number of zealots
+zn_set = range(0, 2001, 100)  # range of considered number of zealots
 
 
 def plot_zealot_susceptibility(config):
@@ -98,7 +100,15 @@ if __name__ == '__main__':
     # run this script with them and pass them into the main.py run below, a convenient
     # way of doing it is by creating a configuration file and passing just the file
     # for this script and here below, careful not to set -zn param in the file
+    conf_file_name = cfg.config_file.split('/')[-1].replace('.json', '')
     for zealots in zn_set:
-        os.system(f'python3 main.py -zn {zealots} --config_file {cfg.config_file}')
+        print(f'Submitting simulation for {zealots} zealots')
+        file_name = f'script_zealots_{conf_file_name}_z{zealots}.sh'
+        out_file = f'log/out_{conf_file_name}_z{zealots}.txt'
+        er_file = f'log/error_{conf_file_name}_z{zealots}.txt'
+        with open(file_name, 'w') as _file:
+            _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
+                        f'-zn {zealots} --config_file {cfg.config_file}')
+        os.system(f'run -t 10:00 -o {out_file} -e {er_file} bash {file_name}')
     ##################################################################################
-    plot_zealot_susceptibility(cfg)
+    # plot_zealot_susceptibility(cfg)

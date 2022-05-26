@@ -12,12 +12,12 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 1.7237,
-  "sample_size": 1000,
-  "mc_steps": 50,
+  "sample_size": 10,
+  "mc_steps": 600,
   "epsilon": 0.0005,
   "mass_media": 0.333333333333333333333,
   "num_parties": 3,
-  "therm_time": 10000000,
+  "therm_time": 1,
   "alternative_systems": [
     {
       "name": "40 old districts",

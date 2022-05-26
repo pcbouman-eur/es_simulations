@@ -31,12 +31,12 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 3.6068,
-  "sample_size": 1000,
-  "mc_steps": 10,
+  "sample_size": 10,
+  "mc_steps": 300,
   "epsilon": 0.0001,
   "mass_media": 0.111111111111111111,
   "num_parties": 9,
-  "therm_time": 1000000,
+  "therm_time": 1,
   "alternative_systems": [
     {
       "name": "36 districts",

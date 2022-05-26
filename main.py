@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import matplotlib as mpl
+mpl.use('agg')
 import numpy as np
 import sys
 
@@ -31,10 +33,10 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
                         initial_state=config.not_zealot_state, all_states=config.all_states)
     init_g = add_zealots(init_g, n_zealots, config.zealot_state, **config.zealots_config)
 
-    if not silent:
-        link_fraction, link_ratio = compute_edge_ratio(init_g)
-        log.info('There is ' + str(round(100.0 * link_fraction, 1)) + '% of inter-district connections')
-        log.info('Ratio of inter- to intra-district links is equal ' + str(round(link_ratio, 3)))
+    # if not silent:
+    #     link_fraction, link_ratio = compute_edge_ratio(init_g)
+    #     log.info('There is ' + str(round(100.0 * link_fraction, 1)) + '% of inter-district connections')
+    #     log.info('Ratio of inter- to intra-district links is equal ' + str(round(link_ratio, 3)))
 
     log.info(f"Running thermalization for {therm_time} time steps")
     if make_plots:
@@ -69,7 +71,7 @@ def run_experiment(n=None, epsilon=None, sample_size=None, therm_time=None, n_ze
 
 
 @run_with_time
-def main(silent=False, make_plots=True):
+def main(silent=False, make_plots=False):
     """
     Uses the command line parser from the config.parse module to obtain
     the relevant arguments to run the experiments. These are passed to the

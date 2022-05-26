@@ -11,12 +11,12 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 1.7237,
-  "sample_size": 1000,
-  "mc_steps": 50,
+  "sample_size": 10,
+  "mc_steps": 700,
   "epsilon": 0.001,
   "mass_media": 0.2,
   "num_parties": 5,
-  "therm_time": 100000000,
+  "therm_time": 1,
   "alternative_systems": [
     {
       "name": "41 districts FPTP",
