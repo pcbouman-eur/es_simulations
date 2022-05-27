@@ -369,7 +369,7 @@ class Config:
         # short suffix in case of using a configuration file
         if self.config_file is not None:
             self.suffix = (f"_{self.config_file.split('/')[-1].replace('.json', '')}_p_{self.propagation}"
-                           f"_media_{self.mass_media}_zn_{self.n_zealots}")
+                           f"_media_{self.mass_media}_zn_{self.n_zealots}_mc_{self.mc_steps}")
 
         # at the end remove dots from the suffix so latex doesn't have issues with the filenames
         self.suffix = self.suffix.replace('.', '')

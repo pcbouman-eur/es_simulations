@@ -18,7 +18,7 @@ sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix
-from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff, plot_mean_std_two_systems
+from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff, plot_mean_std_all
 
 # parameters of simulations not present in the config module
 zn_set = range(31)  # range of considered number of zealots
@@ -78,12 +78,9 @@ def plot_zealot_susceptibility(config):
                        suffix=suffix, xlab='number of zealots', ylab=f'susceptibility derivative',
                        ylim=(), save_file=True)
 
-    plot_mean_std_two_systems(
-        x=zn_set, y1=results['countrywide_system']['mean_set'], std1=results['countrywide_system']['std_set'],
-        y1_name='1 district', y2=results['main_district_system']['mean_set'],
-        std2=results['main_district_system']['std_set'], y2_name=f'{config.q} districts',
-        quantity='zealots', suffix=suffix, xlab='number of zealots', ylab=f'election result of {config.zealot_state}',
-        ylim=ylim_mean, save_file=True)
+    plot_mean_std_all(voting_systems=config.voting_systems.keys(), x=zn_set, results=results, quantity='zealots',
+                      suffix=suffix, xlab='number of zealots', ylab=f'election result of {config.zealot_state}',
+                      ylim=ylim_mean, save_file=True)
 
 
 if __name__ == '__main__':

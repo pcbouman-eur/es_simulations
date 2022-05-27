@@ -165,6 +165,44 @@ def plot_mean_std_two_systems(x, y1, std1, y1_name, y2, std2, y2_name, quantity,
     plt.close('all')
 
 
+def plot_mean_std_all(voting_systems, x, results, quantity, suffix, xlab, ylab='election result of a', ylim=(),
+                      save_file=True):
+    """
+    Plots mean +/- std of all electoral systems from results vs quantity (eg number of zealots)
+    :param voting_systems: iterable with names of electoral systems
+    :param x: array with considered quantity (zealots / media influence)
+    :param results: dict with results with keys 'mean_set' and 'std_set' (e.g. prepared in zealot_susceptibility.py)
+    :param quantity: we calculate susceptibility over that quantity
+    :param suffix: suffix with params values
+    :param xlab: x-axis label
+    :param ylab: y-axis label
+    :param ylim: y-axis limits as [ymin, ymax]
+    :param save_file: bool if save plot to file
+    """
+    plt.figure(figsize=(4, 3))
+
+    for i, system in enumerate(voting_systems):
+        plt.plot(x, results[system]['mean_set'], color=COLORS[i % len(COLORS)], linestyle='-', label=system)
+        plt.fill_between(x, results[system]['mean_set'] - results[system]['std_set'],
+                         results[system]['mean_set'] + results[system]['std_set'],
+                         color=COLORS[i % len(COLORS)], linewidth=0, alpha=0.5)
+
+    if ylim:
+        plt.ylim(ylim)
+
+    plt.title(f'{quantity} susceptibility')
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.legend()
+    plt.tight_layout()
+    if save_file:
+        s = suffix.format(valuetoinsert='')
+        plt.savefig(f'plots/{quantity}_sus_all{s}.png')
+    else:
+        plt.show()
+    plt.close('all')
+
+
 def plot_std(x, std, quantity, election_system, suffix, xlab,
              ylab='election result of 1', ylim=(), save_file=True):
     """

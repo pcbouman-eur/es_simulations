@@ -18,7 +18,7 @@ sys.path.insert(0, parentdir)
 
 from configuration.parser import get_arguments
 from tools import convert_to_distributions, split_suffix
-from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff, plot_mean_std_two_systems
+from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff, plot_mean_std_all
 
 # parameters of simulations not present in the config module
 media_influence = np.linspace(0, 1, 21)  # range of considered media influence
@@ -80,13 +80,10 @@ def plot_media_susceptibility(config):
                        suffix=suffix, xlab='media influence', ylab=f'susceptibility derivative', ylim=(),
                        save_file=True)
 
-    plot_mean_std_two_systems(
-        x=media_influence, y1=results['countrywide_system']['mean_set'], std1=results['countrywide_system']['std_set'],
-        y1_name='1 district', y2=results['main_district_system']['mean_set'],
-        std2=results['main_district_system']['std_set'], y2_name=f'{config.q} districts',
-        quantity='media', suffix=suffix, xlab='media influence', ylab=f'election result of {media_state}',
-        ylim=ylim_mean, save_file=True)
-    
+    plot_mean_std_all(voting_systems=config.voting_systems.keys(), x=media_influence, results=results, quantity='media',
+                      suffix=suffix, xlab='media influence', ylab=f'election result of {media_state}', ylim=ylim_mean,
+                      save_file=True)
+
 
 if __name__ == '__main__':
     os.chdir(parentdir)
