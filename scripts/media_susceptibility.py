@@ -104,8 +104,7 @@ if __name__ == '__main__':
     # for this script and here below, careful not to set -mm param in the file
     conf_file_name = cfg.config_file.split('/')[-1].replace('.json', '')
     for media in media_influence:
-        media_str = str(media)
-        media_str.replace('.', '')
+        media_str = str(media).replace('.', '')
         print(f'Submitting simulation for {media} media influence')
         file_name = f'script_media_{conf_file_name}_mm{media_str}.sh'
         out_file = f'log/out_{conf_file_name}_mm{media_str}.txt'
