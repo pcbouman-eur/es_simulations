@@ -4,6 +4,8 @@ A script running main.py many times with a given configuration
 and changing mass media influence, to then compute and plot
 mass media susceptibility and related quantities.
 """
+import matplotlib as mpl
+mpl.use('agg')
 import os
 import sys
 import json
@@ -21,7 +23,7 @@ from tools import convert_to_distributions, split_suffix
 from plotting import plot_mean_std, plot_heatmap, plot_std, plot_mean_per, plot_mean_diff, plot_mean_std_two_systems
 
 # parameters of simulations not present in the config module
-media_influence = np.linspace(0, 1, 21)  # range of considered media influence
+media_influence = np.linspace(0, 1, 31)  # range of considered media influence
 
 
 def plot_media_susceptibility(config):
@@ -100,8 +102,18 @@ if __name__ == '__main__':
     # run this script with them and pass them into the main.py run below, a convenient
     # way of doing it is by creating a configuration file and passing just the file
     # for this script and here below, careful not to set -mm param in the file
+    conf_file_name = cfg.config_file.split('/')[-1].replace('.json', '')
     for media in media_influence:
-        os.system(f'python3 main.py -mm {media} --config_file {cfg.config_file}')
+        media_str = str(media)
+        media_str.replace('.', '')
+        print(f'Submitting simulation for {media} media influence')
+        file_name = f'script_media_{conf_file_name}_mm{media_str}.sh'
+        out_file = f'log/out_{conf_file_name}_mm{media_str}.txt'
+        er_file = f'log/error_{conf_file_name}_mm{media_str}.txt'
+        with open(file_name, 'w') as _file:
+            _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
+                        f'-mm {media} --config_file {cfg.config_file}')
+        os.system(f'run -t 5:00 -o {out_file} -e {er_file} bash {file_name}')
     ##################################################################################
 
-    plot_media_susceptibility(cfg)
+    # plot_media_susceptibility(cfg)

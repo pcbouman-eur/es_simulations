@@ -9,12 +9,11 @@
   "avg_deg": 12,
   "planar_c": 5.1874,
   "sample_size": 10,
-  "mc_steps": 1000,
+  "mc_steps": 50,
   "epsilon": 0.006,
-  "mass_media": 0.125,
   "num_parties": 8,
-  "therm_time": 1,
-  "reset": true,
+  "therm_time": 6000000,
+  "reset": false,
   "alternative_systems": [
     {
       "name": "15 districts FPTP",

@@ -32,12 +32,11 @@
   "avg_deg": 12,
   "planar_c": 3.6068,
   "sample_size": 10,
-  "mc_steps": 300,
+  "mc_steps": 50,
   "epsilon": 0.0001,
-  "mass_media": 0.111111111111111111,
   "num_parties": 9,
-  "therm_time": 1,
-  "reset": true,
+  "therm_time": 100000000,
+  "reset": false,
   "alternative_systems": [
     {
       "name": "36 districts",
