@@ -11,11 +11,11 @@
   "seat_rule": "jefferson",
   "avg_deg": 12,
   "planar_c": 1.7237,
-  "sample_size": 10,
+  "sample_size": 1000,
   "mc_steps": 50,
   "epsilon": 0.001,
   "num_parties": 5,
-  "therm_time": 60000000,
+  "therm_time": 180000000,
   "reset": false,
   "alternative_systems": [
     {
