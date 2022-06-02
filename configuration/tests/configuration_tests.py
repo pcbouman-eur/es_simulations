@@ -39,6 +39,7 @@ class DummyParser(Namespace):
         self.threshold = 0.0
         self.where_zealots = 'random'
         self.zealots_district = None
+        self.short_suffix = False
         super().__init__(**kwargs)
 
 

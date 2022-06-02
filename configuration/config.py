@@ -63,6 +63,7 @@ class Config:
     num_parties = None
 
     config_file = None
+    short_suffix = None
     # alternative electoral systems can be passed only in the configuration file
     alternative_systems = None
 
@@ -366,10 +367,11 @@ class Config:
                     raise NotImplementedError(f"Type '{alt['type']}' is not implemented, but was provided in the "
                                               f"configuration file for the alternative system '{alt['name']}'.")
 
-        # short suffix in case of using a configuration file
-        if self.config_file is not None:
-            self.suffix = (f"_{self.config_file.split('/')[-1].replace('.json', '')}_p_{self.propagation}"
-                           f"_media_{self.mass_media}_zn_{self.n_zealots}_mc_{self.mc_steps}")
+        # short suffix
+        if self.short_suffix:
+            self.suffix = f"_p_{self.propagation}_media_{self.mass_media}_zn_{self.n_zealots}_mc_{self.mc_steps}"
+            if self.config_file is not None:
+                self.suffix = f"_{self.config_file.split('/')[-1].replace('.json', '')}" + self.suffix
 
         # at the end remove dots from the suffix so latex doesn't have issues with the filenames
         self.suffix = self.suffix.replace('.', '')
