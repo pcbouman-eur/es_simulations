@@ -30,7 +30,7 @@ if __name__ == '__main__':
         er_file = f'log/error_basic_no{no}.txt'
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
-                        f'--config_file {cfg.config_file} -qs [{qs}] -avg_deg {k} -ra {ra} -e {e} --np {parties}')
+                        f'--config_file {cfg.config_file} -qs {qs} -avg_deg {k} -ra {ra} -e {e} -np {parties}')
         os.system(f'run -t 70:00 -o {out_file} -e {er_file} bash {file_name}')
         no += 1
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         er_file = f'log/error_basic_no{no}.txt'
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
-                        f'--config_file {cfg.config_file} -qs [{qs}] -avg_deg {k} -ra {ra} -e {e} --np {parties}')
+                        f'--config_file {cfg.config_file} -qs {qs} -avg_deg {k} -ra {ra} -e {e} -np {parties}')
         os.system(f'run -t 70:00 -o {out_file} -e {er_file} bash {file_name}')
         no += 1
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         er_file = f'log/error_basic_no{no}.txt'
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
-                        f'--config_file {cfg.config_file} -qs [{qs}] -avg_deg {k} -ra {ra} -e {e} --np {parties}')
+                        f'--config_file {cfg.config_file} -qs {qs} -avg_deg {k} -ra {ra} -e {e} -np {parties}')
         os.system(f'run -t 70:00 -o {out_file} -e {er_file} bash {file_name}')
         no += 1
 
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         er_file = f'log/error_basic_no{no}.txt'
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
-                        f'--config_file {cfg.config_file} -qs [{qs}] -avg_deg {k} -ra {ra} -e {e} --np {parties}')
+                        f'--config_file {cfg.config_file} -qs {qs} -avg_deg {k} -ra {ra} -e {e} -np {parties}')
         os.system(f'run -t 70:00 -o {out_file} -e {er_file} bash {file_name}')
         no += 1
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         er_file = f'log/error_basic_no{no}.txt'
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
-                        f'--config_file {cfg.config_file} -qs [{qs}] -avg_deg {k} -ra {ra} -e {e} --np {parties}')
+                        f'--config_file {cfg.config_file} -qs {qs} -avg_deg {k} -ra {ra} -e {e} -np {parties}')
         os.system(f'run -t 70:00 -o {out_file} -e {er_file} bash {file_name}')
         no += 1
 
