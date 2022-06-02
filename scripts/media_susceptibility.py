@@ -109,7 +109,7 @@ if __name__ == '__main__':
         with open(file_name, 'w') as _file:
             _file.write(f'/home/tomasz/anaconda2/envs/conda_python3.6/bin/python3 main.py '
                         f'-mm {media} --config_file {cfg.config_file}')
-        os.system(f'run -t 5:00 -o {out_file} -e {er_file} bash {file_name}')
+        os.system(f'run -t 20:00 -o {out_file} -e {er_file} bash {file_name}')
     ##################################################################################
 
     # plot_media_susceptibility(cfg)

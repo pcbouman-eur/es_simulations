@@ -1,0 +1,28 @@
+{
+  "_comment_": "Configuration for an abstract electoral system",
+  "q": 100,
+  "n": 10000,
+  "seats": [5],
+  "seat_rule": "jefferson",
+  "avg_deg": 12,
+  "ratio": 0.002,
+  "sample_size": 500,
+  "mc_steps": 1000,
+  "epsilon": 0.005,
+  "num_parties": 3,
+  "therm_time": 1,
+  "reset": true,
+  "short_suffix": true,
+  "alternative_systems": [
+    {
+      "name": "100 districts FPTP",
+      "type": "basic",
+      "seat_rule": "fptp"
+    },
+    {
+      "name": "100 districts Webster",
+      "type": "basic",
+      "seat_rule": "webster"
+    }
+  ]
+}
