@@ -136,6 +136,9 @@ parser.add_argument('--config_file', action='store', default=None, dest='config_
                          'from the command line. The name of the parameter in the file should be the same '
                          'as the name in the namespace ("dest" argument).')
 
+parser.add_argument('--short_suffix', action='store_const', default=False, const=True, dest='short_suffix',
+                    help='whether to use a shortened version of the suffix with only some of the parameters')
+
 
 def get_arguments():
     """
