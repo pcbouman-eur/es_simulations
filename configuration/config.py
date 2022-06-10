@@ -221,12 +221,12 @@ class Config:
                 raise ValueError(f"The list of district coordinates (len={len(self.district_coords)}) "
                                  f"must have a length equal to the number of districts (q={self.q})!")
             log.info('The network will have a "planar" structure based on district_coords and planar_c values')
-            self.suffix += f"_gc_{self.planar_c}_c_{self.avg_deg}"
+            self.suffix += f"_gc_{self.planar_c}_k_{self.avg_deg}"
             if self.ratio is not None:
                 log.warning('"ratio" parameter was provided, but will be ignored in the planar network')
         else:
             log.info('The network will have a simple planted block structure')
-            self.suffix += f"_R_{self.ratio}_c_{self.avg_deg}"
+            self.suffix += f"_R_{self.ratio}_k_{self.avg_deg}"
             if self.planar_c is not None:
                 log.warning('"planar_c" parameter was provided, but will be ignored in the simple planted network')
 
@@ -278,6 +278,7 @@ class Config:
         # Seat allocation rules
         self.seats_per_district, self.total_seats = self.validate_seats(self.seats, self.q, 'the main configuration')
         self.seat_alloc_function = self.validate_seat_rule(self.seat_rule, 'the main configuration')
+        self.suffix += f"_qs_{self.seats_per_district[0]}"
 
         # add the general configuration to the main pre-defined electoral systems
         for system in self.voting_systems.keys():
