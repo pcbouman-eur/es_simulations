@@ -14,10 +14,11 @@ sys.path.insert(0, parentdir)
 from configuration.parser import parser
 from configuration.config import Config
 from tools import convert_to_distributions, read_data, calculate_indexes
-from plotting.plotting_tools import names_dict, DefDict, plot_box
+from plotting_scripts.plotting_tools import names_dict, DefDict, plot_box
 
 
 def main():
+    param = 'seats'
     os.chdir(parentdir)
 
     args = parser.parse_args()
@@ -34,14 +35,14 @@ def main():
 
     systems_res = defaultdict(DefDict)
 
-    parties_list = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-    for parties in parties_list:
-        setattr(args, 'num_parties', parties)
+    seats = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for seat_num in seats:
+        setattr(args, 'seats', [seat_num])
         cfg = Config(args, parser._option_string_actions)
         res, settings = read_data(cfg.suffix, input_dir='results/final1/')
         voting_distribution = convert_to_distributions(res['vote_fractions'])
 
-        for system in ['countrywide_system', 'main_district_system', '100 districts Webster', '100 districts FPTP']:
+        for system in ['main_district_system', '100 districts FPTP']:
             distribution = convert_to_distributions(res[system])
             systems_res[system]['data'].append(distribution['a'])
             systems_res[system]['mean'].append(np.mean(distribution['a']))
@@ -54,17 +55,17 @@ def main():
 
     res = systems_res['main_district_system']
     short = names_dict['main_district_system']["short"]
-    plot_box(res['data'], labels=parties_list, file_name=f'parties_box_{short.lower()}.pdf', title=short, number='b', ylabel='election result', xlabel='number of parties', ylim=(-0.03, 1.03))
-    plot_box(res['gall'], labels=parties_list, file_name=f'parties_box_{short.lower()}_gall.pdf', title=short, number='d', ylabel='Gallagher index', xlabel='number of parties', ylim=(-0.015, 0.35))
-    plot_box(res['loos'], labels=parties_list, file_name=f'parties_box_{short.lower()}_loos.pdf', title=short, number='e', ylabel='Loosemore-Hanby index', xlabel='number of parties', ylim=(-0.015, 0.42))
-    plot_box(res['eff'], labels=parties_list, file_name=f'parties_box_{short.lower()}_eff.pdf', title=short, number='f', ylabel='effective num. of parties', xlabel='number of parties', ylim=(0.93, 10.1))
+    plot_box(res['data'], labels=seats, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='b', ylabel='election result', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
+    plot_box(res['gall'], labels=seats, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='d', ylabel='Gallagher index', xlabel=f'number of {param}', ylim=(-0.015, 0.35))
+    plot_box(res['loos'], labels=seats, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='e', ylabel='Loosemore-Hanby index', xlabel=f'number of {param}', ylim=(-0.015, 0.42))
+    plot_box(res['eff'], labels=seats, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='f', ylabel='effective num. of parties', xlabel=f'number of {param}', ylim=(0.95, 3.05))
 
     res = systems_res['100 districts FPTP']
     short = names_dict['100 districts FPTP']["short"]
-    plot_box(res['data'], labels=parties_list, file_name=f'parties_box_{short.lower()}.pdf', title=short, number='c', ylabel='election result', xlabel='number of parties', ylim=(-0.03, 1.03))
-    plot_box(res['gall'], labels=parties_list, file_name=f'parties_box_{short.lower()}_gall.pdf', title=short, number='g', ylabel='Gallagher index', xlabel='number of parties', ylim=(-0.015, 0.35))
-    plot_box(res['loos'], labels=parties_list, file_name=f'parties_box_{short.lower()}_loos.pdf', title=short, number='h', ylabel='Loosemore-Hanby index', xlabel='number of parties', ylim=(-0.015, 0.42))
-    plot_box(res['eff'], labels=parties_list, file_name=f'parties_box_{short.lower()}_eff.pdf', title=short, number='i', ylabel='effective num. of parties', xlabel='number of parties', ylim=(0.93, 10.1))
+    plot_box(res['data'], labels=seats, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='c', ylabel='election result', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
+    plot_box(res['gall'], labels=seats, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='g', ylabel='Gallagher index', xlabel=f'number of {param}', ylim=(-0.015, 0.35))
+    plot_box(res['loos'], labels=seats, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='h', ylabel='Loosemore-Hanby index', xlabel=f'number of {param}', ylim=(-0.015, 0.42))
+    plot_box(res['eff'], labels=seats, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='i', ylabel='effective num. of parties', xlabel=f'number of {param}', ylim=(0.95, 3.05))
 
     fig = plt.figure(figsize=(6, 5))
     axs = fig.subplots(3, 3)
@@ -72,7 +73,7 @@ def main():
     for i, ax_col in enumerate(axs):
         for j, ax in enumerate(ax_col):
             ax.set_xlim([0, 1])
-            ax.set_ylim([0, 7])
+            ax.set_ylim([0, 5.2])
             ax.set_xticks((0, 0.5, 1))
             for system in ['main_district_system', '100 districts FPTP']:
                 color = 'deepskyblue' if system == 'main_district_system' else 'orangered'
@@ -83,16 +84,19 @@ def main():
                 ax.set_xticklabels((0, 0.5, 1))
             if j != 0:
                 ax.set_yticklabels(())
-            ax.text(0.5, 6, f'{parties_list[index]} parties')
+            if index == 0:
+                ax.text(0.6, 4.4, f'{seats[index]} seat')
+            else:
+                ax.text(0.6, 4.4, f'{seats[index]} {param}')
             index += 1
 
     plt.subplots_adjust(wspace=0.09, hspace=0.08, top=0.96, bottom=0.09, left=0.08, right=0.97)
     axs[0][0].set_title('a', loc='left', fontweight='bold')
     axs[2][1].set_xlabel('election result')
     axs[1][0].set_ylabel('probability')
-    axs[1][1].text(0.8, 2.5, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.7))
+    axs[1][1].text(0.8, 2.25, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.7))
     axs[1][1].text(0.8, 1.55, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.7))
-    plt.savefig('plots/parties_hist.pdf')
+    plt.savefig(f'plots/{param}_hist.pdf')
     plt.show()
     plt.close()
 

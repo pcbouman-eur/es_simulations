@@ -14,7 +14,7 @@ sys.path.insert(0, parentdir)
 from configuration.parser import parser
 from configuration.config import Config
 from tools import convert_to_distributions, read_data, calculate_indexes
-from plotting.plotting_tools import names_dict, DefDict, plot_box
+from plotting_scripts.plotting_tools import names_dict, DefDict, plot_box
 
 
 def main():
@@ -61,17 +61,17 @@ def main():
     districts = [100, 50, 25, 10, 1]
     res = systems_res['main_district_system']
     short = names_dict['main_district_system']["short"]
-    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='b', ylabel='election result', xlabel='number of districts', ylim=(-0.03, 1.03))
-    plot_box(res['gall'], labels=districts, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='d', ylabel='Gallagher index', xlabel='number of districts', ylim=(-0.002, 0.082))
-    plot_box(res['loos'], labels=districts, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='e', ylabel='Loosemore-Hanby index', xlabel='number of districts', ylim=(-0.002, 0.082))
-    plot_box(res['eff'], labels=districts, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='f', ylabel='effective num. of parties', xlabel='number of districts', ylim=None)
+    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='b', ylabel='election result', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
+    plot_box(res['gall'], labels=districts, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='d', ylabel='Gallagher index', xlabel=f'number of {param}', ylim=(-0.002, 0.082))
+    plot_box(res['loos'], labels=districts, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='e', ylabel='Loosemore-Hanby index', xlabel=f'number of {param}', ylim=(-0.002, 0.082))
+    plot_box(res['eff'], labels=districts, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='f', ylabel='effective num. of parties', xlabel=f'number of {param}', ylim=None)
 
     res = systems_res['100 districts FPTP']
     short = names_dict['100 districts FPTP']["short"]
-    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='c', ylabel='election result', xlabel='number of districts', ylim=(-0.03, 1.03))
-    plot_box(res['gall'], labels=districts, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='g', ylabel='Gallagher index', xlabel='number of districts', ylim=(-0.02, 0.68))
-    plot_box(res['loos'], labels=districts, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='h', ylabel='Loosemore-Hanby index', xlabel='number of districts', ylim=(-0.02, 0.68))
-    plot_box(res['eff'], labels=districts, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='i', ylabel='effective num. of parties', xlabel='number of districts', ylim=None)
+    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='c', ylabel='election result', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
+    plot_box(res['gall'], labels=districts, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='g', ylabel='Gallagher index', xlabel=f'number of {param}', ylim=(-0.02, 0.68))
+    plot_box(res['loos'], labels=districts, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='h', ylabel='Loosemore-Hanby index', xlabel=f'number of {param}', ylim=(-0.02, 0.68))
+    plot_box(res['eff'], labels=districts, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='i', ylabel='effective num. of parties', xlabel=f'number of {param}', ylim=None)
 
     fig = plt.figure(figsize=(6.5, 4))
     axs = fig.subplots(2, 3)
@@ -93,7 +93,7 @@ def main():
             if j != 0:
                 ax.set_yticklabels(())
             if index < 4:
-                ax.text(0.5, 7.4, f'{districts[index]} districts')
+                ax.text(0.5, 7.4, f'{districts[index]} {param}')
             else:
                 ax.text(0.5, 7.4, f'{districts[index]} district')
             index += 1
@@ -107,7 +107,6 @@ def main():
 
     plt.subplots_adjust(wspace=0.09, hspace=0.08, top=0.95, bottom=0.12, left=0.06, right=0.98)
     plt.savefig(f'plots/{param}_hist.pdf')
-    # plt.show()
     plt.close()
 
 
