@@ -6,21 +6,25 @@ names_dict = {
         'short': 'PR',
         'medium': 'PR Jefferson',
         'long': 'proportional representation with the Jefferson method',
+        'color': 'deepskyblue',
     },
     'countrywide_system': {
-        'short': 'global-PR',
+        'short': 'PR-G',
         'medium': 'PR one district',
         'long': 'proportional representation with one countrywide district',
+        'color': 'mediumseagreen',
     },
     '100 districts Webster': {
         'short': 'PR-W',
         'medium': 'PR Webster',
         'long': 'proportional representation with the Webster method',
+        'color': 'sandybrown',
     },
     '100 districts FPTP': {
         'short': 'PV',
         'medium': 'PV',
         'long': 'plurality voting',
+        'color': 'orangered',
     },
 }
 
