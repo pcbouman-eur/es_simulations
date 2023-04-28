@@ -4,6 +4,7 @@ import inspect
 import numpy as np
 from matplotlib import pyplot as plt
 from collections import defaultdict
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 # path hack for imports to work when running this script from any location,
 # without the hack one has to manually edit PYTHONPATH every time
@@ -39,7 +40,7 @@ def main(arguments=None, input_dir=None):
             systems_res[system]['loos'].append(indexes['Loosemore Hanby index'])
             systems_res[system]['eff'].append(indexes['Eff. No of Parties'])
 
-    fig = plt.figure(figsize=(6, 4))
+    fig = plt.figure(figsize=(6, 4.5))
     plt.axhline(1./3, ls='--', lw=0.9, color='black')
     x_list = [100.0 * x / 10000 for x in z_list]
 
@@ -56,11 +57,23 @@ def main(arguments=None, input_dir=None):
     plt.xlabel('% of zealots')
     plt.ylabel('fraction of seats')
     plt.legend(loc=5)
+    plt.tight_layout()
 
-    plt.xlim([0, z_list[-1]/100.])
+    plt.xlim([0, z_list[-1] / 100.])
     plt.ylim([0.3, 1.005])
 
-    plt.tight_layout()
+    ax = plt.gca()
+    axin = inset_axes(ax, width="100%", height="100%", bbox_to_anchor=(.38, .18, .4, .4), bbox_transform=ax.transAxes)
+    for system in systems:
+        mean = np.array(systems_res[system]['mean'])
+        short = names_dict[system]['short']
+        color = names_dict[system]['color']
+        axin.plot(x_list[1:], (mean[1:] - mean[0]) / np.array(z_list[1:]), color=color, ls='-', label=short, lw=2)
+    axin.set_xlim([0, 3])
+    axin.set_ylim([0., 0.027])
+    axin.set_title('marginal susceptibility')
+
+    # plt.tight_layout()
     plt.savefig(f'plots/z_sus_normal.pdf')
     plt.close()
 

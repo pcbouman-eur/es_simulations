@@ -61,14 +61,14 @@ def main():
     districts = [100, 50, 25, 10, 1]
     res = systems_res['main_district_system']
     short = names_dict['main_district_system']["short"]
-    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='b', ylabel='election result', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
+    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='b', ylabel='fraction of seats', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
     plot_box(res['gall'], labels=districts, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='d', ylabel='Gallagher index', xlabel=f'number of {param}', ylim=(-0.002, 0.082))
     plot_box(res['loos'], labels=districts, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='e', ylabel='Loosemore-Hanby index', xlabel=f'number of {param}', ylim=(-0.002, 0.082))
     plot_box(res['eff'], labels=districts, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='f', ylabel='effective num. of parties', xlabel=f'number of {param}', ylim=None)
 
     res = systems_res['100 districts FPTP']
     short = names_dict['100 districts FPTP']["short"]
-    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='c', ylabel='election result', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
+    plot_box(res['data'], labels=districts, file_name=f'{param}_box_{short.lower()}.pdf', title=short, number='c', ylabel='fraction of seats', xlabel=f'number of {param}', ylim=(-0.03, 1.03))
     plot_box(res['gall'], labels=districts, file_name=f'{param}_box_{short.lower()}_gall.pdf', title=short, number='g', ylabel='Gallagher index', xlabel=f'number of {param}', ylim=(-0.02, 0.68))
     plot_box(res['loos'], labels=districts, file_name=f'{param}_box_{short.lower()}_loos.pdf', title=short, number='h', ylabel='Loosemore-Hanby index', xlabel=f'number of {param}', ylim=(-0.02, 0.68))
     plot_box(res['eff'], labels=districts, file_name=f'{param}_box_{short.lower()}_eff.pdf', title=short, number='i', ylabel='effective num. of parties', xlabel=f'number of {param}', ylim=None)
@@ -100,7 +100,7 @@ def main():
 
     axs[1][2].remove()
     axs[0][0].set_title('a', loc='left', fontweight='bold')
-    axs[1][1].set_xlabel('election result')
+    axs[1][1].set_xlabel('fraction of seats')
     axs[1][0].set_ylabel('probability')
     axs[1][1].text(0.7, 2.7, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.7))
     axs[1][1].text(0.7, 1.7, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.7))
