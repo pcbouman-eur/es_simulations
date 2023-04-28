@@ -13,7 +13,7 @@ sys.path.insert(0, parentdir)
 
 from configuration.parser import parser
 from configuration.config import Config
-from tools import convert_to_distributions, read_data, calculate_indexes
+from tools import convert_to_distributions, read_data
 from plotting_scripts.plotting_tools import names_dict, DefDict
 
 
@@ -33,11 +33,8 @@ def main(system, arguments=None):
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
-    std = np.array(systems_res[system]['std'])
     color = names_dict[system]['color']
     plt.plot(x_list, mean, color=color, ls='-', lw=2.2, label='standard')
-    # plt.scatter(x_list, mean, color=color, label='standard', facecolor='none', marker='o', s=50)
-    # plt.fill_between(x_list, mean-std, mean+std, color=color, lw=0, alpha=0.4)
 
     systems_res = defaultdict(DefDict)
     for i, z in enumerate(z_list):
@@ -48,10 +45,7 @@ def main(system, arguments=None):
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
-    std = np.array(systems_res[system]['std'])
     plt.plot(x_list, mean, color='darkcyan', ls='--', lw=2, label=r'$k=50$')
-    # plt.scatter(x_list, mean, color='mediumorchid', label=r'$k=50$', marker='x')
-    # plt.fill_between(x_list, mean-std, mean+std, color='mediumorchid', lw=0, alpha=0.4)
 
     setattr(arguments, 'mc_steps', 999)
 
@@ -64,10 +58,7 @@ def main(system, arguments=None):
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
-    std = np.array(systems_res[system]['std'])
     plt.plot(x_list, mean, color='mediumorchid', ls='-.', lw=2, label=r'$\varepsilon=0.01$')
-    # plt.scatter(x_list, mean, color='darkcyan', label=r'$\varepsilon=0.01$', facecolor='none', marker='D')
-    # plt.fill_between(x_list, mean - std, mean + std, color='darkcyan', lw=0, alpha=0.4)
 
     setattr(arguments, 'mc_steps', 1001)
 
@@ -80,10 +71,7 @@ def main(system, arguments=None):
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
-    std = np.array(systems_res[system]['std'])
     plt.plot(x_list, mean, color='darkorange', ls=':', lw=2, label=r'$r=0.007$')
-    # plt.scatter(x_list, mean, color='darkorange', label=r'$r=0.007$', facecolor='none', marker='v')
-    # plt.fill_between(x_list, mean - std, mean + std, color='darkorange', lw=0, alpha=0.4)
 
     setattr(arguments, 'mc_steps', 1002)
     setattr(arguments, 'num_parties', 6)
@@ -97,16 +85,13 @@ def main(system, arguments=None):
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
-    std = np.array(systems_res[system]['std'])
     plt.plot(x_list, mean, color='goldenrod', ls=(0, (3, 1, 1, 1, 1, 1)), lw=2, label='6 parties')
-    # plt.scatter(x_list, mean, color='goldenrod', label='6 parties', facecolor='none', marker='s')
-    # plt.fill_between(x_list, mean - std, mean + std, color='goldenrod', lw=0, alpha=0.4)
 
     plt.title('PV')
     plt.title('i', loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('fraction of seats')
-    plt.legend(loc='best', bbox_to_anchor=(1, 0.95))
+    plt.legend(loc='lower right', bbox_to_anchor=(1, 0.05))
 
     plt.xlim([0, 2])
     plt.ylim([0.13, 1.005])

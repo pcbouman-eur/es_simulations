@@ -20,15 +20,16 @@ from plotting_scripts.plotting_tools import names_dict, DefDict
 def main(system, arguments=None):
     plt.figure(figsize=(3.5, 2.7))
     plt.axhline(1. / 3, ls='--', lw=0.9, color='black')
+    plt.axvline(0, ls='--', lw=0.9, color='black')
 
-    z_list = list(range(0, 400, 13))
-    x_list = [100.0 * x / 10000 for x in z_list]
+    m_list = list(np.linspace(0, 1, 31))
+    x_list = np.array(m_list)-1./3
 
     systems_res = defaultdict(DefDict)
-    for i, z in enumerate(z_list):
-        setattr(arguments, 'n_zealots', z)
+    for i, m in enumerate(m_list):
+        setattr(arguments, 'mass_media', m)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final1/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final1/')
         distribution = convert_to_distributions(res[system])
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
@@ -37,67 +38,67 @@ def main(system, arguments=None):
     plt.plot(x_list, mean, color=color, ls='-', lw=2.2, label='standard')
 
     systems_res = defaultdict(DefDict)
-    for i, z in enumerate(z_list):
-        setattr(arguments, 'n_zealots', z)
+    for i, m in enumerate(m_list):
+        setattr(arguments, 'mass_media', m)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final3/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final3/')
         distribution = convert_to_distributions(res[system])
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
     plt.plot(x_list, mean, color='darkcyan', ls='--', lw=2, label=r'$k=50$')
 
-    setattr(arguments, 'mc_steps', 999)
+    setattr(arguments, 'mc_steps', 49)
 
     systems_res = defaultdict(DefDict)
-    for i, z in enumerate(z_list):
-        setattr(arguments, 'n_zealots', z)
+    for i, m in enumerate(m_list):
+        setattr(arguments, 'mass_media', m)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final3/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final3/')
         distribution = convert_to_distributions(res[system])
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
     plt.plot(x_list, mean, color='mediumorchid', ls='-.', lw=2, label=r'$\varepsilon=0.01$')
 
-    setattr(arguments, 'mc_steps', 1001)
+    setattr(arguments, 'mc_steps', 51)
 
     systems_res = defaultdict(DefDict)
-    for i, z in enumerate(z_list):
-        setattr(arguments, 'n_zealots', z)
+    for i, m in enumerate(m_list):
+        setattr(arguments, 'mass_media', m)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final3/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final3/')
         distribution = convert_to_distributions(res[system])
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
     plt.plot(x_list, mean, color='darkorange', ls=':', lw=2, label=r'$r=0.007$')
 
-    setattr(arguments, 'mc_steps', 1002)
+    setattr(arguments, 'mc_steps', 52)
     setattr(arguments, 'num_parties', 6)
 
     systems_res = defaultdict(DefDict)
-    for i, z in enumerate(z_list):
-        setattr(arguments, 'n_zealots', z)
+    for i, m in enumerate(m_list):
+        setattr(arguments, 'mass_media', m)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final3/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final3/')
         distribution = convert_to_distributions(res[system])
         systems_res[system]['mean'].append(np.mean(distribution['a']))
         systems_res[system]['std'].append(np.std(distribution['a']))
     mean = np.array(systems_res[system]['mean'])
-    plt.plot(x_list, mean, color='goldenrod', ls=(0, (3, 1, 1, 1, 1, 1)), lw=2, label='6 parties')
+    plt.plot(np.array(m_list)-1./6, mean, color='goldenrod', ls=(0, (3, 1, 1, 1, 1, 1)), lw=2, label='6 parties')
 
-    plt.title('PR')
-    plt.title('h', loc='left', fontweight='bold')
-    plt.xlabel('% of zealots')
+    plt.title('PV')
+    plt.title('i', loc='left', fontweight='bold')
+    plt.xlabel('media bias')
     plt.ylabel('fraction of seats')
-    plt.legend(loc='lower right', bbox_to_anchor=(1, 0.05))
+    plt.legend(loc=4, fontsize=9)
 
-    plt.xlim([0, 3])
-    plt.ylim([0.13, 1.005])
+    plt.xlim([-1/3, 2/3])
+    plt.ylim([0, 1])
 
     plt.tight_layout()
-    plt.savefig(f'plots/z_sus_pr.pdf')
+    plt.savefig(f'plots/m_sus_pv.pdf')
     plt.close()
 
 
@@ -106,9 +107,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     setattr(args, 'n', 10000)
     setattr(args, 'q', 100)
-    setattr(args, 'sample_size', 500)
-    setattr(args, 'mc_steps', 1000)
-    setattr(args, 'therm_time', 1)
+    setattr(args, 'sample_size', 1000)
+    setattr(args, 'mc_steps', 50)
+    setattr(args, 'therm_time', 10000000)
     setattr(args, 'seats', [5])
     setattr(args, 'ratio', 0.002)
     setattr(args, 'avg_deg', 12.0)
@@ -116,5 +117,5 @@ if __name__ == '__main__':
     setattr(args, 'num_parties', 3)
     setattr(args, 'short_suffix', True)
 
-    main('main_district_system', arguments=args)
+    main('100 districts FPTP', arguments=args)
 

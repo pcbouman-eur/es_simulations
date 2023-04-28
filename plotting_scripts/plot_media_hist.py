@@ -34,7 +34,7 @@ def main():
 
     m_list = [0.23333333333333334, None, 0.5]
     numbers = ['d', 'e', 'f']
-    titles = ['negative propaganda', 'no propaganda', 'positive propaganda']
+    titles = ['negative bias', 'no bias', 'positive bias']
     for i, m in enumerate(m_list):
         setattr(args, 'mass_media', m)
         cfg = Config(args, parser._option_string_actions)
