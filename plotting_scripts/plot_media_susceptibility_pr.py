@@ -18,7 +18,7 @@ from plotting_scripts.plotting_tools import names_dict, DefDict
 
 
 def main(system, arguments=None):
-    plt.figure(figsize=(3.5, 2.7))
+    plt.figure(figsize=(5, 3.5))
     plt.axhline(1. / 3, ls='--', lw=0.9, color='black')
     plt.axvline(0, ls='--', lw=0.9, color='black')
 
@@ -89,10 +89,10 @@ def main(system, arguments=None):
     plt.plot(np.array(m_list)-1./6, mean, color='goldenrod', ls=(0, (3, 1, 1, 1, 1, 1)), lw=2, label='6 parties')
 
     plt.title('PR')
-    plt.title('h', loc='left', fontweight='bold')
+    plt.title('a', loc='left', fontweight='bold')
     plt.xlabel('media bias')
     plt.ylabel('fraction of seats')
-    plt.legend(loc=4, fontsize=9)
+    plt.legend(loc=4)
 
     plt.xlim([-1/3, 2/3])
     plt.ylim([0, 1])

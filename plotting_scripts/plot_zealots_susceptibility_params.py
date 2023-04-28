@@ -39,7 +39,7 @@ def main(arguments=None, input_dir=None, title=None, save=None, num=None):
             systems_res[system]['loos'].append(indexes['Loosemore Hanby index'])
             systems_res[system]['eff'].append(indexes['Eff. No of Parties'])
 
-    plt.figure(figsize=(2.8, 2.4))
+    plt.figure(figsize=(2.5, 2.2))
     if title == '6 parties':
         plt.axhline(1./6, ls='--', lw=0.9, color='black')
     else:
@@ -63,7 +63,7 @@ def main(arguments=None, input_dir=None, title=None, save=None, num=None):
     plt.xlim([0, z_list[-1]/100.])
     plt.ylim([0.13, 1.005])
 
-    plt.tight_layout()
+    plt.subplots_adjust(top=0.87, bottom=0.22, left=0.21, right=0.99)
     plt.savefig(f'plots/z_sus_{save}.pdf')
     plt.close()
 
@@ -83,11 +83,11 @@ if __name__ == '__main__':
     setattr(args, 'num_parties', 3)
     setattr(args, 'short_suffix', True)
 
-    main(arguments=args, input_dir='results/final3/', title=r'$k=50$', save='k', num='j')
+    main(arguments=args, input_dir='results/final3/', title=r'$k=50$', save='k', num='h')
     setattr(args, 'mc_steps', 999)
-    main(arguments=args, input_dir='results/final3/', title=r'$\varepsilon=0.01$', save='eps', num='k')
+    main(arguments=args, input_dir='results/final3/', title=r'$\varepsilon=0.01$', save='eps', num='i')
     setattr(args, 'mc_steps', 1001)
-    main(arguments=args, input_dir='results/final3/', title=r'$r=0.007$', save='r', num='l')
+    main(arguments=args, input_dir='results/final3/', title=r'$r=0.007$', save='r', num='j')
     setattr(args, 'mc_steps', 1002)
     setattr(args, 'num_parties', 6)
-    main(arguments=args, input_dir='results/final3/', title='6 parties', save='parties', num='m')
+    main(arguments=args, input_dir='results/final3/', title='6 parties', save='parties', num='k')

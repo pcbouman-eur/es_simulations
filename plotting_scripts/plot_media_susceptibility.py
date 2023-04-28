@@ -40,7 +40,7 @@ def main(arguments=None, input_dir=None):
             systems_res[system]['loos'].append(indexes['Loosemore Hanby index'])
             systems_res[system]['eff'].append(indexes['Eff. No of Parties'])
 
-    fig = plt.figure(figsize=(6, 4.5))
+    plt.figure(figsize=(5.55, 4.35))
     plt.axhline(1./3, ls='--', lw=0.9, color='black')
     plt.axvline(0, ls='--', lw=0.9, color='black')
 

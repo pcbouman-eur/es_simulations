@@ -39,7 +39,7 @@ def main(arguments=None, input_dir=None, title=None, save=None, num=None):
             systems_res[system]['loos'].append(indexes['Loosemore Hanby index'])
             systems_res[system]['eff'].append(indexes['Eff. No of Parties'])
 
-    plt.figure(figsize=(2.8, 2.4))
+    plt.figure(figsize=(2.5, 2.2))
     if title == '6 parties':
         plt.axhline(1./6, ls='--', lw=0.9, color='black')
     else:
@@ -64,13 +64,16 @@ def main(arguments=None, input_dir=None, title=None, save=None, num=None):
     plt.ylabel('fraction of seats')
     plt.legend(loc=4, fontsize=9)
 
+    ax = plt.gca()
+    ax.set_yticks((0, 0.2, 0.4, 0.6, 0.8, 1))
+
     if title == '6 parties':
         plt.xlim([-1 / 6, 5 / 6])
     else:
         plt.xlim([-1 / 3, 2 / 3])
     plt.ylim([-0.005, 1.005])
 
-    plt.tight_layout()
+    plt.subplots_adjust(top=0.87, bottom=0.22, left=0.21, right=0.99)
     plt.savefig(f'plots/m_sus_{save}.pdf')
     plt.close()
 
