@@ -22,9 +22,9 @@ def main():
     args = parser.parse_args()
     setattr(args, 'n', 10000)
     setattr(args, 'q', 100)
-    setattr(args, 'sample_size', 500)
-    setattr(args, 'mc_steps', 1000)
-    setattr(args, 'therm_time', 1)
+    setattr(args, 'sample_size', 1000)
+    setattr(args, 'mc_steps', 50)
+    setattr(args, 'therm_time', 10000000)
     setattr(args, 'seats', [5])
     setattr(args, 'ratio', 0.002)
     setattr(args, 'avg_deg', 12.0)
@@ -32,20 +32,20 @@ def main():
     setattr(args, 'num_parties', 3)
     setattr(args, 'short_suffix', True)
 
-    z_list = [0, 13, 26]
+    m_list = [0.23333333333333334, None, 0.5]
     numbers = ['d', 'e', 'f']
-    titles = ['no zealots', '~0.1% of zealots', '~0.25% of zealots']
-    for i, z in enumerate(z_list):
-        setattr(args, 'n_zealots', z)
+    titles = ['negative propaganda', 'no propaganda', 'positive propaganda']
+    for i, m in enumerate(m_list):
+        setattr(args, 'mass_media', m)
         cfg = Config(args, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final1/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final1/')
 
         plt.figure(figsize=(3.5, 2.7))
         for system in ['main_district_system', '100 districts FPTP']:
             distribution = convert_to_distributions(res[system])
             color = 'deepskyblue' if system == 'main_district_system' else 'orangered'
-            plt.hist(distribution['a'], bins=np.linspace(0.0, 1.0, 25), range=(0, 1), density=True, color=color, alpha=0.7, zorder=10)
-            if i != 0:
+            plt.hist(distribution['a'], bins=np.linspace(0.0, 1.0, 27), range=(0, 1), density=True, color=color, alpha=0.7, zorder=10)
+            if i != 1:
                 plt.axvline(np.mean(distribution['a']), ls='--', lw=1, color='black', zorder=0)
 
         plt.axvline(1./3, ls='-', lw=0.9, color='black', zorder=0)
@@ -62,7 +62,7 @@ def main():
         plt.ylim([0, 6.5])
 
         plt.tight_layout()
-        plt.savefig(f'plots/z_hist_{z}.pdf')
+        plt.savefig(f'plots/m_hist_{m}.pdf')
         plt.close()
 
 
