@@ -22,7 +22,6 @@ GRAY = '#a0a0a0'
 india_geojson = 'plotting_scripts/india.geojson'  # 'https://raw.githubusercontent.com/geohacker/india/master/state/india_state.geojson'
 poland_geojson = 'plotting_scripts/poland.geojson'  # 'https://raw.githubusercontent.com/ppatrzyk/polska-geojson/master/wojewodztwa/wojewodztwa-max.geojson'
 israel_geojson = 'plotting_scripts/israel.geojson'
-TO_PLOT = israel_geojson
 
 
 def draw_map(config):
@@ -34,11 +33,21 @@ def draw_map(config):
     m = folium.Map(tiles=None, zoom_start=5.5, max_bounds=True,  # cartodbpositron stamenwatercolor
                    location=[(min_lat+max_lat)/2, (min_lon+max_lon)/2])
 
+    save_as = f'plots/{cfg.config_file.split("/")[-1].replace(".json", ".html")}'
+    if save_as[6:9] == 'pl_':
+        to_plot = poland_geojson
+    elif save_as[6:9] == 'il_':
+        to_plot = israel_geojson
+    elif save_as[6:10] == 'ind_':
+        to_plot = india_geojson
+    else:
+        raise ValueError('no geojson data for selected country')
+
     style = {'fillColor': GRAY, 'color': BLACK}
-    folium.GeoJson(TO_PLOT, name="geojson", style_function=lambda x: style).add_to(m)
+    folium.GeoJson(to_plot, name="geojson", style_function=lambda x: style).add_to(m)
 
     colors = COLORS_MANY.copy()
-    random.seed(44)
+    random.seed(42)
     random.shuffle(colors)
 
     for i, (lat, lon) in enumerate(config.district_coords):
@@ -53,7 +62,6 @@ def draw_map(config):
     m.get_root().header.add_child(folium.Element(html_to_insert))
 
     m.fit_bounds((max_lat, max_lon), (min_lat, min_lon))
-
     m.save(f'plots/{cfg.config_file.split("/")[-1].replace(".json", ".html")}')
 
 
