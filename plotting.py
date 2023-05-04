@@ -97,15 +97,18 @@ def plot_hist(distribution, name, suffix, bins_num=21, output_dir='plots/', colo
         distr = distribution[key]
 
         plt.figure(figsize=(4, 3))
+        ax = plt.gca()
+
         plt.hist(distr, bins=np.linspace(0.0, 1.0, bins_num), range=(0, 1), density=True, color=col)
 
         avg = np.mean(distr)
         std = np.std(distr)
-        plt.axvline(avg, linestyle='-', color='black')
-        plt.axvline(avg - std, linestyle='--', color='black')
-        plt.axvline(avg + std, linestyle='--', color='black')
+        plt.axvline(avg, linestyle='-', color='black', linewidth=0.9)
+        plt.axvline(avg - std, linestyle='--', color='black', linewidth=0.8)
+        plt.axvline(avg + std, linestyle='--', color='black', linewidth=0.8)
 
-        plt.title('Histogram of seats share, avg={}, std={}'.format(round(avg, 2), round(std, 2)))
+        plt.text(0.75, 0.92, 'avg={}, std={}'.format(round(avg, 2), round(std, 2)),
+                 horizontalalignment='center', verticalalignment='center', transform=ax.transAxes, fontsize=9)
         plt.xlabel('fraction of seats')
         plt.ylabel('probability')
 
@@ -114,21 +117,26 @@ def plot_hist(distribution, name, suffix, bins_num=21, output_dir='plots/', colo
         plt.close('all')
 
 
-def plot_indexes(indexes, name, suffix, output_dir='plots/'):
-    for index, values in indexes.items():
+def plot_indexes(indexes, name, suffix, output_dir='plots/', colors=('mediumorchid', 'gold', 'deepskyblue')):
+    for idx, (index, values) in enumerate(indexes.items()):
+        col = colors[idx % len(colors)]
+
         lim0 = np.min([0, np.min(values)])
         lim1 = np.max([1, np.max(values)])
 
         plt.figure(figsize=(4, 3))
-        plt.hist(values, bins=np.linspace(lim0, lim1, 21), range=(0, 1), density=True)
+        ax = plt.gca()
+
+        plt.hist(values, bins=np.linspace(lim0, lim1, 21), range=(0, 1), density=True, color=col)
 
         avg = np.mean(values)
         std = np.std(values)
-        plt.axvline(avg, linestyle='-', color='black')
-        plt.axvline(avg - std, linestyle='--', color='black')
-        plt.axvline(avg + std, linestyle='--', color='black')
+        plt.axvline(avg, linestyle='-', color='black', linewidth=0.9)
+        plt.axvline(avg - std, linestyle='--', color='black', linewidth=0.8)
+        plt.axvline(avg + std, linestyle='--', color='black', linewidth=0.8)
 
-        plt.title(f'Histogram of {index} \n avg={round(avg, 2)}, std={round(std, 2)}')
+        plt.text(0.5, 0.92, f'avg={round(avg, 2)}\nstd={round(std, 2)}',
+                 horizontalalignment='center', verticalalignment='center', transform=ax.transAxes, fontsize=9)
         plt.xlabel(f'{index}')
         plt.ylabel('probability')
 
@@ -215,7 +223,7 @@ def plot_mean_std_two_systems(x, y1, std1, y1_name, y2, std2, y2_name, quantity,
 
 
 def plot_mean_std_all(voting_systems, x, results, quantity, suffix, xlab, ylab='election result of a', ylim=(),
-                      save_file=True):
+                      save_file=True, vline=None):
     """
     Plots mean +/- std of all electoral systems from results vs quantity (eg number of zealots)
     :param voting_systems: iterable with names of electoral systems
@@ -226,6 +234,7 @@ def plot_mean_std_all(voting_systems, x, results, quantity, suffix, xlab, ylab='
     :param xlab: x-axis label
     :param ylab: y-axis label
     :param ylim: y-axis limits as [ymin, ymax]
+    :param vline: position of a vertical line to add
     :param save_file: bool if save plot to file
     """
     plt.figure(figsize=(4, 3))
@@ -238,6 +247,9 @@ def plot_mean_std_all(voting_systems, x, results, quantity, suffix, xlab, ylab='
 
     if ylim:
         plt.ylim(ylim)
+
+    if vline is not None:
+        plt.axvline(vline, linewidth=0.6, linestyle='--', color='black')
 
     plt.title(f'{quantity} susceptibility')
     plt.xlabel(xlab)
@@ -382,30 +394,37 @@ def plot_heatmap(heatmap, l_bins, quantity, election_system, suffix, xlab='numbe
     plt.close('all')
 
 
-def plot_network(graph, config, mode='districts', layout='geo', save_as=None, node_size=10, std=0.00015, ig_layout=None):
+def plot_network(graph, config, mode='districts', layout='geo', save_as=None, node_size=10, std=0.00015,
+                 ig_layout=None, colors=COLORS_MANY, no_background=False):
     """
-    Plotting igraph.Graph() object in various ways, indicating with color districts or states of the dones.
+    Plotting igraph.Graph() object in various ways, indicating with color districts or states of the nodes.
     :param graph: the network to plot, igraph.Graph() object
     :param config: configuration of the simulation, config.Config() object
-    :param mode: either 'districts' to plot districts, or 'states' to plot states
-    :param layout: 'default', 'geo', or 'geo_strict', the mode of plotting the net, if None it'll be 'default'
+    :param mode: either 'districts' to color the nodes according to their districts, or 'states' according to parties
+    :param layout: 'default', 'geo', or 'geo_strict', the mode of plotting the net, if None it'll be default from iGraph
     :param save_as: destination file to save the plot, use .png or .pdf
     :param node_size: the size of the node on the plot
     :param std: this param defines the size of the area that nodes from one district will take on the plot,
                 if 0 all nodes from the same district will overlap on the plot
     :param ig_layout: the layout as from ig.Graph.layout() to plot the nodes in a fixed position
+    :param colors: list of colours to use when plotting districts
+    :param no_background: if True, background is transparent instead of white
     :return: None
     """
     if mode == 'districts':
         for v in graph.vs():
-            v['color'] = COLORS_MANY[v['district'] % len(COLORS_MANY)]
+            v['color'] = colors[v['district'] % len(colors)]
+            v['frame_color'] = '#404040'
     elif mode == 'states':
         for v in graph.vs():
             v['color'] = COLORS[config.all_states.index(v['state']) % len(COLORS)]
     else:
         raise ValueError(f"Mode '{mode}' not implemented!")
 
-    background = 'white'
+    if no_background:
+        background = None
+    else:
+        background = 'white'
 
     if layout is not None and 'geo' in layout:
 
@@ -443,17 +462,16 @@ def plot_network(graph, config, mode='districts', layout='geo', save_as=None, no
             x_middle = (x_min + x_max) / 2
             y_middle = (y_min + y_max) / 2
 
-            graph.add_vertex(x=x_middle + diff, y=y_middle + diff, color='black')
-            graph.add_vertex(x=x_middle - diff, y=y_middle + diff, color='black')
-            graph.add_vertex(x=x_middle + diff, y=y_middle - diff, color='black')
-            graph.add_vertex(x=x_middle - diff, y=y_middle - diff, color='black')
-
-            background = None
+            graph.add_vertex(x=x_middle + diff, y=y_middle + diff, color='white', frame_color='white')
+            graph.add_vertex(x=x_middle - diff, y=y_middle + diff, color='white', frame_color='white')
+            graph.add_vertex(x=x_middle + diff, y=y_middle - diff, color='white', frame_color='white')
+            graph.add_vertex(x=x_middle - diff, y=y_middle - diff, color='white', frame_color='white')
 
     graph.vs()['size'] = node_size
     graph.es()['width'] = 0.5
+    graph.es()['color'] = '#404040'
 
     if save_as is not None:
-        ig.plot(graph, layout=ig_layout, background=background, target=save_as, bbox=(800, 800))
+        ig.plot(graph, layout=ig_layout, background=background, target=save_as, bbox=(1000, 1000))
     else:
-        ig.plot(graph, layout=ig_layout, background=background, bbox=(800, 800))
+        ig.plot(graph, layout=ig_layout, background=background, bbox=(1000, 1000))
