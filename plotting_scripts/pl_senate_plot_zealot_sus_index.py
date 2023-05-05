@@ -18,7 +18,7 @@ from tools import convert_to_distributions, read_data, calculate_indexes
 
 names_dict = {
     'main_district_system': {
-        'short': 'real ES',
+        'short': '100 dist. PV*',
         'long': 'FPTP 100 districts',
         'color': 'mediumorchid',
     },
@@ -75,7 +75,7 @@ def main(arguments=None, input_dir=None):
             systems_res[system]['eff_std'].append(np.std(indexes['Eff. No of Parties']))
 
     plt.figure(figsize=(3.5, 2.7))
-    x_list = [100.0 * x / 10000 for x in z_list]
+    x_list = [100.0 * x / settings['n'] for x in z_list]
     for system in systems:
         mean = np.array(systems_res[system]['gall_mean'])
         std = np.array(systems_res[system]['gall_std'])
@@ -88,9 +88,9 @@ def main(arguments=None, input_dir=None):
     plt.title('g', loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('Gallagher index')
-    plt.text(0.05, 0.4, r'$\varepsilon =$'+f'{settings["epsilon"]}')
+    plt.text(1.05, 0.37, r'$\varepsilon =$'+f'{settings["epsilon"]}')
     # plt.legend(loc=1)
-    plt.xlim([0, 100. * z_list[-1] / cfg.n])
+    plt.xlim([0, x_list[-1]])
     plt.ylim([-0.01, 0.46])
     plt.tight_layout()
     plt.savefig(f'plots/pl_senate_z_sus_gall.pdf')
@@ -98,7 +98,6 @@ def main(arguments=None, input_dir=None):
 
     ############################################################
     plt.figure(figsize=(3.5, 2.7))
-    x_list = [100.0 * x / 10000 for x in z_list]
     for system in systems:
         mean = np.array(systems_res[system]['loos_mean'])
         std = np.array(systems_res[system]['loos_std'])
@@ -111,9 +110,9 @@ def main(arguments=None, input_dir=None):
     plt.title('h', loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('Loosemore-Hanby index')
-    plt.text(0.05, 0.4, r'$\varepsilon =$'+f'{settings["epsilon"]}')
+    plt.text(1.05, 0.37, r'$\varepsilon =$'+f'{settings["epsilon"]}')
     # plt.legend(loc=1)
-    plt.xlim([0, 100. * z_list[-1] / cfg.n])
+    plt.xlim([0, x_list[-1]])
     plt.ylim([-0.01, 0.46])
     plt.tight_layout()
     plt.savefig(f'plots/pl_senate_z_sus_loos.pdf')
@@ -121,7 +120,6 @@ def main(arguments=None, input_dir=None):
 
     ############################################################
     plt.figure(figsize=(3.5, 2.7))
-    x_list = [100.0 * x / 10000 for x in z_list]
     for system in systems:
         mean = np.array(systems_res[system]['eff_mean'])
         std = np.array(systems_res[system]['eff_std'])
@@ -134,9 +132,9 @@ def main(arguments=None, input_dir=None):
     plt.title('i', loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('effective num. of parties')
-    plt.text(1.05, 2.7, r'$\varepsilon =$'+f'{settings["epsilon"]}')
-    # plt.legend(loc=1, fontsize=9)
-    plt.xlim([0, 100. * z_list[-1] / cfg.n])
+    plt.text(0.32, 2.6, r'$\varepsilon =$'+f'{settings["epsilon"]}')
+    plt.legend(loc=1, fontsize=9)
+    plt.xlim([0, x_list[-1]])
     plt.ylim([0.975, 3.02])
     plt.tight_layout()
     plt.savefig(f'plots/pl_senate_z_sus_eff.pdf')

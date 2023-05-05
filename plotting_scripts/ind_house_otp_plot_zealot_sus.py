@@ -19,12 +19,12 @@ from plotting_scripts.plotting_tools import DefDict
 
 names_dict = {
     'main_district_system': {
-        'short': '41 dist. PR*',
-        'long': 'PR with 41 districts',
+        'short': '543 dist. PV*',
+        'long': 'FPTP with 543 districts',
         'color': 'mediumorchid',
     },
-    '16 districts': {
-        'short': '16 dist. PR',
+    '36 districts': {
+        'short': '36 dist. PR',
         'long': '',
         'color': 'deepskyblue',
     },
@@ -33,13 +33,13 @@ names_dict = {
         'long': '',
         'color': 'mediumseagreen',
     },
-    '41 districts FPTP': {
-        'short': '41 dist. PV',
+    '132 districts': {
+        'short': '132 dist. PR',
         'long': '',
         'color': 'sandybrown',
     },
-    '16 districts FPTP': {
-        'short': '16 dist. PV',
+    '132 districts FPTP': {
+        'short': '132 dist. PV',
         'long': '',
         'color': 'orangered',
     },
@@ -48,13 +48,13 @@ names_dict = {
 
 def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
     systems_res = defaultdict(DefDict)
-    systems = ['main_district_system', '41 districts FPTP', '16 districts', '16 districts FPTP', 'countrywide_system']
+    systems = ['main_district_system', '132 districts', '132 districts FPTP', '36 districts', 'countrywide_system']
 
-    z_list = list(range(0, 400, 13))
+    z_list = list(range(0, 2020, 67))
     for i, z in enumerate(z_list):
         setattr(arguments, 'n_zealots', z)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_pl_sejm' + cfg.suffix, input_dir=input_dir)
+        res, settings = read_data('_ind_house_otp' + cfg.suffix, input_dir=input_dir)
 
         for system in systems:
             distribution = convert_to_distributions(res[system])
@@ -78,10 +78,10 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
         plt.fill_between(x_list, mean-std, mean+std, color=color, lw=0, alpha=0.25, zorder=0)
 
     if big:
-        plt.title(r'zealot susceptibility                  $\varepsilon =$'+f'{settings["epsilon"]}', loc='right')
+        plt.title(r'zealot susceptibility                 $\varepsilon =$'+f'{settings["epsilon"]}', loc='right')
     else:
         plt.title('zealot susceptibility')
-        plt.text(0.15, 0.27, r'$\varepsilon =$' + f'{settings["epsilon"]}')
+        plt.text(0.3, 0.27, r'$\varepsilon =$' + f'{settings["epsilon"]}')
     plt.title(num, loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('fraction of seats')
@@ -94,7 +94,7 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
     plt.xlim([0, x_list[-1]])
     plt.ylim([0.18, 1.005])
 
-    plt.savefig(f'plots/pl_sejm_z_sus_eps{settings["epsilon"]}.pdf')
+    plt.savefig(f'plots/ind_house_otp_z_sus_eps{settings["epsilon"]}.pdf')
     plt.close()
 
     ########################################################################################
@@ -106,33 +106,31 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
         color = names_dict[system]['color']
         plt.plot(x_list[1:], (mean[1:] - mean[0]) / np.array(z_list[1:]), color=color, ls='-', label=short, lw=2)
     plt.xlim([0, x_list[-1]])
-    plt.ylim([0., 0.018])
+    plt.ylim([0., 0.0073])
     plt.title('marginal susceptibility')
-    plt.text(0.11, 0.0151, r'$\varepsilon =$' + f'{settings["epsilon"]}')
+    plt.text(0.18, 0.0061, r'$\varepsilon =$' + f'{settings["epsilon"]}')
     plt.title(num2, loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('fraction of seats')
     plt.legend(loc=1, fontsize=9)
 
     plt.tight_layout()
-    plt.savefig(f'plots/pl_sejm_z_sus_marginal_eps{settings["epsilon"]}.pdf')
+    plt.savefig(f'plots/ind_house_otp_z_sus_marginal_eps{settings["epsilon"]}.pdf')
     plt.close()
 
 
 if __name__ == '__main__':
     os.chdir(parentdir)
     args = parser.parse_args()
-    setattr(args, 'n', 41000)
-    setattr(args, 'mc_steps', 50)
-    setattr(args, 'num_parties', 5)
+    setattr(args, 'n', 100000)
+    setattr(args, 'mc_steps', 300)
+    setattr(args, 'num_parties', 9)
     setattr(args, 'short_suffix', True)
 
-    main(arguments=args, input_dir='results/final1/', num='b', num2='d')  # eps=0.001
+    main(arguments=args, input_dir='results/final1/', num='b', num2='d')  # eps=0.0001
 
-    setattr(args, 'mc_steps', 700)
-    main(arguments=args, input_dir='results/final2/', num='a', big=True, num2='e')  # eps=0.002
+    main(arguments=args, input_dir='results/final2/', num='a', big=True, num2='e')  # eps=0.0007
 
-    setattr(args, 'mc_steps', 700)
-    main(arguments=args, input_dir='results/final3/', num='c', num2='f')  # eps=0.005
+    main(arguments=args, input_dir='results/final3/', num='c', num2='f')  # eps=0.002
 
 

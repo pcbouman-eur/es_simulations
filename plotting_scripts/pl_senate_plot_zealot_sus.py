@@ -19,7 +19,7 @@ from plotting_scripts.plotting_tools import DefDict
 
 names_dict = {
     'main_district_system': {
-        'short': 'real ES',
+        'short': '100 dist. PV*',
         'long': 'FPTP 100 districts',
         'color': 'mediumorchid',
     },
@@ -74,8 +74,8 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
         plt.figure(figsize=(3.5, 2.7))
     else:
         plt.figure(figsize=(6, 4.5))
-    plt.axhline(1./cfg.num_parties, ls='--', lw=0.9, color='black')
-    x_list = [100.0 * x / cfg.n for x in z_list]
+    plt.axhline(1./settings['num_parties'], ls='--', lw=0.9, color='black')
+    x_list = [100.0 * x / settings['n'] for x in z_list]
 
     for system in systems:
         mean = np.array(systems_res[system]['mean'])
@@ -99,7 +99,7 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
         plt.legend(loc=5, fontsize=9)
     plt.tight_layout()
 
-    plt.xlim([0, 100. * z_list[-1] / cfg.n])
+    plt.xlim([0, x_list[-1]])
     plt.ylim([0.3, 1.005])
 
     plt.savefig(f'plots/pl_senate_z_sus_eps{settings["epsilon"]}.pdf')
@@ -113,7 +113,7 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
         short = names_dict[system]['short']
         color = names_dict[system]['color']
         plt.plot(x_list[1:], (mean[1:] - mean[0]) / np.array(z_list[1:]), color=color, ls='-', label=short, lw=2)
-    plt.xlim([0, 100. * z_list[-1] / cfg.n])
+    plt.xlim([0, x_list[-1]])
     plt.ylim([0., 0.015])
     plt.title('marginal susceptibility')
     plt.text(0.15, 0.013, r'$\varepsilon =$' + f'{settings["epsilon"]}')
