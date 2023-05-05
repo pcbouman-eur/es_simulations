@@ -19,8 +19,13 @@ from tools import convert_to_distributions, read_data, calculate_indexes
 names_dict = {
     'main_district_system': {
         'short': 'real ES',
-        'long': 'PR with 41 districts',
+        'long': 'FPTP 100 districts',
         'color': 'mediumorchid',
+    },
+    '40 old districts': {
+        'short': '40 dist. PR',
+        'long': '',
+        'color': '#d3c655',  # E1357A
     },
     '16 districts': {
         'short': '16 dist. PR',
@@ -32,8 +37,8 @@ names_dict = {
         'long': '',
         'color': 'mediumseagreen',
     },
-    '41 districts FPTP': {
-        'short': '41 dist. PV',
+    '40 old districts FPTP': {
+        'short': '40 dist. PV',
         'long': '',
         'color': 'sandybrown',
     },
@@ -47,13 +52,16 @@ names_dict = {
 
 def main(arguments=None, input_dir=None):
     systems_res = defaultdict(lambda: defaultdict(list))
-    systems = ['main_district_system', '41 districts FPTP', '16 districts', '16 districts FPTP', 'countrywide_system']
+    systems = ['main_district_system', '40 old districts', '40 old districts FPTP', '16 districts', '16 districts FPTP', 'countrywide_system']
 
-    z_list = list(range(0, 400, 13))
+    z_list = list(range(0, 800, 27))
     for i, z in enumerate(z_list):
         setattr(arguments, 'n_zealots', z)
         cfg = Config(arguments, parser._option_string_actions)
-        res, settings = read_data('_pl_sejm' + cfg.suffix, input_dir=input_dir)
+        if 'final3' in input_dir:
+            res, settings = read_data('_pl_senate_z' + cfg.suffix, input_dir=input_dir)
+        else:
+            res, settings = read_data('_pl_senate' + cfg.suffix, input_dir=input_dir)
         voting_distribution = convert_to_distributions(res['vote_fractions'])
 
         for system in systems:
@@ -85,7 +93,7 @@ def main(arguments=None, input_dir=None):
     plt.xlim([0, 100. * z_list[-1] / cfg.n])
     plt.ylim([-0.01, 0.46])
     plt.tight_layout()
-    plt.savefig(f'plots/pl_sejm_z_sus_gall.pdf')
+    plt.savefig(f'plots/pl_senate_z_sus_gall.pdf')
     plt.close()
 
     ############################################################
@@ -108,7 +116,7 @@ def main(arguments=None, input_dir=None):
     plt.xlim([0, 100. * z_list[-1] / cfg.n])
     plt.ylim([-0.01, 0.46])
     plt.tight_layout()
-    plt.savefig(f'plots/pl_sejm_z_sus_loos.pdf')
+    plt.savefig(f'plots/pl_senate_z_sus_loos.pdf')
     plt.close()
 
     ############################################################
@@ -126,29 +134,29 @@ def main(arguments=None, input_dir=None):
     plt.title('i', loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('effective num. of parties')
-    plt.text(0.7, 4.5, r'$\varepsilon =$'+f'{settings["epsilon"]}')
+    plt.text(1.05, 2.7, r'$\varepsilon =$'+f'{settings["epsilon"]}')
     # plt.legend(loc=1, fontsize=9)
     plt.xlim([0, 100. * z_list[-1] / cfg.n])
-    plt.ylim([0.975, 5.02])
+    plt.ylim([0.975, 3.02])
     plt.tight_layout()
-    plt.savefig(f'plots/pl_sejm_z_sus_eff.pdf')
+    plt.savefig(f'plots/pl_senate_z_sus_eff.pdf')
     plt.close()
 
 
 if __name__ == '__main__':
     os.chdir(parentdir)
     args = parser.parse_args()
-    setattr(args, 'n', 41000)
-    setattr(args, 'mc_steps', 50)
-    setattr(args, 'num_parties', 5)
+    setattr(args, 'n', 50000)
+    setattr(args, 'mc_steps', 50)  # the name of the file has a wrong value
+    setattr(args, 'num_parties', 3)
     setattr(args, 'short_suffix', True)
 
-    # main(arguments=args, input_dir='results/final1/')  # eps=0.001
+    # main(arguments=args, input_dir='results/final1/')  # eps=0.0005
 
-    setattr(args, 'mc_steps', 700)
-    main(arguments=args, input_dir='results/final2/')  # eps=0.002
+    # setattr(args, 'mc_steps', 600)
+    # main(arguments=args, input_dir='results/final2/')  # eps=0.001
 
-    # setattr(args, 'mc_steps', 700)
-    # main(arguments=args, input_dir='results/final3/')   # eps=0.005
+    setattr(args, 'mc_steps', 600)
+    main(arguments=args, input_dir='results/final3/')  # eps=0.002
 
 
