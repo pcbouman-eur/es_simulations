@@ -74,21 +74,19 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
         std = np.array(systems_res[system]['std'])
         short = names_dict[system]['short']
         color = names_dict[system]['color']
-        plt.plot(x_list, mean, color=color, ls='-', label=short, lw=2 if big else 1.2, zorder=10)
+        plt.plot(x_list, mean, color=color, ls='-', label=short, lw=2, zorder=10)
         plt.fill_between(x_list, mean-std, mean+std, color=color, lw=0, alpha=0.25, zorder=0)
 
     if big:
         plt.title(r'zealot susceptibility                  $\varepsilon =$'+f'{settings["epsilon"]}', loc='right')
     else:
         plt.title('zealot susceptibility')
-        plt.text(0.15, 0.27, r'$\varepsilon =$' + f'{settings["epsilon"]}')
+        plt.text(0.65, 0.27, r'$\varepsilon =$' + f'{settings["epsilon"]}')
     plt.title(num, loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('fraction of seats')
     if big:
         plt.legend(loc=5)
-    else:
-        plt.legend(loc=4, fontsize=9)
     plt.tight_layout()
 
     plt.xlim([0, x_list[-1]])
@@ -108,11 +106,15 @@ def main(arguments=None, input_dir=None, num=None, big=False, num2=None):
     plt.xlim([0, x_list[-1]])
     plt.ylim([0., 0.018])
     plt.title('marginal susceptibility')
-    plt.text(0.11, 0.0151, r'$\varepsilon =$' + f'{settings["epsilon"]}')
+    if num2 == 'f':
+        plt.text(0.11, 0.0151, r'$\varepsilon =$' + f'{settings["epsilon"]}')
+    else:
+        plt.text(0.6, 0.0151, r'$\varepsilon =$' + f'{settings["epsilon"]}')
     plt.title(num2, loc='left', fontweight='bold')
     plt.xlabel('% of zealots')
     plt.ylabel('fraction of seats')
-    plt.legend(loc=1, fontsize=9)
+    if num2 == 'f':
+        plt.legend(loc=1, fontsize=9)
 
     plt.tight_layout()
     plt.savefig(f'plots/pl_sejm_z_sus_marginal_eps{settings["epsilon"]}.pdf')
