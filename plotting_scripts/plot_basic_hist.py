@@ -19,7 +19,7 @@ from plotting_scripts.plotting_tools import names_dict
 
 def plot_small_seats_hist(dist, file_name=None, number=None, title=None, xlim=None, ylim=None, color=None, bins=51,
                           density=None, text=None, xlabel=None):
-    plt.figure(figsize=(3.2, 2.6))
+    plt.figure(figsize=(3.2, 2.4))
     if xlim is not None:
         plt.hist(dist, bins=np.linspace(xlim[0], xlim[1], bins), range=(xlim[0], xlim[1]), density=True, color=color)
     else:
