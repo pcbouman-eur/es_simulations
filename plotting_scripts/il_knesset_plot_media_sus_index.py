@@ -82,7 +82,7 @@ def main(arguments=None, input_dir=None):
 
     plt.title('disproportionality')
     plt.title('g', loc='left', fontweight='bold')
-    plt.xlabel('% of zealots')
+    plt.xlabel('media bias')
     plt.ylabel('Gallagher index')
     plt.text(0.55, 0.6, r'$\varepsilon =$'+f'{settings["epsilon"]}')
     plt.xlim([x_list[0], x_list[-1]])
@@ -105,7 +105,7 @@ def main(arguments=None, input_dir=None):
 
     plt.title('disproportionality')
     plt.title('h', loc='left', fontweight='bold')
-    plt.xlabel('% of zealots')
+    plt.xlabel('media bias')
     plt.ylabel('Loosemore-Hanby index')
     plt.text(0.55, 0.6, r'$\varepsilon =$'+f'{settings["epsilon"]}')
     plt.xlim([x_list[0], x_list[-1]])
@@ -127,7 +127,7 @@ def main(arguments=None, input_dir=None):
 
     plt.title('fragmentation')
     plt.title('i', loc='left', fontweight='bold')
-    plt.xlabel('% of zealots')
+    plt.xlabel('media bias')
     plt.ylabel('effective num. of parties')
     plt.text(0.2, 6.9, r'$\varepsilon =$'+f'{settings["epsilon"]}')
     plt.legend(loc=1, fontsize=9)
