@@ -74,6 +74,36 @@ def get_binom_hist(config_args, m, system):
     return hist, density
 
 
+def get_trinom_hist(config_args, m, system):
+    """
+    Returns histogram of fractions for trinomial approximation, for a given set of parameters.
+
+    @param config_args: set of parameters.
+    @param m: number of bins in the produced histogram. (int)
+    @param system: electoral system name. (string)
+
+    @return: histogram bar sizes for a given setting in a binomial approximation. (numpy.array)
+    """
+    p = (1.0 - config_args.epsilon) / 3.0 + config_args.epsilon * config_args.mass_media  # effective state 'a' probability
+    # TODO: the probability needs to be an array, which sums to one.
+    if system == 'countrywide_system':
+        eff_N = config_args.n - config_args.n_zealots  # number of non-zealot voters
+        sub_density = st.multinomial(eff_N, p).pmf(np.arange(eff_N + 1))  # density for single voters
+        # TODO: The pmf takes an array as an input, so you need to sum it correctly here
+        density = np.zeros(config_args.n + 1)  # density including zealots
+        density[config_args.n_zealots:] = sub_density
+        hist = density_to_histogram(density, m)
+    elif system == 'main_district_system':
+        n_d = config_args.n / config_args.q  # number of voters per district
+        n_z = config_args.n_zealots / config_args.q  # average number of zealots per district
+        # TODO: "everything", but remember that multinom does not have cdf function
+
+        pass
+    else:
+        raise Exception('Electoral system unknown or not supported for trinomial approximation.')
+    return hist, density
+
+
 def plot_hist_with_binom_approx(distribution, m, hist, density, suffix, colors=('tomato', 'mediumseagreen', 'cornflowerblue')):
     """
     Plots a histogram with results of the simulation and binomial approximation on top of that.
