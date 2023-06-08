@@ -18,8 +18,8 @@ from tools import convert_to_distributions, read_data, calculate_indexes
 
 names_dict = {
     'main_district_system': {
-        'short': '543 dist. PV*',
-        'long': 'FPTP with 543 districts',
+        'short': '542 dist. PV*',
+        'long': 'FPTP with 542 districts',
         'color': 'mediumorchid',
     },
     '36 districts': {
