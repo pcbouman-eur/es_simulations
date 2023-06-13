@@ -66,12 +66,47 @@ def get_binom_hist(config_args, m, system):
         if n_d % 2:
             p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z)  # probability of winning in a district
         else:
-            p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d / 2 - n_z) + st.binom(n_d - n_z, p).pmf(n_d / 2 - n_z) * 0.5
+            p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z) + st.binom(n_d - n_z, p).pmf(n_d // 2 - n_z) * 0.5
         density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
         hist = density_to_histogram(density, m)
     else:
         raise Exception('Electoral system unknown or not supported for binomial approximation.')
     return hist, density
+
+
+def trinom_winning_prob(n_d, n_z, p):
+    """
+    Returns the trinomial approximation for the probability of winning the elections
+    given the number of voters "n_d", number of zealots "n_z" and the voting probability "p"
+    in a three party system.
+
+    @param n_d: number of voters. (int)
+    @param n_z: number of zealots. (int)
+    @param p: probability distribution of votes among three parties. (numpy.array)
+
+    @return: winning probability. (float)
+    """
+    x = n_d // 3 - n_z + 1  # the smallest possible number of votes needed to win
+    # first we need to compute the possible losing votes for the second party, given "x"
+    temp_col_2 = np.arange(max(0, n_d - 2*x - 2*n_z + 1), min(x + n_z, n_d - x - n_z + 1))
+    # the third party will simply be reverse since they need to sum to "n_d - n_z - x"
+    temp_col_3 = temp_col_2[::-1]
+    # finally we repeat "x" for all the winning configurations
+    temp_col_1 = np.repeat(x, temp_col_2.shape[0])
+
+    ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T
+    for x in np.arange(n_d // 3 - n_z + 2, n_d - n_z + 1):  # we go over larger possible votes obtained
+        # first we need to compute the possible losing votes for the second party, given "x"
+        temp_col_2 = np.arange(max(0, n_d - 2*x - 2*n_z + 1), min(x + n_z, n_d - x - n_z + 1))
+        # the third party will simply be reverse since they need to sum to "n_d - n_z - x"
+        temp_col_3 = temp_col_2[::-1]
+        # finally we repeat "x" for all the winning configurations
+        temp_col_1 = np.repeat(x, temp_col_2.shape[0])
+        
+        temp_ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T  # set of all winning configurations given "x"
+        ids = np.concatenate([ids, temp_ids])  # we add the newly computed winning configurations
+
+    return st.multinomial(n_d - n_z, p).pmf(ids).sum()  # we sum over all winning configurations
 
 
 def get_trinom_hist(config_args, m, system):
@@ -84,11 +119,14 @@ def get_trinom_hist(config_args, m, system):
 
     @return: histogram bar sizes for a given setting in a binomial approximation. (numpy.array)
     """
-    p = (1.0 - config_args.epsilon) / 3.0 + config_args.epsilon * config_args.mass_media  # effective state 'a' probability
+    p = np.zeros(3)
+    p[0] = (1.0 - config_args.epsilon) / 3.0 + config_args.epsilon * config_args.mass_media  # effective state 'a' probability
+    p[1] = (1.0 - p[0]) / 2.0
+    p[2] = p[1]
     # TODO: the probability needs to be an array, which sums to one.
     if system == 'countrywide_system':
         eff_N = config_args.n - config_args.n_zealots  # number of non-zealot voters
-        sub_density = st.multinomial(eff_N, p).pmf(np.arange(eff_N + 1))  # density for single voters
+        sub_density = st.binom(eff_N, p[0]).pmf(np.arange(eff_N + 1))  # density for single voters
         # TODO: The pmf takes an array as an input, so you need to sum it correctly here
         density = np.zeros(config_args.n + 1)  # density including zealots
         density[config_args.n_zealots:] = sub_density
@@ -96,8 +134,13 @@ def get_trinom_hist(config_args, m, system):
     elif system == 'main_district_system':
         n_d = config_args.n / config_args.q  # number of voters per district
         n_z = config_args.n_zealots / config_args.q  # average number of zealots per district
-        # TODO: "everything", but remember that multinom does not have cdf function
 
+        p_d = st.multinomial(n_d - n_z, p).pmf(n_d // 3 - n_z)
+# st.multinomial(11, np.array([0.5, 0.2, 0.3])).pmf(np.array([[[1., 6., 4.], [2., 5., 4.]], [[1., 6., 4.], [2., 5., 4.]]]))
+
+        density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
+        hist = density_to_histogram(density, m)
+        # TODO: "everything", but remember that multinom does not have cdf function
         pass
     else:
         raise Exception('Electoral system unknown or not supported for trinomial approximation.')
