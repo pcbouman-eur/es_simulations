@@ -86,7 +86,10 @@ def trinom_winning_prob(n_d, n_z, p):
 
     @return: winning probability. (float)
     """
-    x = n_d // 3 - n_z + 1  # the smallest possible number of votes needed to win
+    if n_z >= n_d:
+        return 1.0
+
+    x = max(0, n_d // 3 - n_z + 1)  # the smallest possible number of votes needed to win
     # first we need to compute the possible losing votes for the second party, given "x"
     temp_col_2 = np.arange(max(0, n_d - 2*x - 2*n_z + 1), min(x + n_z, n_d - x - n_z + 1))
     # the third party will simply be reverse since they need to sum to "n_d - n_z - x"
@@ -95,7 +98,7 @@ def trinom_winning_prob(n_d, n_z, p):
     temp_col_1 = np.repeat(x, temp_col_2.shape[0])
 
     ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T
-    for x in np.arange(n_d // 3 - n_z + 2, n_d - n_z + 1):  # we go over larger possible votes obtained
+    for x in np.arange(max(1, n_d // 3 - n_z + 2), n_d - n_z + 1):  # we go over larger possible votes obtained
         # first we need to compute the possible losing votes for the second party, given "x"
         temp_col_2 = np.arange(max(0, n_d - 2*x - 2*n_z + 1), min(x + n_z, n_d - x - n_z + 1))
         # the third party will simply be reverse since they need to sum to "n_d - n_z - x"
