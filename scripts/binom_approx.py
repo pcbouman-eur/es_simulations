@@ -66,11 +66,125 @@ def get_binom_hist(config_args, m, system):
         if n_d % 2:
             p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z)  # probability of winning in a district
         else:
-            p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d / 2 - n_z) + st.binom(n_d - n_z, p).pmf(n_d / 2 - n_z) * 0.5
+            p_d = 1.0 - st.binom(n_d - n_z, p).cdf(n_d // 2 - n_z) + st.binom(n_d - n_z, p).pmf(n_d // 2 - n_z) * 0.5
         density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
         hist = density_to_histogram(density, m)
     else:
         raise Exception('Electoral system unknown or not supported for binomial approximation.')
+    return hist, density
+
+
+def trinom_win_prob(n_d, n_z, p):
+    """
+    Returns the trinomial approximation for the probability of winning the elections
+    given the number of voters "n_d", number of zealots "n_z" and the voting probability "p"
+    in a three party system.
+
+    @param n_d: number of voters. (int)
+    @param n_z: number of zealots. (int)
+    @param p: probability distribution of votes among three parties. (numpy.array)
+
+    @return: winning probability. (float)
+    """
+    if n_z >= n_d:
+        return 1.0
+
+    x = max(0, n_d // 3 - n_z + 1)  # the smallest possible number of votes needed to win
+    # first we need to compute the possible losing votes for the second party, given "x"
+    temp_col_2 = np.arange(max(0, n_d - 2*x - 2*n_z + 1), min(x + n_z, n_d - x - n_z + 1))
+    # the third party will simply be reverse since they need to sum to "n_d - n_z - x"
+    temp_col_3 = temp_col_2[::-1]
+    # finally we repeat "x" for all the winning configurations
+    temp_col_1 = np.repeat(x, temp_col_2.shape[0])
+
+    ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T
+    for x in np.arange(max(1, n_d // 3 - n_z + 2), n_d - n_z + 1):  # we go over larger possible votes obtained
+        # first we need to compute the possible losing votes for the second party, given "x"
+        temp_col_2 = np.arange(max(0, n_d - 2*x - 2*n_z + 1), min(x + n_z, n_d - x - n_z + 1))
+        # the third party will simply be reverse since they need to sum to "n_d - n_z - x"
+        temp_col_3 = temp_col_2[::-1]
+        # finally we repeat "x" for all the winning configurations
+        temp_col_1 = np.repeat(x, temp_col_2.shape[0])
+        
+        temp_ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T  # set of all winning configurations given "x"
+        ids = np.concatenate([ids, temp_ids])  # we add the newly computed winning configurations
+
+    return st.multinomial(n_d - n_z, p).pmf(ids).sum()  # we sum over all winning configurations
+
+
+def trinom_draw_prob(n_d, n_z, p):
+    """
+    Returns the trinomial approximation for the probability of winning the elections by a draw
+    given the number of voters "n_d", number of zealots "n_z" and the voting probability "p"
+    in a three party system.
+
+    @param n_d: number of voters. (int)
+    @param n_z: number of zealots. (int)
+    @param p: probability distribution of votes among three parties. (numpy.array)
+
+    @return: winning by a draw probability. (float)
+    """
+    if n_z > n_d // 2:
+        return 0.0
+
+    # minimum number of votes needed to win by a (non-complete) draw
+    x_min = max(0, n_d // 3 - n_z + 1)
+    # maximum number of votes that allow to win by a (non-complete) draw
+    x_max = n_d // 2 - n_z
+    # we compute the possible drawing votes with the second party
+    col_1 = np.arange(x_min, x_max+1)
+    col_2 = col_1 + n_z
+    col_3 = n_d - 2.0 * col_2
+
+    ids_2 = np.array([col_1, col_2, col_3]).T
+    ids_3 = np.array([col_1, col_3, col_2]).T
+    # Note that in case of a draw the probability of winning is equal to 0.5,
+    # however, one can symmetrically draw with 3 party, which means that
+    # in the end the correct probability is equal to:
+    p_d = 0.5 * (st.multinomial(n_d - n_z, p).pmf(ids_2).sum() +
+                 st.multinomial(n_d - n_z, p).pmf(ids_3).sum())
+
+    if n_d % 3:  # we must also include all parties draw
+        p_d += st.multinomial(n_d - n_z, p).pmf(np.array([n_d // 3 - n_z,
+                                                          n_d // 3,
+                                                          n_d // 3])) / 3.0
+
+    return p_d
+
+
+def get_trinom_hist(config_args, m, system):
+    """
+    Returns histogram of fractions for trinomial approximation, for a given set of parameters.
+
+    @param config_args: set of parameters.
+    @param m: number of bins in the produced histogram. (int)
+    @param system: electoral system name. (string)
+
+    @return: histogram bar sizes for a given setting in a binomial approximation. (numpy.array)
+    """
+    p = np.zeros(3)
+    p[0] = (1.0 - config_args.epsilon) / 3.0 + config_args.epsilon * config_args.mass_media  # effective state 'a' probability
+    p[1] = (1.0 - p[0]) / 2.0
+    p[2] = p[1]
+    if system == 'countrywide_system':
+        eff_N = config_args.n - config_args.n_zealots  # number of non-zealot voters
+        sub_density = st.binom(eff_N, p[0]).pmf(np.arange(eff_N + 1))  # density for single voters
+        density = np.zeros(config_args.n + 1)  # density including zealots
+        density[config_args.n_zealots:] = sub_density
+        hist = density_to_histogram(density, m)
+    elif system == 'main_district_system':
+        n_d = config_args.n / config_args.q  # number of voters per district
+        n_z = config_args.n_zealots / config_args.q  # average number of zealots per district
+
+        # In contrast to the 'countrywide_system' case, here we only approximate the effect of zealots.
+        # Otherwise, we would need to sum over all possible combinations.
+        p_d = trinom_win_prob(n_d, n_z, p)  # winning probability without draws
+        p_d += trinom_draw_prob(n_d, n_z, p)  # winning draw probability
+
+        density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
+        hist = density_to_histogram(density, m)
+    else:
+        raise Exception('Electoral system unknown or not supported for trinomial approximation.')
     return hist, density
 
 
