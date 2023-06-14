@@ -25,7 +25,7 @@ Fell free to use our code, and if you do so, we kindly ask to cite us:
 
 ## Requirements
 
-[![python](https://img.shields.io/badge/python-3.6-brightgreen)](https://www.python.org/downloads/release/python-360/)
+[![python](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8%7C3.9%7C3.10-brightgreen)](https://www.python.org/downloads/release/python-360/)
 [![python-igraph](https://img.shields.io/badge/python--igraph-0.8-yellowgreen)](https://igraph.org/2020/02/14/igraph-0.8.0-python.html)
 [![numpy](https://img.shields.io/badge/numpy-1.19.2-yellow)](https://numpy.org/devdocs/release/1.19.2-notes.html)
 [![matplotlib](https://img.shields.io/badge/matplotlib-3.2.0-orange)](https://matplotlib.org/3.2.0/contents.html)
