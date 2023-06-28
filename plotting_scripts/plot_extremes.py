@@ -17,16 +17,68 @@ from tools import convert_to_distributions, read_data
 from plotting_scripts.plotting_tools import names_dict
 
 
+def trinom_draw_prob(n_d, n_z, p):
+    """
+    copied form scripts/binom_approx.py on master
+    """
+    if n_z > n_d // 2:
+        return 0.0
+
+    x_min = max(0, n_d // 3 - n_z + 1)
+    x_max = n_d // 2 - n_z
+    col_1 = np.arange(x_min, x_max+1)
+    col_2 = col_1 + n_z
+    col_3 = n_d - 2.0 * col_2
+
+    ids_2 = np.array([col_1, col_2, col_3]).T
+    ids_3 = np.array([col_1, col_3, col_2]).T
+    p_d = 0.5 * (st.multinomial(n_d - n_z, p).pmf(ids_2).sum() +
+                 st.multinomial(n_d - n_z, p).pmf(ids_3).sum())
+
+    if n_d % 3:
+        p_d += st.multinomial(n_d - n_z, p).pmf(np.array([n_d // 3 - n_z, n_d // 3, n_d // 3])) / 3.0
+    return p_d
+
+
+def trinom_win_prob(n_d, n_z, p):
+    if n_z >= n_d:
+        return 1.0
+
+    x = max(0, n_d // 3 - n_z + 1)
+    temp_col_2 = np.arange(max(0, n_d - 2 * x - 2 * n_z + 1), min(x + n_z, n_d - x - n_z + 1))
+    temp_col_3 = temp_col_2[::-1]
+    temp_col_1 = np.repeat(x, temp_col_2.shape[0])
+
+    ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T
+    for x in np.arange(max(1, n_d // 3 - n_z + 2), n_d - n_z + 1):
+        temp_col_2 = np.arange(max(0, n_d - 2 * x - 2 * n_z + 1), min(x + n_z, n_d - x - n_z + 1))
+        temp_col_3 = temp_col_2[::-1]
+        temp_col_1 = np.repeat(x, temp_col_2.shape[0])
+
+        temp_ids = np.array([temp_col_1, temp_col_2, temp_col_3]).T
+        ids = np.concatenate([ids, temp_ids])
+
+    return st.multinomial(n_d - n_z, p).pmf(ids).sum()
+
+
 def get_binom_hist(config_args, system):
-    p = 1.0/3.0
     if system == 'countrywide_system':
+        p = 1.0 / 3.0
         sub_density = st.binom(config_args.n, p).pmf(np.arange(config_args.n + 1))
         density = np.zeros(config_args.n + 1)
         density[config_args.n_zealots:] = sub_density
     else:
+        p = np.zeros(3)
+        p[0] = (1.0 - config_args.epsilon) / 3.0 + config_args.epsilon * config_args.mass_media
+        p[1] = (1.0 - p[0]) / 2.0
+        p[2] = p[1]
         n_d = config_args.n / config_args.q
-        p_d = 1.0 - st.binom(n_d, p).cdf(n_d / 2.8571)
-        density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))
+        n_z = config_args.n_zealots / config_args.q
+
+        p_d = trinom_win_prob(n_d, n_z, p)
+        p_d += trinom_draw_prob(n_d, n_z, p)
+
+        density = st.binom(config_args.q, p_d).pmf(np.arange(config_args.q + 1))  # density for districts
     return density
 
 

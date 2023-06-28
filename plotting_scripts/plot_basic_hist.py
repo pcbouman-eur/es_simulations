@@ -84,11 +84,11 @@ def main():
     voting_distribution = convert_to_distributions(res['vote_fractions'])
 
     plot_small_seats_hist(voting_distribution['a'], number='a', title=None, ylim=ylim, xlim=[0, 1], xlabel='fraction of votes',
-                          color='mediumorchid', file_name=f'basic_hist_votes_a.pdf', text='party a')
+                          color='mediumorchid', file_name=f'basic_hist_votes_a.pdf', text=r'party $a$')
     plot_small_seats_hist(voting_distribution['b'], number='b', title=None, ylim=ylim, xlim=[0, 1], xlabel='fraction of votes',
-                          color='darkcyan', file_name=f'basic_hist_votes_b.pdf', text='party b')
+                          color='darkcyan', file_name=f'basic_hist_votes_b.pdf', text=r'party $b$')
     plot_small_seats_hist(voting_distribution['c'], number='c', title=None, ylim=ylim, xlim=[0, 1], xlabel='fraction of votes',
-                          color='darkorange', file_name=f'basic_hist_votes_c.pdf', text='party c')
+                          color='darkorange', file_name=f'basic_hist_votes_c.pdf', text=r'party $c$')
 
     numbers = ['d', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']
     for i, system in enumerate(systems):
@@ -96,11 +96,11 @@ def main():
         short = names_dict[system]['short']
 
         plot_small_seats_hist(distribution['a'], number=numbers[i*3:][0], title=short, ylim=ylim, xlim=[0, 1],
-                              color='mediumorchid', file_name=f'basic_hist_{short.lower()}_a.pdf', text='party a')
+                              color='mediumorchid', file_name=f'basic_hist_{short.lower()}_a.pdf', text=r'party $a$')
         plot_small_seats_hist(distribution['b'], number=numbers[i*3:][1], title=short, ylim=ylim, xlim=[0, 1],
-                              color='darkcyan', file_name=f'basic_hist_{short.lower()}_b.pdf', text='party b')
+                              color='darkcyan', file_name=f'basic_hist_{short.lower()}_b.pdf', text=r'party $b$')
         plot_small_seats_hist(distribution['c'], number=numbers[i*3:][2], title=short, ylim=ylim, xlim=[0, 1],
-                              color='darkorange', file_name=f'basic_hist_{short.lower()}_c.pdf', text='party c')
+                              color='darkorange', file_name=f'basic_hist_{short.lower()}_c.pdf', text=r'party $c$')
 
 
 if __name__ == '__main__':

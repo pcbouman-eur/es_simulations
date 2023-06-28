@@ -40,9 +40,9 @@ def main():
         res, settings = read_data('_trajectory' + cfg.suffix, input_dir='results/final3/traj/')
 
         plt.figure(figsize=(3.5, 2.7))
-        plt.plot(res['a'], label='media party a', color='mediumorchid', lw=2, alpha=1)
-        plt.plot(res['b'], label='party b', color='darkcyan', lw=2, alpha=0.5)
-        plt.plot(res['c'], label='party c', color='darkorange', lw=2, alpha=0.5)
+        plt.plot(res['a'], label=r'media party $a$', color='mediumorchid', lw=2, alpha=1)
+        plt.plot(res['b'], label=r'party $b$', color='darkcyan', lw=2, alpha=0.5)
+        plt.plot(res['c'], label=r'party $c$', color='darkorange', lw=2, alpha=0.5)
 
         plt.legend(fontsize=9, loc=2)
 

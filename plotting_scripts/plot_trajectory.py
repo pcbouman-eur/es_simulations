@@ -39,9 +39,9 @@ def main():
         res, settings = read_data('_trajectory'+cfg.suffix, input_dir='results/final3/traj/')
 
         plt.figure(figsize=(3.5, 2.7))
-        plt.plot(res['a'], label='party a', color='mediumorchid')
-        plt.plot(res['b'], label='party b', color='darkcyan')
-        plt.plot(res['c'], label='party c', color='darkorange')
+        plt.plot(res['a'], label=r'party $a$', color='mediumorchid')
+        plt.plot(res['b'], label=r'party $b$', color='darkcyan')
+        plt.plot(res['c'], label=r'party $c$', color='darkorange')
 
         ax = plt.gca()
         if i == 0:
@@ -68,9 +68,9 @@ def main():
     day = 68
 
     plt.figure(figsize=(6.5, 4))
-    plt.plot(res['a'][:day+1], label='party a', color='mediumorchid', alpha=1, lw=2)
-    plt.plot(res['b'][:day+1], label='party b', color='darkcyan', alpha=1, lw=2)
-    plt.plot(res['c'][:day+1], label='party c', color='darkorange', alpha=1, lw=2)
+    plt.plot(res['a'][:day+1], label=r'party $a$', color='mediumorchid', alpha=1, lw=2)
+    plt.plot(res['b'][:day+1], label=r'party $b$', color='darkcyan', alpha=1, lw=2)
+    plt.plot(res['c'][:day+1], label=r'party $c$', color='darkorange', alpha=1, lw=2)
     plt.plot(range(day, 101), res['a'][day:], color='mediumorchid', alpha=0.5, lw=2)
     plt.plot(range(day, 101), res['b'][day:], color='darkcyan', alpha=0.5, lw=2)
     plt.plot(range(day, 101), res['c'][day:], color='darkorange', alpha=0.5, lw=2)
@@ -79,7 +79,7 @@ def main():
 
     plt.axvline(day, ls='-', lw=1, color='black')
     plt.text(66.3, 0.65, 'election day', horizontalalignment='center', verticalalignment='center', rotation=90)
-    plt.text(84, 0.65, 'obtained votes:\nparty a - 49%\nparty b - 33%\nparty c - 18%', horizontalalignment='center', verticalalignment='center')
+    plt.text(84, 0.65, 'obtained votes:\nparty '+'$a$'+' - 49%\nparty '+r'$b$'+' - 33%\nparty '+r'$c$'+' - 18%', horizontalalignment='center', verticalalignment='center')
 
     plt.text(101, 0.495, '0.49', horizontalalignment='left', verticalalignment='center')
     plt.text(101, 0.327, '0.33', horizontalalignment='left', verticalalignment='center')
