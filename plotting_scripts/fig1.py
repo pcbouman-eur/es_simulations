@@ -22,6 +22,20 @@ cm = 1/2.54  # centimeters in inches
 def main():
     os.chdir(parentdir)
 
+    plt.rcParams.update({'font.size': 7})
+    title_font = 8
+
+    gs_kw = dict(width_ratios=[1, 1], height_ratios=[1.8, 1, 1])
+    fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8.7*cm, 12*cm), gridspec_kw=gs_kw)
+    gs = axs[0, 0].get_gridspec()
+    for ax in axs[0, 0:]:
+        ax.remove()
+    axbig = fig.add_subplot(gs[0, 0:])
+
+    ####################################################################################################################
+    ####################################################################################################################
+    ####################################################################################################################
+
     args = parser.parse_args()
     setattr(args, 'n', 10000)
     setattr(args, 'q', 100)
@@ -37,21 +51,6 @@ def main():
     cfg = Config(args, parser._option_string_actions)
     res, settings = read_data('_trajectory' + cfg.suffix, input_dir='results/final3/traj/')
 
-    plt.rcParams.update({'font.size': 7})
-    title_font = 8
-
-    gs_kw = dict(width_ratios=[1, 1], height_ratios=[1.8, 1, 1])
-    fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8.7*cm, 12*cm), gridspec_kw=gs_kw)
-    gs = axs[0, 0].get_gridspec()
-    for ax in axs[0, 0:]:
-        ax.remove()
-    axbig = fig.add_subplot(gs[0, 0:])
-    # axs = axs.flat
-
-    ####################################################################################################################
-    ####################################################################################################################
-    ####################################################################################################################
-
     day = 68
     axbig.plot(res['a'][:day+1], label=r'party $a$', color='mediumorchid', alpha=1, lw=1)
     axbig.plot(res['b'][:day+1], label=r'party $b$', color='darkcyan', alpha=1, lw=1)
@@ -60,7 +59,7 @@ def main():
     axbig.plot(range(day, 101), res['b'][day:], color='darkcyan', alpha=0.3, lw=1)
     axbig.plot(range(day, 101), res['c'][day:], color='darkorange', alpha=0.3, lw=1)
 
-    axbig.axvline(day, ls='-', lw=1, color='black')
+    axbig.axvline(day, ls='-', lw=0.8, color='black')
     axbig.text(65.8, 0.648, 'election day', horizontalalignment='center', verticalalignment='center', rotation=90)
     axbig.text(84, 0.65, 'obtained votes:\nparty '+'$a$'+' - 49%\nparty '+r'$b$'+' - 33%\nparty '+r'$c$'+' - 18%', horizontalalignment='center', verticalalignment='center')
 
@@ -98,7 +97,8 @@ def main():
     res, settings = read_data(cfg.suffix, input_dir='results/final1/')
     voting_distribution = convert_to_distributions(res['vote_fractions'])
 
-    axs[1, 0].hist(voting_distribution['a'], bins=np.linspace(0.0, 1.0, 25), range=(0, 1), density=True, color='mediumorchid')
+    axs[1, 0].axvline(1. / 3, ls='-', lw=0.8, color='black', zorder=-10)
+    axs[1, 0].hist(voting_distribution['a'], bins=np.linspace(0.0, 1.0, 25), range=(0, 1), density=True, color='mediumorchid', alpha=0.9)
     axs[1, 0].set_xlim([0, 1])
     axs[1, 0].set_xlabel('fraction of votes')
     axs[1, 0].set_ylabel('probability')
@@ -114,15 +114,17 @@ def main():
     for system in ['main_district_system', '100 districts FPTP']:
         distribution = convert_to_distributions(res[system])
         color = 'deepskyblue' if system == 'main_district_system' else 'orangered'
+        axs[1, 1].axvline(1. / 3, ls='-', lw=0.8, color='black', zorder=-10)
         axs[1, 1].hist(distribution['a'], bins=np.linspace(0.0, 1.0, 25), range=(0, 1), density=True, color=color, alpha=0.7)
         axs[1, 1].set_xlim([0, 1])
+        axs[1, 1].set_ylim([0, 6.2])
         axs[1, 1].set_xlabel('fraction of seats')
         axs[1, 1].set_ylabel('probability')
         axs[1, 1].set_title('c', loc='left', fontweight='bold', fontsize=title_font)
         axs[1, 1].set_xticks((0, 1. / 3, 2. / 3, 1))
         axs[1, 1].set_xticklabels((0, 0.33, 0.66, 1))
 
-        axs[1, 1].text(0.7, 3.3, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.5))
+        axs[1, 1].text(0.7, 3.5, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.5))
         axs[1, 1].text(0.7, 2.359, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.5))
 
         ################################################################################################################
