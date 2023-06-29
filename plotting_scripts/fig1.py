@@ -137,8 +137,9 @@ def main():
         axs[2, 0].set_ylabel('probability')
         axs[2, 0].set_title('d', loc='left', fontweight='bold', fontsize=title_font)
 
-        axs[2, 0].text(0.2, 22.5, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.5))
-        axs[2, 0].text(0.2, 16.2, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.5))
+        # axs[2, 0].text(0.2, 22.5, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.5))
+        # axs[2, 0].text(0.2, 16.2, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.5))
+        axs[2, 0].text(0.07, 24, 'disproportionality')
 
         ################################################################################################################
 
@@ -147,9 +148,10 @@ def main():
         axs[2, 1].set_xlabel('eff. num. of parties')
         axs[2, 1].set_ylabel('probability')
         axs[2, 1].set_title('e', loc='left', fontweight='bold', fontsize=title_font)
-        #
-        axs[2, 1].text(1.5, 2.9, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.5))
-        axs[2, 1].text(1.5, 2.1, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.5))
+
+        # axs[2, 1].text(1.5, 2.9, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.5))
+        # axs[2, 1].text(1.5, 2.1, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.5))
+        axs[2, 1].text(1.2, 2.7, 'political\nfragmentation')
 
     ####################################################################################################################
     ####################################################################################################################

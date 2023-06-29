@@ -36,18 +36,18 @@ def main():
     args = parser.parse_args()
     setattr(args, 'n', 10000)
     setattr(args, 'q', 100)
-    setattr(args, 'sample_size', 500)
-    setattr(args, 'mc_steps', 1000)
-    setattr(args, 'therm_time', 1)
+    setattr(args, 'sample_size', 1000)
+    setattr(args, 'mc_steps', 50)
+    setattr(args, 'therm_time', 10000000)
     setattr(args, 'seats', [5])
     setattr(args, 'ratio', 0.002)
     setattr(args, 'avg_deg', 12.0)
     setattr(args, 'epsilon', 0.005)
     setattr(args, 'num_parties', 3)
     setattr(args, 'short_suffix', True)
-    setattr(args, 'n_zealots', 26)
+    setattr(args, 'mass_media', 0.5)
     cfg = Config(args, parser._option_string_actions)
-    res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final1/')
+    res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final1/')
 
     for system in ['main_district_system', '100 districts FPTP']:
         distribution = convert_to_distributions(res[system])
@@ -59,7 +59,7 @@ def main():
     axs[0, 0].axvline(1. / 3, ls='-', lw=0.8, color='black', zorder=0)
 
     axs[0, 0].set_xlim([0, 1])
-    axs[0, 0].set_ylim([0, 6.5])
+    axs[0, 0].set_ylim([0, 6.2])
     axs[0, 0].set_xlabel('fraction of seats')
     axs[0, 0].set_ylabel('probability')
     axs[0, 0].set_title('a', loc='left', fontweight='bold', fontsize=title_font)
@@ -67,8 +67,8 @@ def main():
     axs[0, 0].set_xticklabels((0, 0.33, 0.66, 1))
 
     axs[0, 0].text(0.12, 3.125, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.7))
-    axs[0, 0].text(0.12, 2.1, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.7))
-    axs[0, 0].set_title(' 0.25% of zealots', fontsize=7)
+    axs[0, 0].text(0.12, 2.14, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.7))
+    axs[0, 0].set_title(' 0.27 media bias', fontsize=7)
 
     ####################################################################################################################
     ####################################################################################################################
@@ -77,9 +77,9 @@ def main():
     args = parser.parse_args()
     setattr(args, 'n', 10000)
     setattr(args, 'q', 100)
-    setattr(args, 'sample_size', 500)
-    setattr(args, 'mc_steps', 1000)
-    setattr(args, 'therm_time', 1)
+    setattr(args, 'sample_size', 1000)
+    setattr(args, 'mc_steps', 50)
+    setattr(args, 'therm_time', 10000000)
     setattr(args, 'seats', [5])
     setattr(args, 'ratio', 0.002)
     setattr(args, 'avg_deg', 12.0)
@@ -90,11 +90,11 @@ def main():
     systems = ['100 districts FPTP', 'main_district_system', 'countrywide_system']  # '100 districts Webster'
     systems_res = defaultdict(DefDict)
 
-    z_list = list(range(0, 400, 13))
-    for i, z in enumerate(z_list):
-        setattr(args, 'n_zealots', z)
+    m_list = list(np.linspace(0, 1, 31))
+    for i, m in enumerate(m_list):
+        setattr(args, 'mass_media', m)
         cfg = Config(args, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final1/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final1/')
         voting_distribution = convert_to_distributions(res['vote_fractions'])
 
         for system in systems:
@@ -109,24 +109,24 @@ def main():
             systems_res[system]['eff'].append(indexes['Eff. No of Parties'])
 
     axs[0, 1].axhline(1. / 3, ls='--', lw=0.8, color='black', zorder=-10)
-    x_list = [100.0 * x / 10000 for x in z_list]
+    axs[0, 1].axvline(0, ls='--', lw=0.8, color='black', zorder=-10)
 
     for system in systems:
         mean = np.array(systems_res[system]['mean'])
         std = np.array(systems_res[system]['std'])
         short = names_dict[system]['short']
         color = names_dict[system]['color']
-        axs[0, 1].plot(x_list, mean, color=color, ls='-', label=short, lw=1)
-        axs[0, 1].fill_between(x_list, mean - std, mean + std, color=color, lw=0, alpha=0.45)
+        axs[0, 1].plot(np.array(m_list)-1./3, mean, color=color, ls='-', label=short, lw=1)
+        axs[0, 1].fill_between(np.array(m_list)-1./3, mean-std, mean+std, color=color, lw=0, alpha=0.45)
 
+    axs[0, 1].set_title(' media susceptibility', fontsize=7)
     axs[0, 1].set_title('b', loc='left', fontweight='bold', fontsize=title_font)
-    axs[0, 1].set_xlabel('% of zealots')
+    axs[0, 1].set_xlabel('media bias')
     axs[0, 1].set_ylabel('fraction of seats')
-    axs[0, 1].legend(loc='center right', bbox_to_anchor=(1.01, 0.4))
-    axs[0, 1].set_title(' zealot susceptibility', fontsize=7)
+    axs[0, 1].legend(loc='lower right', bbox_to_anchor=(1.03, -0.04))
 
-    axs[0, 1].set_xlim([0, z_list[-1] / 100.])
-    axs[0, 1].set_ylim([0.3, 1.005])
+    axs[0, 1].set_xlim([-1/3, 2/3])
+    axs[0, 1].set_ylim([-0.005, 1.005])
 
     ####################################################################################################################
     ####################################################################################################################
@@ -135,9 +135,9 @@ def main():
     args = parser.parse_args()
     setattr(args, 'n', 10000)
     setattr(args, 'q', 100)
-    setattr(args, 'sample_size', 500)
-    setattr(args, 'mc_steps', 1000)
-    setattr(args, 'therm_time', 1)
+    setattr(args, 'sample_size', 1000)
+    setattr(args, 'mc_steps', 50)
+    setattr(args, 'therm_time', 10000000)
     setattr(args, 'seats', [5])
     setattr(args, 'ratio', 0.002)
     setattr(args, 'avg_deg', 12.0)
@@ -148,11 +148,11 @@ def main():
     systems_res = defaultdict(lambda: defaultdict(list))
     systems = ['100 districts FPTP', 'main_district_system', 'countrywide_system']  # '100 districts Webster'
 
-    z_list = list(range(0, 400, 13))
-    for i, z in enumerate(z_list):
-        setattr(args, 'n_zealots', z)
+    m_list = list(np.linspace(0, 1, 31))
+    for i, m in enumerate(m_list):
+        setattr(args, 'mass_media', m)
         cfg = Config(args, parser._option_string_actions)
-        res, settings = read_data('_basic_z' + cfg.suffix, input_dir='results/final1/')
+        res, settings = read_data('_basic_m' + cfg.suffix, input_dir='results/final1/')
         voting_distribution = convert_to_distributions(res['vote_fractions'])
 
         for system in systems:
@@ -165,9 +165,11 @@ def main():
             systems_res[system]['eff_mean'].append(np.mean(indexes['Eff. No of Parties']))
             systems_res[system]['eff_std'].append(np.std(indexes['Eff. No of Parties']))
 
+    x_list = np.array(m_list) - 1. / 3
+
     ####################################################################################################################
 
-    x_list = [100.0 * x / 10000 for x in z_list]
+    axs[1, 0].axvline(0, ls='--', lw=0.8, color='black', zorder=-10)
     for system in systems:
         mean = np.array(systems_res[system]['gall_mean'])
         std = np.array(systems_res[system]['gall_std'])
@@ -177,17 +179,17 @@ def main():
         axs[1, 0].fill_between(x_list, mean - std, mean + std, color=color, lw=0, alpha=0.45)
 
     axs[1, 0].set_title('c', loc='left', fontweight='bold', fontsize=title_font)
-    axs[1, 0].set_xlabel('% of zealots')
+    axs[1, 0].set_xlabel('media bias')
     axs[1, 0].set_ylabel('Gallagher index')
-    # axs[1, 0].legend(loc=1)
-    axs[1, 0].set_xlim([0, z_list[-1] / 100.])
+    # axs[1, 0].legend(loc=2)
+    axs[1, 0].set_xlim([-1 / 3, 2 / 3])
     axs[1, 0].set_ylim([-0.01, 0.32])
 
     ####################################################################################################################
     ####################################################################################################################
     ####################################################################################################################
 
-    x_list = [100.0 * x / 10000 for x in z_list]
+    axs[1, 1].axvline(0, ls='--', lw=0.8, color='black', zorder=-10)
     for system in systems:
         mean = np.array(systems_res[system]['eff_mean'])
         std = np.array(systems_res[system]['eff_std'])
@@ -197,10 +199,10 @@ def main():
         axs[1, 1].fill_between(x_list, mean - std, mean + std, color=color, lw=0, alpha=0.45)
 
     axs[1, 1].set_title('d', loc='left', fontweight='bold', fontsize=title_font)
-    axs[1, 1].set_xlabel('% of zealots')
+    axs[1, 1].set_xlabel('media bias')
     axs[1, 1].set_ylabel('eff. num. of parties')
     # axs[1, 1].legend(loc=1)
-    axs[1, 1].set_xlim([0, z_list[-1] / 100.])
+    axs[1, 1].set_xlim([-1 / 3, 2 / 3])
     axs[1, 1].set_ylim([0.975, 3.02])
 
     ####################################################################################################################
@@ -208,7 +210,7 @@ def main():
     ####################################################################################################################
 
     plt.subplots_adjust(left=0.12, right=0.985, top=0.94, bottom=0.115, hspace=0.58, wspace=0.43)
-    plt.savefig(f'plots/fig2.pdf')
+    plt.savefig(f'plots/fig3.pdf')
     plt.close()
 
 
