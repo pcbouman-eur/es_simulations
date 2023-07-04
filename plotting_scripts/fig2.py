@@ -68,7 +68,7 @@ def main():
 
     axs[0, 0].text(0.12, 3.125, 'PR', bbox=dict(facecolor='deepskyblue', edgecolor='none', pad=2.0, alpha=0.7))
     axs[0, 0].text(0.12, 2.1, 'PV', bbox=dict(facecolor='orangered', edgecolor='none', pad=2.0, alpha=0.7))
-    axs[0, 0].set_title(' 0.25% of zealots', fontsize=7)
+    axs[0, 0].set_title(' 0.26% of zealots', fontsize=7)
 
     ####################################################################################################################
     ####################################################################################################################
