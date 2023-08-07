@@ -1,4 +1,7 @@
 [![Python tests](https://github.com/pcbouman-eur/wwcs2020-votingmodel/actions/workflows/run_tests.yml/badge.svg)](https://github.com/pcbouman-eur/wwcs2020-votingmodel/actions/workflows/run_tests.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8220453.svg)](https://doi.org/10.5281/zenodo.8220453)
+[![MIT License](https://img.shields.io/badge/licence-MIT-blue)](https://opensource.org/licenses/MIT)
+
 
 # Electoral Systems project
 
@@ -190,7 +193,3 @@ To run all the tests use:
 ```bash
 $ python3 -m unittest discover -s <repo_directory> -p '*_tests.py'
 ```
-
-## License
-
-[![scipy](https://img.shields.io/badge/licence-MIT-blue)](https://opensource.org/licenses/MIT)
