@@ -17,12 +17,16 @@ Due to high flexibility and wide parametrization many real-world electoral syste
 New measures of the system's stability, like zealot- or media-susceptibility, can be computed using special scripts.
 Fell free to use our code, and if you do so, we kindly ask to cite us:
 
+[https://arxiv.org/abs/2308.10066](https://arxiv.org/abs/2308.10066)
+
 ```
-@article{wilinski2022vulnerability,
-  title={Vulnerability of electoral systems: how to improve the core of democracy},
-  author={Wilinski, Mateusz and Klamut, Jaroslaw and Cremades, Roger and Bouman, Paul and Raducha, Tomasz},
-  journal={...},
-  year={2022}
+@misc{raducha2023vulnerability,
+      title={Vulnerability of democratic electoral systems}, 
+      author={Tomasz Raducha and Jaros\l{}aw Klamut and Roger Cremades and Paul Bouman and Mateusz Wili\'nski},
+      year={2023},
+      eprint={2308.10066},
+      archivePrefix={arXiv},
+      primaryClass={physics.soc-ph}
 }
 ```
 
